@@ -436,11 +436,12 @@
         <div class="container header-content">
             <a href="#" class="logo">UUcats Repository</a>
             <div class="nav-links">
+                <a href="#">홈</a>
                 <a href="#" class="social-link" id="twitter-link">
                     <svg viewBox="0 0 24 24">
                         <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
-                    (UUcats X)
+                    X (트위터)
                 </a>
                 <a href="#" id="login-button">관리자</a>
             </div>
@@ -448,7 +449,8 @@
     </header>
 
     <section class="hero-section">
-        <img id="hero-image-display" src="/api/placeholder/1200/500" alt="히어로 이미지"> <div class="hero-text-container">
+        <img id="hero-image-display" src="/api/placeholder/1200/500" alt="히어로 이미지"> 
+        <div class="hero-text-container">
             <h1 id="hero-title-display">여기에 멋진 제목을!</h1>
             <p id="hero-subtitle-display">여기는 부제목을 쓰는 공간이다옹!</p>
         </div>
@@ -480,29 +482,31 @@
                 <button class="btn" id="add-category-btn">카테고리 추가</button>
             </div>
             <ul id="category-list-admin" class="category-list">
-                </ul>
+            </ul>
             <h3>갤러리 사진 업로드</h3>
             <div class="upload-form">
                 <input type="file" class="file-input" id="image-upload" accept="image/*">
                 <input type="text" placeholder="사진 제목" id="image-title" class="text-input">
                 <select id="image-category-upload" class="text-input" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                     <option value="">카테고리 선택</option>
-                    </select>
-                <button class="btn" id="upload-btn">사진 업로드</button>
+                </select>
+                <button class="btn" id="add-to-stage-btn">대기열에 추가</button> <button class="btn" id="save-gallery-changes-btn" style="margin-left: 10px;">변경사항 저장</button> 
             </div>
-            <div class="gallery-admin" id="gallery-admin">
+            <div id="staged-files-info" style="margin-top: 10px; margin-bottom: 15px; font-size: 14px; color: #555;">
                 </div>
+            <div class="gallery-admin" id="gallery-admin">
+            </div>
             <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
         </div>
         
         <div class="category-dropdown-container">
             <select id="category-dropdown" class="category-dropdown" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #ddd;">
                 <option value="전체">모든 카테고리</option>
-                </select>
+            </select>
         </div>
         
         <div class="gallery" id="gallery">
-            </div>
+        </div>
     </main>
     
     <div class="modal" id="image-modal">
@@ -548,6 +552,9 @@
             title: '여기에 멋진 제목을!',
             subtitle: '여기는 부제목을 쓰는 공간이다옹!'
         };
+
+        // === 새로운 기능: 업로드 대기 중인 파일들을 위한 배열이다옹! ===
+        let stagedPhotos = []; 
         
         // DOM 요소들이다냥!
         const gallery = document.getElementById('gallery');
@@ -558,10 +565,14 @@
         const loginSubmit = document.getElementById('login-submit');
         const logoutBtn = document.getElementById('logout-btn');
         
-        const uploadBtn = document.getElementById('upload-btn');
-        const imageUploadInput = document.getElementById('image-upload'); // 갤러리 사진 업로드 인풋
-        const imageTitleInput = document.getElementById('image-title'); // 갤러리 사진 제목 인풋
-        const imageCategoryUploadDropdown = document.getElementById('image-category-upload'); // 업로드 시 카테고리 선택
+        // === '사진 업로드' 버튼이 이제 '대기열에 추가' 버튼으로 바뀐다옹! ===
+        const addToStageBtn = document.getElementById('add-to-stage-btn'); // ID 변경!
+        const saveGalleryChangesBtn = document.getElementById('save-gallery-changes-btn'); // 새로 추가된 저장 버튼!
+        const stagedFilesInfoDiv = document.getElementById('staged-files-info'); // 대기열 정보 표시용 div
+
+        const imageUploadInput = document.getElementById('image-upload'); 
+        const imageTitleInput = document.getElementById('image-title'); 
+        const imageCategoryUploadDropdown = document.getElementById('image-category-upload'); 
 
         const imageModal = document.getElementById('image-modal');
         const modalImage = document.getElementById('modal-image');
@@ -570,9 +581,8 @@
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const twitterLink = document.getElementById('twitter-link');
-        const categoryDropdown = document.getElementById('category-dropdown'); // 메인 화면 카테고리 필터
+        const categoryDropdown = document.getElementById('category-dropdown'); 
 
-        // === 새롭게 추가된 DOM 요소들이다옹! ===
         const heroImageDisplay = document.getElementById('hero-image-display');
         const heroTitleDisplay = document.getElementById('hero-title-display');
         const heroSubtitleDisplay = document.getElementById('hero-subtitle-display');
@@ -590,12 +600,10 @@
         const newCategoryInputAdmin = document.getElementById('new-category-input');
         const addCategoryBtnAdmin = document.getElementById('add-category-btn');
         const categoryListAdmin = document.getElementById('category-list-admin');
-        // === 여기까지 새로운 DOM 요소들! ===
         
-        let currentCategoryFilter = '전체'; // 현재 선택된 카테고리 필터
-        let currentModalPhotoIndex = 0; // 현재 모달에 표시 중인 이미지 인덱스
+        let currentCategoryFilter = '전체'; 
+        let currentModalPhotoIndex = 0; 
 
-        // --- 로컬 스토리지에서 데이터 불러오기 ---
         function loadDataFromLocalStorage() {
             const storedPhotos = localStorage.getItem('photos');
             if (storedPhotos) photos = JSON.parse(storedPhotos);
@@ -607,38 +615,34 @@
             if (storedHeroInfo) heroInfo = JSON.parse(storedHeroInfo);
         }
 
-        // --- 로컬 스토리지에 데이터 저장하기 ---
         function saveDataToLocalStorage() {
             localStorage.setItem('photos', JSON.stringify(photos));
             localStorage.setItem('categories', JSON.stringify(categories));
             localStorage.setItem('heroInfo', JSON.stringify(heroInfo));
         }
         
-        // 초기화 함수다냥!
         function init() {
-            loadDataFromLocalStorage(); // 데이터 먼저 불러오고!
-            updateHeroSection(); // 히어로 섹션 업데이트!
-            populateAllCategoryDropdowns(); // 모든 카테고리 드롭다운 채우기!
+            loadDataFromLocalStorage(); 
+            updateHeroSection(); 
+            populateAllCategoryDropdowns(); 
             renderGallery();
-            checkLogin(); // 로그인 상태 확인하고 관리자 패널 준비!
+            checkLogin(); 
             setupEventListeners();
+            updateStagedFilesInfo(); // 대기열 정보 초기 업데이트
         }
 
-        // === 히어로 섹션 업데이트 함수다냥! ===
         function updateHeroSection() {
             heroImageDisplay.src = heroInfo.imageUrl || '/api/placeholder/1200/500?text=No+Image';
             heroTitleDisplay.textContent = heroInfo.title || '';
             heroSubtitleDisplay.textContent = heroInfo.subtitle || '';
 
-            // 관리자 패널 미리보기 이미지도 업데이트
-            if (adminPanel.style.display === 'block') { // 관리자 패널 보일 때만!
+            if (adminPanel.style.display === 'block') { 
                 adminHeroPreview.src = heroInfo.imageUrl || '/api/placeholder/400/150?text=No+Image';
                 heroTitleInputAdmin.value = heroInfo.title || '';
                 heroSubtitleInputAdmin.value = heroInfo.subtitle || '';
             }
         }
 
-        // === 히어로 이미지 업로드 함수 (관리자) ===
         function handleHeroImageUpload() {
             const file = heroImageUploadInputAdmin.files[0];
             if (!file) {
@@ -649,24 +653,22 @@
             reader.onload = function(e) {
                 heroInfo.imageUrl = e.target.result;
                 updateHeroSection();
-                saveDataToLocalStorage(); // 변경사항 저장!
+                saveDataToLocalStorage(); 
                 alert('히어로 이미지가 업로드 되었다옹!');
             };
             reader.readAsDataURL(file);
-            heroImageUploadInputAdmin.value = ''; // 파일 입력 초기화
+            heroImageUploadInputAdmin.value = ''; 
         }
 
-        // === 히어로 이미지 삭제 함수 (관리자) ===
         function deleteHeroImage() {
             if (confirm('정말로 히어로 이미지를 삭제할거냥? 기본 이미지로 돌아간다옹!')) {
-                heroInfo.imageUrl = '/api/placeholder/1200/500?text=Hero+Image'; // 기본 이미지로 설정
+                heroInfo.imageUrl = '/api/placeholder/1200/500?text=Hero+Image'; 
                 updateHeroSection();
                 saveDataToLocalStorage();
                 alert('히어로 이미지가 삭제되었다옹!');
             }
         }
 
-        // === 히어로 문구 저장 함수 (관리자) ===
         function saveHeroText() {
             heroInfo.title = heroTitleInputAdmin.value.trim();
             heroInfo.subtitle = heroSubtitleInputAdmin.value.trim();
@@ -675,7 +677,6 @@
             alert('히어로 문구가 저장되었다옹!');
         }
 
-        // === 히어로 문구 전체 삭제 함수 (관리자) ===
         function deleteHeroText() {
             if (confirm('정말로 히어로 문구를 전부 삭제할거냥?')) {
                 heroInfo.title = '';
@@ -686,10 +687,8 @@
             }
         }
         
-        // === 모든 카테고리 관련 드롭다운 & 목록 업데이트 함수다냥! ===
         function populateAllCategoryDropdowns() {
-            // 1. 메인 화면 필터 드롭다운
-            categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>'; // '전체'는 항상 먼저!
+            categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>'; 
             categories.forEach(category => {
                 const count = photos.filter(p => p.category === category).length;
                 const option = document.createElement('option');
@@ -697,9 +696,8 @@
                 option.textContent = `${category} (${count})`;
                 categoryDropdown.appendChild(option);
             });
-            categoryDropdown.value = currentCategoryFilter; // 현재 필터 유지!
+            categoryDropdown.value = currentCategoryFilter; 
 
-            // 2. 관리자 사진 업로드 시 카테고리 선택 드롭다운
             imageCategoryUploadDropdown.innerHTML = '<option value="">카테고리 선택</option>';
             categories.forEach(category => {
                 const option = document.createElement('option');
@@ -708,13 +706,11 @@
                 imageCategoryUploadDropdown.appendChild(option);
             });
 
-            // 3. 관리자 카테고리 관리 목록 (추가/삭제용)
-            if (adminPanel.style.display === 'block') { // 관리자 패널 보일 때만!
+            if (adminPanel.style.display === 'block') { 
                 renderAdminCategoryList();
             }
         }
 
-        // === 관리자 패널 내 카테고리 목록 렌더링 함수 ===
         function renderAdminCategoryList() {
             categoryListAdmin.innerHTML = '';
             categories.forEach(category => {
@@ -723,7 +719,7 @@
                 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = '삭제';
-                deleteButton.className = 'btn btn-danger btn-sm'; // 작은 버튼으로!
+                deleteButton.className = 'btn btn-danger btn-sm'; 
                 deleteButton.onclick = () => handleDeleteCategory(category);
                 
                 listItem.appendChild(deleteButton);
@@ -731,7 +727,6 @@
             });
         }
 
-        // === 새 카테고리 추가 함수 (관리자) ===
         function handleAddCategory() {
             const newCategoryName = newCategoryInputAdmin.value.trim();
             if (!newCategoryName) {
@@ -747,30 +742,23 @@
                 return;
             }
             categories.push(newCategoryName);
-            categories.sort(); // 가나다 순 정렬!
+            categories.sort(); 
             populateAllCategoryDropdowns();
             saveDataToLocalStorage();
-            newCategoryInputAdmin.value = ''; // 입력 필드 비우기
+            newCategoryInputAdmin.value = ''; 
             alert(`'${newCategoryName}' 카테고리가 추가되었다옹!`);
         }
 
-        // === 카테고리 삭제 함수 (관리자) ===
         function handleDeleteCategory(categoryNameToDelete) {
             if (confirm(`정말로 '${categoryNameToDelete}' 카테고리를 삭제할거냥? 해당 카테고리의 사진들은 어떻게 할지 고민해봐야 한다옹! (여기선 일단 카테고리만 삭제한다옹)`)) {
-                // 실제 앱에서는 이 카테고리를 사용하는 사진들의 처리 방안을 결정해야 한다냥. (예: '기타' 카테고리로 옮기기 등)
-                // 여기서는 해당 카테고리 사진은 그대로 두고 카테고리 목록에서만 지운다옹.
-                // 만약 해당 카테고리 사진도 함께 삭제하거나 '미분류' 등으로 변경하고 싶다면 추가 로직이 필요하다냥!
                 const photosWithThisCategory = photos.filter(p => p.category === categoryNameToDelete);
                 if (photosWithThisCategory.length > 0) {
                     if(!confirm(`'${categoryNameToDelete}' 카테고리를 사용하는 사진 ${photosWithThisCategory.length}장이 있다옹. 그래도 카테고리를 삭제할거냥? (사진의 카테고리는 빈 값으로 남게 된다옹)`)){
                         return;
                     }
-                    // 해당 카테고리 사진들의 카테고리 정보를 비우거나, '미분류' 등으로 변경할 수 있다옹.
                     photos.forEach(photo => {
                         if (photo.category === categoryNameToDelete) {
-                            // photo.category = '미분류'; // 또는 ''
-                            // 여기서는 일단 카테고리 정보만 제거하는 것으로 가정하지 않고, 사용자에게 알리기만 한다옹.
-                            // 실제로는 사진의 category 속성을 변경해줘야 한다냥.
+                            // photo.category = '미분류'; // 또는 '' 로 설정할 수 있다옹. 여기선 알림만!
                             console.warn(`사진 "${photo.title}"의 카테고리 "${categoryNameToDelete}"가 삭제되었지만, 사진 데이터는 그대로 남아있다옹.`);
                         }
                     });
@@ -779,12 +767,11 @@
                 categories = categories.filter(cat => cat !== categoryNameToDelete);
                 populateAllCategoryDropdowns();
                 saveDataToLocalStorage();
-                renderGallery(); // 갤러리도 다시 그려서 반영!
+                renderGallery(); 
                 alert(`'${categoryNameToDelete}' 카테고리가 삭제되었다옹!`);
             }
         }
         
-        // 갤러리 렌더링 함수다냥!
         function renderGallery() {
             gallery.innerHTML = '';
             
@@ -832,10 +819,9 @@
             });
         }
         
-        // 관리자용 갤러리 렌더링 함수다냥!
         function renderAdminGallery() {
             galleryAdmin.innerHTML = '';
-            photos.slice().reverse().forEach(photo => { // 최근 업로드 순으로 보이게!
+            photos.slice().reverse().forEach(photo => { 
                 const item = document.createElement('div');
                 item.className = 'gallery-admin-item';
                 item.innerHTML = `
@@ -857,22 +843,20 @@
             });
         }
         
-        // 이미지 모달 열기 함수다냥!
         function openImageModal(photoId) {
             const photosToDisplay = currentCategoryFilter === '전체' 
                 ? photos 
                 : photos.filter(photo => photo.category === currentCategoryFilter);
 
             currentModalPhotoIndex = photosToDisplay.findIndex(photo => photo.id === photoId);
-            if (currentModalPhotoIndex === -1) { // 혹시 모를 에러 방지!
-                 currentModalPhotoIndex = photos.findIndex(photo => photo.id === photoId); // 전체 목록에서 다시 찾기
+            if (currentModalPhotoIndex === -1) { 
+                 currentModalPhotoIndex = photos.findIndex(photo => photo.id === photoId); 
             }
-            displayCurrentPhotoInModal(photosToDisplay); // 필터된 목록 기준으로 전달
+            displayCurrentPhotoInModal(photosToDisplay); 
             imageModal.style.display = 'flex';
         }
         
-        // 모달에 현재 사진 표시 함수다냥!
-        function displayCurrentPhotoInModal(photoArray) { // 어떤 사진 목록을 기준으로 할지 받는다옹!
+        function displayCurrentPhotoInModal(photoArray) { 
             if (currentModalPhotoIndex >= 0 && currentModalPhotoIndex < photoArray.length) {
                 const photo = photoArray[currentModalPhotoIndex];
                 modalImage.src = photo.url;
@@ -885,7 +869,6 @@
             }
         }
         
-        // 이전 사진 보기 함수다냥! (모달용)
         function showPreviousPhotoInModal() {
             const photosToDisplay = currentCategoryFilter === '전체' 
                 ? photos 
@@ -894,7 +877,6 @@
             displayCurrentPhotoInModal(photosToDisplay);
         }
         
-        // 다음 사진 보기 함수다냥! (모달용)
         function showNextPhotoInModal() {
             const photosToDisplay = currentCategoryFilter === '전체' 
                 ? photos 
@@ -903,99 +885,88 @@
             displayCurrentPhotoInModal(photosToDisplay);
         }
         
-        // 사진 삭제 함수다냥! (관리자용)
         function deletePhoto(id) {
             if (confirm('정말로 이 사진을 삭제할거냥? 되돌릴 수 없다옹!')) {
                 photos = photos.filter(photo => photo.id !== id);
                 renderGallery();
                 renderAdminGallery();
-                populateAllCategoryDropdowns(); // 카테고리별 사진 개수 업데이트!
+                populateAllCategoryDropdowns(); 
                 saveDataToLocalStorage();
                 alert('사진이 삭제되었다옹!');
             }
         }
+
+        // === 대기열 정보 업데이트 함수 ===
+        function updateStagedFilesInfo() {
+            if (stagedPhotos.length > 0) {
+                stagedFilesInfoDiv.innerHTML = `<strong>현재 대기 중인 파일:</strong> ${stagedPhotos.length}개 (제목: ${stagedPhotos.map(p => p.title).join(', ')})`;
+            } else {
+                stagedFilesInfoDiv.innerHTML = '현재 대기 중인 파일이 없다옹.';
+            }
+        }
         
-// 사진 업로드 함수다냥! (관리자용) - 여러 파일 업로드 가능하도록 수정!
-function uploadPhoto() {
-    const files = imageUploadInput.files; // 선택된 모든 파일을 가져온다옹!
-    if (files.length === 0) {
-        alert('업로드할 이미지를 하나 이상 선택해달라옹!');
-        return;
-    }
+        // === '대기열에 추가' 함수 (기존 uploadPhoto 함수 변경) ===
+        function addPhotoToStage() {
+            const file = imageUploadInput.files[0];
+            if (!file) {
+                alert('업로드할 이미지를 선택해달라옹!');
+                return;
+            }
+            
+            const title = imageTitleInput.value.trim() || `새로운 냥냥이 사진 ${Date.now()}`;
+            const category = imageCategoryUploadDropdown.value;
 
-    const category = imageCategoryUploadDropdown.value;
-    if (!category) {
-        alert('사진의 카테고리를 선택해달라옹!');
-        return;
-    }
+            if (!category) {
+                alert('사진의 카테고리를 선택해달라옹!');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // 실제 저장은 '변경사항 저장' 때 할 것이므로, 여기선 stagedPhotos 배열에만 추가한다옹!
+                stagedPhotos.push({
+                    fileData: e.target.result, // 파일 데이터 (Data URL)
+                    title: title,
+                    category: category
+                });
+                
+                imageUploadInput.value = ''; 
+                imageTitleInput.value = '';
+                imageCategoryUploadDropdown.value = '';
+                updateStagedFilesInfo(); // 대기열 정보 업데이트
+                alert('사진이 업로드 대기열에 추가되었다옹! "변경사항 저장"을 눌러야 진짜로 올라간다옹.');
+            };
+            reader.readAsDataURL(file);
+        }
 
-    let uploadedCount = 0; // 몇 개나 성공했는지 세어보자냥!
+        // === '변경사항 저장' 버튼 클릭 시 실행될 함수 ===
+        function handleSaveChanges() {
+            if (stagedPhotos.length === 0) {
+                alert('저장할 변경사항이 없다옹! 먼저 사진을 대기열에 추가해달라냥.');
+                return;
+            }
 
-    // 각 파일에 대해 반복한다옹!
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const title = imageTitleInput.value.trim() || `새로운 냥냥이 사진 <span class="math-inline">\{Date\.now\(\)\}\_</span>{i+1}`; // 각 파일에 고유한 기본 제목을 줄 수 있다옹
-
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-            // 고유 ID 생성 로직은 반복문 안으로 들어와야 각 파일마다 새 ID를 받는다옹!
-            // 하지만 photos 배열은 공유되므로, ID 생성은 모든 파일 처리가 끝난 후,
-            // 혹은 photos에 추가하기 직전에 올바른 현재 photos.length를 기반으로 해야한다옹.
-            // 더 안전한 방법은 ID를 미리 계산하지 않고, push 할 때마다 고유값을 찾는 것이다옹.
-            // 여기서는 간단하게 최대 ID + 1 로직을 유지하되, 각 파일 처리 시점에 photos를 참조한다냥.
-            const newId = photos.length > 0 ? Math.max(0, ...photos.map(p => p.id)) + 1 : 1;
-            // Math.max()가 빈 배열에 대해 -Infinity를 반환하는 것을 막기 위해 Math.max(0, ...) 사용 가능
-
-            photos.push({
-                id: newId,
-                url: e.target.result,
-                title: title, // 각 파일별 제목
-                category: category
+            stagedPhotos.forEach(stagedPhoto => {
+                const newId = photos.length > 0 ? Math.max(...photos.map(p => p.id)) + 1 : 1;
+                photos.push({
+                    id: newId,
+                    url: stagedPhoto.fileData, // stagedPhoto에서 파일 데이터 사용!
+                    title: stagedPhoto.title,
+                    category: stagedPhoto.category
+                });
             });
 
-            uploadedCount++; // 성공한 파일 개수 증가!
+            stagedPhotos = []; // 대기열 비우기!
+            updateStagedFilesInfo(); // 대기열 정보 업데이트
 
-            // 모든 파일이 처리되었는지 확인한다옹 (비동기라서 순서 보장이 안될 수 있으니 주의!)
-            // 모든 파일의 onload가 호출된 후에 UI 업데이트 및 저장을 하는 것이 좋다옹.
-            // 여기서는 각 파일마다 UI를 업데이트 하지만, 많은 파일을 올릴 땐 마지막에 한 번만 하는 게 효율적이다옹.
-            if (uploadedCount === files.length) {
-                renderGallery();
-                renderAdminGallery();
-                populateAllCategoryDropdowns();
-                saveDataToLocalStorage();
+            saveDataToLocalStorage(); // 로컬 스토리지에 최종 저장!
+            renderGallery(); 
+            renderAdminGallery(); 
+            populateAllCategoryDropdowns(); 
 
-                imageUploadInput.value = ''; // 모든 파일 처리 후 입력 필드 초기화
-                imageTitleInput.value = ''; // 제목 필드도 초기화
-                imageCategoryUploadDropdown.value = ''; // 카테고리 필드도 초기화
-                alert(`${uploadedCount}개의 사진이 성공적으로 업로드되었다옹!`);
-            }
-        };
+            alert('저장이 완료되었습니다옹! 갤러리가 업데이트 되었다냥! 😻');
+        }
 
-        reader.onerror = function() {
-            console.error(`"${file.name}" 파일을 읽는데 실패했다옹.`);
-            uploadedCount++; // 오류가 나도 카운트는 올려서 모든 파일 처리를 기다린다옹.
-             if (uploadedCount === files.length) {
-                // 오류가 있었더라도, 성공한 것들만이라도 반영하기 위해 UI 업데이트
-                renderGallery();
-                renderAdminGallery();
-                populateAllCategoryDropdowns();
-                saveDataToLocalStorage();
-                alert(`일부 파일 업로드에 실패했지만, ${photos.length}개의 사진은 처리되었다옹.`);
-            }
-        };
-
-        reader.readAsDataURL(file);
-    }
-
-    // 반복문이 다 돌고 나면 입력 필드를 초기화하는 것이 좋다옹.
-    // 하지만 reader.onload가 비동기라서, 위의 로직처럼 모든 파일 처리가 끝난 시점에 초기화하는 것이 더 정확하다옹.
-    // imageUploadInput.value = '';
-    // imageTitleInput.value = '';
-    // imageCategoryUploadDropdown.value = '';
-}
-
-// 로그인 처리 (서버에 물어보는 방식으로 되돌렸다옹!)
         async function login() { 
             const usernameInput = document.getElementById('username'); 
             const passwordInput = document.getElementById('password'); 
@@ -1003,8 +974,6 @@ function uploadPhoto() {
             const password = passwordInput.value;
 
             try {
-                // 서버의 'login-police'에게 물어본다옹!
-                // '/.netlify/functions/login-police' 경로가 맞는지 확인하라옹!
                 const response = await fetch('/.netlify/functions/login-police', { 
                     method: 'POST', 
                     headers: {
@@ -1019,7 +988,7 @@ function uploadPhoto() {
                     localStorage.setItem('isLoggedIn', 'true');
                     loginModal.style.display = 'none';
                     checkLogin();
-                    alert(result.message || '로그인 성공이다옹! 냥냥!'); // 서버 메시지가 있으면 그걸 쓰고, 없으면 기본 메시지!
+                    alert(result.message || '로그인 성공이다옹! 냥냥!'); 
                 } else {
                     alert(result.message || '로그인에 실패했다옹. 아이디와 비밀번호를 다시 확인해보라냥.');
                     usernameInput.value = '';
@@ -1031,71 +1000,70 @@ function uploadPhoto() {
             }
         }
         
-        // 로그아웃 처리 함수다냥!
         function logout() {
             localStorage.removeItem('isLoggedIn');
             adminPanel.style.display = 'none';
             loginButton.textContent = '관리자';
+            stagedPhotos = []; // 로그아웃 시 대기열도 비운다옹!
+            updateStagedFilesInfo();
             alert('로그아웃 되었다옹!');
         }
         
-        // 로그인 상태 확인 및 UI 업데이트 함수다냥!
         function checkLogin() {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             
             if (isLoggedIn) {
                 adminPanel.style.display = 'block';
-                loginButton.textContent = '관리자 패널 보기'; // 버튼 텍스트 변경
+                loginButton.textContent = '관리자 패널 보기'; 
                 renderAdminGallery();
-                populateAllCategoryDropdowns(); // 관리자 패널용 카테고리 목록도 다시 그림!
-                updateHeroSection(); // 관리자 패널 내 히어로 정보도 업데이트!
+                populateAllCategoryDropdowns(); 
+                updateHeroSection(); 
+                updateStagedFilesInfo(); // 로그인 시 대기열 정보 업데이트
             } else {
                 adminPanel.style.display = 'none';
-                loginButton.textContent = '관리자 로그인'; // 버튼 텍스트 변경
+                loginButton.textContent = '관리자 로그인'; 
             }
         }
         
-        // 이벤트 리스너 설정 함수다냥!
         function setupEventListeners() {
             loginButton.addEventListener('click', () => {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 if (isLoggedIn) {
-                    // 이미 로그인 상태면 관리자 패널로 스크롤 (또는 토글)
                     if (adminPanel.style.display === 'block') {
                         adminPanel.style.display = 'none';
                         loginButton.textContent = '관리자 패널 열기';
                     } else {
                         adminPanel.style.display = 'block';
                         loginButton.textContent = '관리자 패널 닫기';
-                        checkLogin(); // 관리자 패널 열 때 필요한 내용들 다시 로드
+                        checkLogin(); 
                         window.scrollTo({ top: adminPanel.offsetTop - 80, behavior: 'smooth' });
                     }
                 } else {
-                    loginModal.style.display = 'flex'; // 로그인 안됐으면 모달 띄우기
+                    loginModal.style.display = 'flex'; 
                 }
             });
             
             loginSubmit.addEventListener('click', login);
             logoutBtn.addEventListener('click', logout);
-            uploadBtn.addEventListener('click', uploadPhoto); // 갤러리 사진 업로드
             
+            // === 이벤트 리스너 변경 및 추가 ===
+            addToStageBtn.addEventListener('click', addPhotoToStage); // '대기열에 추가' 버튼
+            saveGalleryChangesBtn.addEventListener('click', handleSaveChanges); // '변경사항 저장' 버튼
+
             closeModal.addEventListener('click', () => imageModal.style.display = 'none');
-            prevBtn.addEventListener('click', showPreviousPhotoInModal); // 모달용 함수로 변경!
-            nextBtn.addEventListener('click', showNextPhotoInModal); // 모달용 함수로 변경!
+            prevBtn.addEventListener('click', showPreviousPhotoInModal); 
+            nextBtn.addEventListener('click', showNextPhotoInModal); 
             
-            // 카테고리 필터 변경 시 갤러리 다시 그리기!
             categoryDropdown.addEventListener('change', (e) => {
                 currentCategoryFilter = e.target.value;
                 renderGallery();
             });
 
-            // --- 새로운 기능들에 대한 이벤트 리스너다옹! ---
             heroImageUploadBtnAdmin.addEventListener('click', handleHeroImageUpload);
             heroImageDeleteBtnAdmin.addEventListener('click', deleteHeroImage);
             heroTextSaveBtnAdmin.addEventListener('click', saveHeroText);
             heroTextDeleteBtnAdmin.addEventListener('click', deleteHeroText);
             addCategoryBtnAdmin.addEventListener('click', handleAddCategory);
-            // --- 여기까지 새로운 이벤트 리스너들! ---
 
             document.addEventListener('keydown', (e) => {
                 if (imageModal.style.display === 'flex') {
@@ -1116,7 +1084,6 @@ function uploadPhoto() {
             });
         }
         
-        // 페이지 로드 완료되면 실행이다냥!
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
