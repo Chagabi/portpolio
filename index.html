@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UUcats Repository</title>
     <style>
-        /* --- (기존 스타일 대부분 유지) --- */
+        /* --- (모든 CSS 스타일은 이전과 동일하게 유지) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Sans KR', sans-serif; }
         body { background-color: #f5f5f5; color: #333; }
         header { background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px 0; position: sticky; top: 0; z-index: 1000; }
@@ -17,24 +17,19 @@
         .nav-links a:hover { color: #4285f4; }
         .social-link { display: flex; align-items: center; gap: 5px; }
         .social-link svg { width: 20px; height: 20px; }
-
-        /* 히어로 섹션 스타일 */
         .hero-section { width: 100%; height: 60vh; min-height: 300px; max-height: 500px; position: relative; overflow: hidden; background-color: #e0e0e0; }
         .hero-image { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
         .hero-text-content { position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); color: #fff; text-align: center; padding: 20px; width: 80%; max-width: 800px; }
         .hero-title { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
         .hero-subtitle { font-size: 1.2em; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
-
         main { padding: 40px 0; }
         .category-dropdown-container { margin-bottom: 20px; text-align: right; }
         .category-dropdown { padding: 10px 15px; border-radius: 4px; border: 1px solid #ddd; font-size: 16px; background-color: #fff; }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .gallery-item { position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-color: #fff; cursor: pointer; }
-        .gallery-item img { width: 100%; height: 250px; object-fit: cover; transition: transform 0.3s; display: block; /* 이미지 아래 작은 공백 제거 */ }
+        .gallery-item img { width: 100%; height: 250px; object-fit: cover; transition: transform 0.3s; display: block; }
         .gallery-item:hover img { transform: scale(1.05); }
         .photo-title { padding: 10px; text-align: center; font-weight: 500; color: #333; position: relative; z-index: 10; background-color: #fff; }
-
-        /* 이미지 모달 스타일 */
         .modal { display: none; position: fixed; z-index: 1200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; flex-direction: column; padding-bottom: 50px; opacity: 0; transition: opacity 0.3s ease-in-out; }
         .modal.show { opacity: 1; }
         .modal-content { max-width: 90%; max-height: 80%; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 0 30px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.95); transition: opacity 0.3s ease-in-out 0.1s, transform 0.3s ease-in-out 0.1s; }
@@ -47,8 +42,6 @@
         .nav-btn:hover { background-color: rgba(0, 0, 0, 0.6); opacity: 1; }
         .prev-btn { left: 15px; }
         .next-btn { right: 15px; }
-
-        /* 로그인 모달 스타일 */
         .login-modal { display: none; position: fixed; z-index: 1300; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .login-form { background-color: #fff; padding: 30px; border-radius: 8px; width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .login-form h2 { margin-bottom: 20px; text-align: center; }
@@ -58,12 +51,9 @@
         .btn { display: inline-block; padding: 10px 20px; background-color: #4285f4; color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
         .btn:hover { background-color: #3367d6; }
         .btn-block { display: block; width: 100%; }
-
-        /* 관리자 패널 스타일 */
         .admin-panel { display: none; background-color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .admin-panel h2, .admin-panel h3 { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;}
-        .admin-section { margin-bottom: 30px; } /* 각 관리 섹션 간격 */
-
+        .admin-section { margin-bottom: 30px; }
         .add-category-form { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
         .add-category-form input[type="text"] { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
         .upload-form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -71,24 +61,16 @@
         .gallery-admin { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .gallery-admin-item { position: relative; }
         .gallery-admin-item img { width: 100%; height: 150px; object-fit: cover; border-radius: 4px; }
-        .delete-btn { position: absolute; top: 5px; right: 5px; background-color: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; line-height: 25px; text-align: center; cursor: pointer; font-weight: bold; }
-
-        /* 카테고리 관리 스타일 */
+        .delete-btn { position: absolute; top: 5px; right: 5px; background-color: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; line-height: 25px; text-align: center; cursor: pointer; font-weight: bold;}
         .category-management-panel ul { list-style: none; padding: 0; }
         .category-management-panel li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
         .category-management-panel li:last-child { border-bottom: none; }
-        .category-management-panel .delete-category-btn { background-color: #ff6b6b; color: white; padding: 5px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; border: none; /* 버튼 기본 테두리 제거 */ }
+        .category-management-panel .delete-category-btn { background-color: #ff6b6b; color: white; padding: 5px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; border: none; }
         .category-management-panel .delete-category-btn:disabled { background-color: #ccc; cursor: not-allowed; }
-
-        /* === 히어로 영역 관리 스타일 시작 === */
         .hero-management-form .form-group label { margin-bottom: 8px; }
         .hero-management-form .form-group input[type="text"] { margin-bottom: 15px; }
-        /* === 히어로 영역 관리 스타일 끝 === */
-
         .logout-btn { background-color: #f44336; margin-top: 15px; }
         .logout-btn:hover { background-color: #d32f2f; }
-
-        /* 반응형 스타일 */
         @media (max-width: 768px) {
             .gallery { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
             .header-content { flex-direction: column; gap: 15px; }
@@ -127,27 +109,27 @@
     <main class="container">
         <div class="admin-panel" id="admin-panel">
             
-            <div class="admin-section"> <h2>사진 업로드</h2>
+            <div class="admin-section">
+                <h2>사진 업로드</h2>
                  <div class="upload-form">
                     <input type="file" class="file-input" id="image-upload" accept="image/*">
                     <input type="text" placeholder="사진 제목" id="image-title" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                     <select id="image-category" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         <option value="">카테고리 선택</option>
-                        </select>
+                    </select>
                     <button class="btn" id="upload-btn">업로드</button>
                 </div>
-                 <div class="gallery-admin" id="gallery-admin">
-                    </div>
+                 <div class="gallery-admin" id="gallery-admin"></div>
             </div>
 
-            <div class="admin-section"> <h3>카테고리 관리</h3>
+            <div class="admin-section">
+                <h3>카테고리 관리</h3>
                 <div class="add-category-form">
                     <input type="text" id="new-category-name" placeholder="새 카테고리 이름">
                     <button class="btn" id="add-category-btn">카테고리 추가</button>
                 </div>
                 <div class="category-management-panel" id="category-management-panel">
-                    <ul id="category-list-admin">
-                        </ul>
+                    <ul id="category-list-admin"></ul>
                 </div>
             </div>
 
@@ -167,17 +149,17 @@
                 </div>
                 <button class="btn" id="save-hero-btn">히어로 설정 저장</button>
             </div>
-             <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
+
+            <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
         </div>
         
         <div class="category-dropdown-container">
             <select id="category-dropdown" class="category-dropdown">
                 <option value="전체">모든 카테고리</option>
-                </select>
+            </select>
         </div>
         
-        <div class="gallery" id="gallery">
-            </div>
+        <div class="gallery" id="gallery"></div>
     </main>
     
     <div class="modal" id="image-modal">
@@ -204,394 +186,219 @@
     </div>
 
     <script>
-        // --- 로그인, 사진, 카테고리 관련 변수 및 함수들 (이전 코드와 유사) ---
+        // === 로그인 처리 함수 ===
+        // *** 이 함수 정의가 여기에 확실히 있어야 한다옹! ***
+        async function login() {
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+
+            try {
+                const response = await fetch('/.netlify/functions/login-police', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username, password: password })
+                });
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    loginModal.style.display = 'none';
+                    usernameInput.value = ''; 
+                    passwordInput.value = ''; 
+                    checkLogin();
+                    alert(result.message); 
+                } else {
+                    alert(result.message || '로그인에 실패했다옹. 다시 확인해보라냥.');
+                    passwordInput.value = '';
+                }
+            } catch (error) {
+                console.error('로그인 요청 중 에러냥:', error);
+                alert('냐옹... 로그인 서버에 연결할 수 없다옹. 인터넷 확인해보라냥!');
+            }
+        }
+        
+        // === 전역 변수 및 데이터 ===
         let photos = [ /* ... 샘플 사진 데이터 ... */ 
              { id: 1, url: '/api/placeholder/800/600?text=풍경+1', title: '멋진 풍경이다옹', category: '풍경' }, { id: 2, url: '/api/placeholder/800/600?text=인물+1', title: '예쁜 사람이다옹', category: '인물' }, { id: 3, url: '/api/placeholder/800/600?text=건축+1', title: '웅장한 건물이다옹', category: '건축' }, { id: 4, url: '/api/placeholder/800/600?text=풍경+2', title: '또 다른 풍경이다옹', category: '풍경' }, { id: 5, url: '/api/placeholder/800/600?text=동물+1', title: '귀여운 냥이다옹', category: '동물' }, { id: 6, url: '/api/placeholder/800/600?text=거리+1', title: '활기찬 거리다옹', category: '거리' }, { id: 7, url: '/api/placeholder/1600/900?text=히어로냥', title: '대표 히어로 냥이!', category: '동물'} ];
         let categories = []; 
         const defaultCategories = ['풍경', '인물', '건축', '동물', '거리']; 
-
-        // === 유틸리티 함수: 안전하게 로컬 스토리지에서 읽기 ===
-        function safeGetLocalStorage(key, defaultValue = null) {
-            try {
-                const item = localStorage.getItem(key);
-                return item ? JSON.parse(item) : defaultValue;
-            } catch (e) {
-                console.error(`로컬 스토리지 (${key}) 읽기 에러냥:`, e);
-                return defaultValue;
-            }
-        }
-
-        // === 유틸리티 함수: 안전하게 로컬 스토리지에 저장 ===
-        function safeSetLocalStorage(key, value) {
-             try {
-                localStorage.setItem(key, JSON.stringify(value));
-            } catch (e) {
-                console.error(`로컬 스토리지 (${key}) 저장 에러냥:`, e);
-            }
-        }
-
-
-        function loadCategories() {
-            categories = safeGetLocalStorage('uucats_categories', [...defaultCategories]);
-            // 저장된 값에 기본값이 없으면 추가 (이전 로직 개선)
-            defaultCategories.forEach(defaultCat => {
-                 if (!categories.some(cat => cat.toLowerCase() === defaultCat.toLowerCase())) {
-                    categories.push(defaultCat);
-                }
-            });
-             categories.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-        }
-
-        function saveCategories() {
-             safeSetLocalStorage('uucats_categories', categories);
-        }
-        
-        // DOM 요소들
-        const gallery = document.getElementById('gallery');
-        const galleryAdmin = document.getElementById('gallery-admin');
-        const adminPanel = document.getElementById('admin-panel');
-        const loginButton = document.getElementById('login-button');
-        const loginModal = document.getElementById('login-modal');
-        const loginSubmit = document.getElementById('login-submit');
-        const logoutBtn = document.getElementById('logout-btn');
-        const uploadBtn = document.getElementById('upload-btn');
-        const imageUpload = document.getElementById('image-upload');
-        const imageTitleInput = document.getElementById('image-title'); 
-        const imageCategorySelect = document.getElementById('image-category'); 
-        const imageModal = document.getElementById('image-modal');
-        const modalImage = document.getElementById('modal-image');
-        const modalTitle = document.getElementById('modal-title');
-        const closeModalBtn = document.getElementById('close-modal'); // 이름 변경 close -> closeModalBtn
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const twitterLink = document.getElementById('twitter-link');
-        const categoryDropdown = document.getElementById('category-dropdown');
-        const newCategoryNameInput = document.getElementById('new-category-name');
-        const addCategoryBtn = document.getElementById('add-category-btn');
-        const categoryListAdmin = document.getElementById('category-list-admin'); 
-        const heroImageElement = document.getElementById('hero-image-main');
-        const heroTitleElement = document.getElementById('hero-title-main');
-        const heroSubtitleElement = document.getElementById('hero-subtitle-main');
-        // 히어로 관리 폼 요소
-        const heroImageUrlInput = document.getElementById('hero-image-url');
-        const heroTitleTextInput = document.getElementById('hero-title-text');
-        const heroSubtitleTextInput = document.getElementById('hero-subtitle-text');
-        const saveHeroBtn = document.getElementById('save-hero-btn');
-
         let currentFilterCategory = '전체';
         let currentModalPhotoList = [];
         let currentPhotoIndexInModal = 0;
-        
-        function init() {
-            loadCategories(); 
-            populateCategoryDropdown();
-            populateAdminCategoryDropdown(); 
-            renderGallery();
-            setupHeroImage(); // 히어로 이미지 초기 설정 (로컬 스토리지 값 반영)
-            checkLogin(); 
-            setupEventListeners();
+
+        // === 유틸리티 함수 ===
+        function safeGetLocalStorage(key, defaultValue = null) { /* 이전과 동일 */ 
+             try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : defaultValue; } catch (e) { console.error(`로컬 스토리지 (${key}) 읽기 에러냥:`, e); return defaultValue; }
+        }
+        function safeSetLocalStorage(key, value) { /* 이전과 동일 */ 
+             try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.error(`로컬 스토리지 (${key}) 저장 에러냥:`, e); }
         }
 
-        // === 히어로 이미지 & 텍스트 설정/관리 함수 ===
-        function setupHeroImage() {
-            const savedHeroSettings = safeGetLocalStorage('uucats_hero', {}); // 기본값 빈 객체
-            const defaultImageUrl = photos.length > 0 ? (photos.find(p => p.id === 7) || photos[photos.length - 1]).url : '/api/placeholder/1600/900'; // 기본 이미지 URL
-            const defaultTitle = "UUcats의 세계로 초대한다냥!";
-            const defaultSubtitle = "다양한 고양이들의 매력에 푹 빠져보라옹!";
-
-            if (heroImageElement) {
-                heroImageElement.src = savedHeroSettings.imageUrl || defaultImageUrl;
-                heroImageElement.alt = savedHeroSettings.title || defaultTitle; // alt 텍스트도 설정
-            }
-            if (heroTitleElement) heroTitleElement.textContent = savedHeroSettings.title || defaultTitle;
-            if (heroSubtitleElement) heroSubtitleElement.textContent = savedHeroSettings.subtitle || defaultSubtitle;
-
-            // 관리자 패널 입력 필드에도 현재 값 채워넣기 (로그인 상태일 때)
-            if (localStorage.getItem('isLoggedIn') === 'true') {
-                heroImageUrlInput.value = savedHeroSettings.imageUrl || '';
-                heroTitleTextInput.value = savedHeroSettings.title || '';
-                heroSubtitleTextInput.value = savedHeroSettings.subtitle || '';
-            }
+        // === 카테고리 관련 함수 ===
+        function loadCategories() { /* 이전과 동일 */ 
+            categories = safeGetLocalStorage('uucats_categories', [...defaultCategories]);
+            defaultCategories.forEach(defaultCat => { if (!categories.some(cat => cat.toLowerCase() === defaultCat.toLowerCase())) { categories.push(defaultCat); } });
+             categories.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        }
+        function saveCategories() { /* 이전과 동일 */ 
+             safeSetLocalStorage('uucats_categories', categories); 
+        }
+        function populateCategoryDropdown() { /* 이전과 동일 */ 
+            categoryDropdown.innerHTML = ''; const allOption = document.createElement('option'); allOption.value = '전체'; allOption.textContent = '모든 카테고리'; categoryDropdown.appendChild(allOption); const uniqueCategoriesInPhotos = [...new Set(photos.map(p => p.category))]; const allDisplayCategories = [...new Set([...categories, ...uniqueCategoriesInPhotos])].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())); allDisplayCategories.forEach(category => { if (category.toLowerCase() === '전체'.toLowerCase()) return; const count = photos.filter(p => p.category.toLowerCase() === category.toLowerCase()).length; const option = document.createElement('option'); option.value = category; option.textContent = `${category} (${count})`; categoryDropdown.appendChild(option); }); categoryDropdown.value = currentFilterCategory; 
+        }
+        function populateAdminCategoryDropdown() { /* 이전과 동일 */ 
+            imageCategorySelect.innerHTML = '<option value="">카테고리 선택</option>'; categories.forEach(category => { const option = document.createElement('option'); option.value = category; option.textContent = category; imageCategorySelect.appendChild(option); }); 
+        }
+        function addCategory() { /* 이전과 동일 */ 
+            const newCategoryValue = newCategoryNameInput.value.trim(); if (!newCategoryValue) { alert('카테고리 이름을 입력해주라옹!'); return; } if (categories.some(cat => cat.toLowerCase() === newCategoryValue.toLowerCase())) { alert('이미 있는 카테고리다옹! (대소문자 구분 없음)'); newCategoryNameInput.value = ''; return; } categories.push(newCategoryValue); categories.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())); saveCategories(); alert(`"${newCategoryValue}" 카테고리가 추가되었다옹!`); newCategoryNameInput.value = ''; populateAdminCategoryDropdown(); populateCategoryDropdown(); renderCategoryManagement(); 
+        }
+        function renderCategoryManagement() { /* 이전과 동일 */ 
+            if (!categoryListAdmin) return; categoryListAdmin.innerHTML = ''; categories.forEach(category => { if (category.toLowerCase() === '전체'.toLowerCase()) return; const listItem = document.createElement('li'); const categoryNameSpan = document.createElement('span'); categoryNameSpan.textContent = category; listItem.appendChild(categoryNameSpan); const deleteBtn = document.createElement('button'); deleteBtn.textContent = '삭제'; deleteBtn.className = 'delete-category-btn'; const isCategoryInUse = photos.some(photo => photo.category.toLowerCase() === category.toLowerCase()); if (isCategoryInUse) { deleteBtn.disabled = true; deleteBtn.title = '이 카테고리를 사용하는 사진이 있어서 삭제할 수 없다옹!'; } else { deleteBtn.disabled = false; deleteBtn.title = `"${category}" 카테고리를 삭제한다옹!`; deleteBtn.addEventListener('click', () => { if (confirm(`"${category}" 카테고리를 정말 삭제할거냥? 이 카테고리를 사용하는 사진은 없지만, 되돌릴 수 없다옹!`)) { deleteCategory(category); } }); } listItem.appendChild(deleteBtn); categoryListAdmin.appendChild(listItem); }); 
+        }
+        function deleteCategory(categoryToDelete) { /* 이전과 동일 */ 
+            categories = categories.filter(cat => cat.toLowerCase() !== categoryToDelete.toLowerCase()); saveCategories(); alert(`"${categoryToDelete}" 카테고리가 삭제되었다옹!`); populateAdminCategoryDropdown(); populateCategoryDropdown(); renderCategoryManagement(); if (currentFilterCategory.toLowerCase() === categoryToDelete.toLowerCase()) { currentFilterCategory = '전체'; categoryDropdown.value = '전체'; renderGallery(); } 
         }
 
-        function saveHeroSettings() {
-            const newImageUrl = heroImageUrlInput.value.trim();
-            const newTitle = heroTitleTextInput.value.trim();
-            const newSubtitle = heroSubtitleTextInput.value.trim();
-
-            const heroSettings = {
-                imageUrl: newImageUrl,
-                title: newTitle,
-                subtitle: newSubtitle
-            };
-
-            safeSetLocalStorage('uucats_hero', heroSettings);
-            setupHeroImage(); // 변경사항 바로 반영
-            alert('히어로 영역 설정이 저장되었다옹!');
+        // === 히어로 영역 관리 함수 ===
+        function setupHeroImage() { /* 이전과 동일 */ 
+             const savedHeroSettings = safeGetLocalStorage('uucats_hero', {}); const defaultImageUrl = photos.length > 0 ? (photos.find(p => p.id === 7) || photos[photos.length - 1]).url : '/api/placeholder/1600/900'; const defaultTitle = "UUcats의 세계로 초대한다냥!"; const defaultSubtitle = "다양한 고양이들의 매력에 푹 빠져보라옹!"; if (heroImageElement) { heroImageElement.src = savedHeroSettings.imageUrl || defaultImageUrl; heroImageElement.alt = savedHeroSettings.title || defaultTitle; } if (heroTitleElement) heroTitleElement.textContent = savedHeroSettings.title || defaultTitle; if (heroSubtitleElement) heroSubtitleElement.textContent = savedHeroSettings.subtitle || defaultSubtitle; if (localStorage.getItem('isLoggedIn') === 'true') { heroImageUrlInput.value = savedHeroSettings.imageUrl || ''; heroTitleTextInput.value = savedHeroSettings.title || ''; heroSubtitleTextInput.value = savedHeroSettings.subtitle || ''; } 
+        }
+        function saveHeroSettings() { /* 이전과 동일 */ 
+             const newImageUrl = heroImageUrlInput.value.trim(); const newTitle = heroTitleTextInput.value.trim(); const newSubtitle = heroSubtitleTextInput.value.trim(); const heroSettings = { imageUrl: newImageUrl, title: newTitle, subtitle: newSubtitle }; safeSetLocalStorage('uucats_hero', heroSettings); setupHeroImage(); alert('히어로 영역 설정이 저장되었다옹!'); 
         }
 
-        // --- 카테고리, 갤러리 렌더링, 사진 관리 등 함수들 (populate*, addCategory, render*, delete*) ---
-        // (이전 코드와 거의 동일, 버그 수정 및 개선 포함)
-        function populateCategoryDropdown() { /* 이전 코드와 동일 */ 
-            categoryDropdown.innerHTML = ''; 
-            const allOption = document.createElement('option');
-            allOption.value = '전체';
-            allOption.textContent = '모든 카테고리';
-            categoryDropdown.appendChild(allOption);
-            const uniqueCategoriesInPhotos = [...new Set(photos.map(p => p.category))];
-            const allDisplayCategories = [...new Set([...categories, ...uniqueCategoriesInPhotos])].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-            allDisplayCategories.forEach(category => {
-                if (category.toLowerCase() === '전체'.toLowerCase()) return; 
-                const count = photos.filter(p => p.category.toLowerCase() === category.toLowerCase()).length;
-                const option = document.createElement('option');
-                option.value = category;
-                option.textContent = `${category} (${count})`;
-                categoryDropdown.appendChild(option);
-            });
-            categoryDropdown.value = currentFilterCategory;
-        }
-        function populateAdminCategoryDropdown() { /* 이전 코드와 동일 */ 
-             imageCategorySelect.innerHTML = '<option value="">카테고리 선택</option>'; 
-            categories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.textContent = category;
-                imageCategorySelect.appendChild(option);
-            });
-        }
-        function addCategory() { /* 이전 코드와 동일 */ 
-            const newCategoryValue = newCategoryNameInput.value.trim();
-            if (!newCategoryValue) { alert('카테고리 이름을 입력해주라옹!'); return; }
-            if (categories.some(cat => cat.toLowerCase() === newCategoryValue.toLowerCase())) {
-                alert('이미 있는 카테고리다옹! (대소문자 구분 없음)');
-                newCategoryNameInput.value = ''; return;
-            }
-            categories.push(newCategoryValue);
-            categories.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())); 
-            saveCategories(); 
-            alert(`"${newCategoryValue}" 카테고리가 추가되었다옹!`);
-            newCategoryNameInput.value = ''; 
-            populateAdminCategoryDropdown();
-            populateCategoryDropdown(); 
-            renderCategoryManagement();
-        }
-        function renderCategoryManagement() { /* 이전 코드와 동일 */ 
-            if (!categoryListAdmin) return;
-            categoryListAdmin.innerHTML = ''; 
-            categories.forEach(category => {
-                if (category.toLowerCase() === '전체'.toLowerCase()) return; 
-                const listItem = document.createElement('li');
-                const categoryNameSpan = document.createElement('span');
-                categoryNameSpan.textContent = category;
-                listItem.appendChild(categoryNameSpan);
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = '삭제';
-                deleteBtn.className = 'delete-category-btn';
-                const isCategoryInUse = photos.some(photo => photo.category.toLowerCase() === category.toLowerCase());
-                if (isCategoryInUse) {
-                    deleteBtn.disabled = true;
-                    deleteBtn.title = '이 카테고리를 사용하는 사진이 있어서 삭제할 수 없다옹!';
-                } else {
-                    deleteBtn.disabled = false;
-                    deleteBtn.title = `"${category}" 카테고리를 삭제한다옹!`;
-                    deleteBtn.addEventListener('click', () => {
-                        if (confirm(`"${category}" 카테고리를 정말 삭제할거냥? 이 카테고리를 사용하는 사진은 없지만, 되돌릴 수 없다옹!`)) {
-                            deleteCategory(category);
-                        }
-                    });
-                }
-                listItem.appendChild(deleteBtn);
-                categoryListAdmin.appendChild(listItem);
-            });
-        }
-        function deleteCategory(categoryToDelete) { /* 이전 코드와 동일 */ 
-             categories = categories.filter(cat => cat.toLowerCase() !== categoryToDelete.toLowerCase());
-            saveCategories();
-            alert(`"${categoryToDelete}" 카테고리가 삭제되었다옹!`);
-            populateAdminCategoryDropdown();
-            populateCategoryDropdown();
-            renderCategoryManagement();
-            if (currentFilterCategory.toLowerCase() === categoryToDelete.toLowerCase()) {
-                currentFilterCategory = '전체';
-                categoryDropdown.value = '전체';
-                renderGallery();
-            }
-        }
-        function renderGallery() { /* 이전 코드와 동일 (버그픽스 포함) */
+        // === 갤러리 렌더링 함수 ===
+        function renderGallery() { 
             gallery.innerHTML = '';
             const filteredPhotos = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
                 ? photos 
                 : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
             
-            if (filteredPhotos.length === 0 && photos.length > 0) { 
-                const emptyMessage = document.createElement('div');
-                emptyMessage.className = 'empty-gallery-message';
-                emptyMessage.innerHTML = `<div style="text-align: center; padding: 40px; width: 100%; color: #666;"><svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;"><path fill="currentColor" d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" /></svg><p style="font-size: 16px; margin-bottom: 5px;">냥냥! '${currentFilterCategory}' 카테고리에는 아직 사진이 없다옹.</p><p style="font-size: 14px; opacity: 0.7;">다른 카테고리를 보거나 새 사진을 올려보라옹!</p></div>`;
-                gallery.appendChild(emptyMessage); return;
-            } else if (photos.length === 0) { 
-                 const emptyMessage = document.createElement('div');
-                emptyMessage.className = 'empty-gallery-message';
-                emptyMessage.innerHTML = `<div style="text-align: center; padding: 40px; width: 100%; color: #666;"><svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;"><path fill="currentColor" d="M20,5.5C20,4.67 19.33,4 18.5,4H5.5C4.67,4 4,4.67 4,5.5V18.5C4,19.33 4.67,20 5.5,20H18.5C19.33,20 20,19.33 20,18.5V5.5M17,17H7V7H17V17M15,9H9V11H15V9M15,13H9V15H15V13Z" /></svg><p style="font-size: 16px; margin-bottom: 5px;">아직 아무 사진도 없다옹! 관리자라면 사진을 올려보라냥!</p></div>`;
-                gallery.appendChild(emptyMessage); return;
-            }
-            
+            // --- (이하 갤러리 비었을 때 메시지 표시는 이전과 동일) ---
+            if (filteredPhotos.length === 0 && photos.length > 0) { const emptyMessage = document.createElement('div'); emptyMessage.className = 'empty-gallery-message'; emptyMessage.innerHTML = `<div style="text-align: center; padding: 40px; width: 100%; color: #666;"><svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;"><path fill="currentColor" d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" /></svg><p style="font-size: 16px; margin-bottom: 5px;">냥냥! '${currentFilterCategory}' 카테고리에는 아직 사진이 없다옹.</p><p style="font-size: 14px; opacity: 0.7;">다른 카테고리를 보거나 새 사진을 올려보라옹!</p></div>`; gallery.appendChild(emptyMessage); return; }
+            else if (photos.length === 0) { const emptyMessage = document.createElement('div'); emptyMessage.className = 'empty-gallery-message'; emptyMessage.innerHTML = `<div style="text-align: center; padding: 40px; width: 100%; color: #666;"><svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;"><path fill="currentColor" d="M20,5.5C20,4.67 19.33,4 18.5,4H5.5C4.67,4 4,4.67 4,5.5V18.5C4,19.33 4.67,20 5.5,20H18.5C19.33,20 20,19.33 20,18.5V5.5M17,17H7V7H17V17M15,9H9V11H15V9M15,13H9V15H15V13Z" /></svg><p style="font-size: 16px; margin-bottom: 5px;">아직 아무 사진도 없다옹! 관리자라면 사진을 올려보라냥!</p></div>`; gallery.appendChild(emptyMessage); return; }
+
+            // *** 갤러리 아이템 생성 및 이벤트 리스너 부착 ***
             filteredPhotos.forEach((photo, index) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
                 item.style.opacity = '0'; item.style.transform = 'translateY(20px)';
-                item.style.transition = `opacity 0.5s ease ${index * 0.05}s, transform 0.5s ease ${index * 0.05}s`; // 지연 적용 수정
-                item.innerHTML = `<img src="${photo.url}" alt="${photo.title}"><div class="photo-title">${photo.title}</div>`;
+                item.style.transition = `opacity 0.5s ease ${index * 0.05}s, transform 0.5s ease ${index * 0.05}s`;
                 
-                // *** 중요: 클릭 이벤트 리스너 수정 ***
-                // 여기서 직접 photo.id를 전달해야 한다옹!
+                const img = document.createElement('img'); // 이미지 요소 따로 생성
+                img.src = photo.url;
+                img.alt = photo.title;
+                item.appendChild(img);
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'photo-title';
+                titleDiv.textContent = photo.title;
+                item.appendChild(titleDiv);
+                
+                // *** 이벤트 리스너 부착 ***
                 item.addEventListener('click', () => {
-                    console.log("갤러리 아이템 클릭! Photo ID:", photo.id); // 디버깅 로그 추가
+                    console.log("갤러리 아이템 클릭됨! Photo ID:", photo.id); // 디버깅 로그!
                     openImageModal(photo.id); 
                 });
                 // *** --- ***
 
                 gallery.appendChild(item);
-                setTimeout(() => { // 등장 애니메이션
+                setTimeout(() => { 
                     item.style.opacity = '1'; item.style.transform = 'translateY(0)';
-                }, 10); // 아주 짧은 딜레이 후 시작
+                }, 10); 
             });
         }
         function renderAdminGallery() { /* 이전 코드와 동일 */ 
-            galleryAdmin.innerHTML = '';
-            const sortedPhotos = [...photos].sort((a, b) => b.id - a.id); 
-            sortedPhotos.forEach(photo => {
-                const item = document.createElement('div');
-                item.className = 'gallery-admin-item';
-                item.innerHTML = `<img src="${photo.url}" alt="${photo.title}"><div style="padding: 5px; text-align: center; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${photo.title}<span style="display: block; color: #666; font-size: 11px;">${photo.category}</span></div><button class="delete-btn" data-id="${photo.id}">&times;</button>`;
-                galleryAdmin.appendChild(item);
-            });
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(e.target.getAttribute('data-id'));
-                    if (confirm("정말로 이 사진을 삭제할거냥? 냥?")) { deletePhoto(id); }
-                });
-            });
+            galleryAdmin.innerHTML = ''; const sortedPhotos = [...photos].sort((a, b) => b.id - a.id); sortedPhotos.forEach(photo => { const item = document.createElement('div'); item.className = 'gallery-admin-item'; item.innerHTML = `<img src="${photo.url}" alt="${photo.title}"><div style="padding: 5px; text-align: center; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${photo.title}<span style="display: block; color: #666; font-size: 11px;">${photo.category}</span></div><button class="delete-btn" data-id="${photo.id}">&times;</button>`; galleryAdmin.appendChild(item); }); document.querySelectorAll('.delete-btn').forEach(btn => { btn.addEventListener('click', (e) => { const id = parseInt(e.target.getAttribute('data-id')); if (confirm("정말로 이 사진을 삭제할거냥? 냥?")) { deletePhoto(id); } }); }); 
         }
 
-        // --- 이미지 모달 관련 함수들 (개선된 버전) ---
-        function openImageModal(photoId) {
-            console.log('openImageModal 호출됨! ID:', photoId); // *** 디버깅 로그 추가 ***
-            currentModalPhotoList = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
-                ? [...photos] 
-                : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
+        // === 이미지 모달 함수 (개선된 버전) ===
+        function openImageModal(photoId) { /* 이전 코드와 동일 */ 
+            console.log('openImageModal 호출됨! ID:', photoId); 
+            currentModalPhotoList = currentFilterCategory.toLowerCase() === '전체'.toLowerCase() ? [...photos] : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
             currentPhotoIndexInModal = currentModalPhotoList.findIndex(photo => photo.id === photoId);
-            if (currentPhotoIndexInModal === -1) { 
-                currentModalPhotoList = [...photos]; 
-                currentPhotoIndexInModal = currentModalPhotoList.findIndex(photo => photo.id === photoId);
-                if (currentPhotoIndexInModal === -1) {
-                    console.error("사진을 찾을 수 없다옹!", photoId); return; 
-                }
-            }
-            imageModal.style.display = 'flex'; 
-            setTimeout(() => { 
-                imageModal.classList.add('show');
-                displayCurrentPhotoInModal(); 
-            }, 10); 
+            if (currentPhotoIndexInModal === -1) { currentModalPhotoList = [...photos]; currentPhotoIndexInModal = currentModalPhotoList.findIndex(photo => photo.id === photoId); if (currentPhotoIndexInModal === -1) { console.error("사진을 찾을 수 없다옹!", photoId); return; } }
+            imageModal.style.display = 'flex'; setTimeout(() => { imageModal.classList.add('show'); displayCurrentPhotoInModal(); }, 10); 
         }
         function displayCurrentPhotoInModal() { /* 이전 코드와 동일 */ 
-             if (currentPhotoIndexInModal >= 0 && currentPhotoIndexInModal < currentModalPhotoList.length) {
-                const photoToShow = currentModalPhotoList[currentPhotoIndexInModal];
-                modalImage.style.opacity = '0'; 
-                modalImage.classList.remove('loaded');
-                modalTitle.style.opacity = '0';
-                setTimeout(() => { 
-                    modalImage.src = photoToShow.url;
-                    modalTitle.innerHTML = `${photoToShow.title}<br><span style="font-size: 14px; opacity: 0.8;">@UU_CATS</span><span style="display: inline-block; margin-left: 10px; font-size: 12px; background-color: rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 12px; backdrop-filter: blur(5px);">${photoToShow.category}</span>`;
-                    modalImage.onload = () => { modalImage.classList.add('loaded'); modalTitle.style.opacity = '1'; };
-                    if (modalImage.complete) { setTimeout(() => { modalImage.classList.add('loaded'); modalTitle.style.opacity = '1'; }, 50); }
-                }, 200); 
-            }
+            if (currentPhotoIndexInModal >= 0 && currentPhotoIndexInModal < currentModalPhotoList.length) { const photoToShow = currentModalPhotoList[currentPhotoIndexInModal]; modalImage.style.opacity = '0'; modalImage.classList.remove('loaded'); modalTitle.style.opacity = '0'; setTimeout(() => { modalImage.src = photoToShow.url; modalTitle.innerHTML = `${photoToShow.title}<br><span style="font-size: 14px; opacity: 0.8;">@UU_CATS</span><span style="display: inline-block; margin-left: 10px; font-size: 12px; background-color: rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 12px; backdrop-filter: blur(5px);">${photoToShow.category}</span>`; modalImage.onload = () => { modalImage.classList.add('loaded'); modalTitle.style.opacity = '1'; }; if (modalImage.complete) { setTimeout(() => { modalImage.classList.add('loaded'); modalTitle.style.opacity = '1'; }, 50); } }, 200); } 
         }
         function showPreviousPhotoInModal() { /* 이전 코드와 동일 */ 
-            currentPhotoIndexInModal = (currentPhotoIndexInModal - 1 + currentModalPhotoList.length) % currentModalPhotoList.length;
-            displayCurrentPhotoInModal();
+             currentPhotoIndexInModal = (currentPhotoIndexInModal - 1 + currentModalPhotoList.length) % currentModalPhotoList.length; displayCurrentPhotoInModal(); 
         }
         function showNextPhotoInModal() { /* 이전 코드와 동일 */ 
-             currentPhotoIndexInModal = (currentPhotoIndexInModal + 1) % currentModalPhotoList.length;
-            displayCurrentPhotoInModal();
+             currentPhotoIndexInModal = (currentPhotoIndexInModal + 1) % currentModalPhotoList.length; displayCurrentPhotoInModal(); 
         }
         function closeImageModal() { /* 이전 코드와 동일 */ 
-            imageModal.classList.remove('show'); 
-            setTimeout(() => { 
-                imageModal.style.display = 'none';
-                modalImage.classList.remove('loaded'); 
-                modalImage.src = ""; 
-            }, 300); 
+            imageModal.classList.remove('show'); setTimeout(() => { imageModal.style.display = 'none'; modalImage.classList.remove('loaded'); modalImage.src = ""; }, 300); 
         }
 
-        // --- 사진 업로드, 삭제, 로그아웃, 로그인 상태 확인 함수들 ---
+        // === 기타 함수 (사진 업로드, 삭제, 로그아웃, 로그인 상태 확인) ===
         function deletePhoto(id) { /* 이전 코드와 동일 */ 
-            photos = photos.filter(photo => photo.id !== id);
-            renderGallery(); renderAdminGallery(); populateCategoryDropdown(); renderCategoryManagement();
+            photos = photos.filter(photo => photo.id !== id); renderGallery(); renderAdminGallery(); populateCategoryDropdown(); renderCategoryManagement(); 
         }
         function uploadPhoto() { /* 이전 코드와 동일 */ 
-            const file = imageUpload.files[0]; if (!file) { alert('이미지를 선택해주라옹!'); return; }
-            const title = imageTitleInput.value.trim() || `업로드 이미지 ${Math.floor(Math.random() * 1000)}`;
-            const category = imageCategorySelect.value; if (!category) { alert('카테고리를 선택해주라옹!'); return; }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const newId = photos.length > 0 ? Math.max(0, ...photos.map(p => p.id)) + 1 : 1;
-                photos.push({ id: newId, url: e.target.result, title: title, category: category });
-                renderGallery(); renderAdminGallery(); populateCategoryDropdown(); renderCategoryManagement(); 
-                imageUpload.value = ''; imageTitleInput.value = ''; imageCategorySelect.value = '';
-                alert('사진이 업로드 되었다옹!');
-            };
-            reader.readAsDataURL(file);
+            const file = imageUpload.files[0]; if (!file) { alert('이미지를 선택해주라옹!'); return; } const title = imageTitleInput.value.trim() || `업로드 이미지 ${Math.floor(Math.random() * 1000)}`; const category = imageCategorySelect.value; if (!category) { alert('카테고리를 선택해주라옹!'); return; } const reader = new FileReader(); reader.onload = function(e) { const newId = photos.length > 0 ? Math.max(0, ...photos.map(p => p.id)) + 1 : 1; photos.push({ id: newId, url: e.target.result, title: title, category: category }); renderGallery(); renderAdminGallery(); populateCategoryDropdown(); renderCategoryManagement(); imageUpload.value = ''; imageTitleInput.value = ''; imageCategorySelect.value = ''; alert('사진이 업로드 되었다옹!'); }; reader.readAsDataURL(file); 
         }
         function logout() { /* 이전 코드와 동일 */ 
              localStorage.removeItem('isLoggedIn'); checkLogin(); 
         }
-        function checkLogin() { /* 이전 코드와 동일 (setupHeroImage 호출 추가) */
-             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            if (isLoggedIn) {
-                adminPanel.style.display = 'block';
-                loginButton.textContent = '관리자 패널';
-                renderAdminGallery();
-                renderCategoryManagement(); 
-                setupHeroImage(); // 로그인 시 관리자 패널의 히어로 설정 필드 값 채우기 위해 호출
-            } else {
-                adminPanel.style.display = 'none';
-                loginButton.textContent = '관리자';
-            }
+        function checkLogin() { /* 이전 코드와 동일 */ 
+             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; if (isLoggedIn) { adminPanel.style.display = 'block'; loginButton.textContent = '관리자 패널'; renderAdminGallery(); renderCategoryManagement(); setupHeroImage(); } else { adminPanel.style.display = 'none'; loginButton.textContent = '관리자'; } 
         }
 
         // === 이벤트 리스너 설정 ===
         function setupEventListeners() {
-            loginButton.addEventListener('click', () => { /* 이전과 동일 */ 
-                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                if (isLoggedIn) { if(adminPanel.style.display === 'block') { window.scrollTo({ top: adminPanel.offsetTop - (document.querySelector('header')?.offsetHeight || 70), behavior: 'smooth' }); } } else { loginModal.style.display = 'flex'; }
-            });
-            loginSubmit.addEventListener('click', login);
-            logoutBtn.addEventListener('click', logout);
-            uploadBtn.addEventListener('click', uploadPhoto);
-            addCategoryBtn.addEventListener('click', addCategory); 
-            saveHeroBtn.addEventListener('click', saveHeroSettings); // 히어로 설정 저장 버튼 이벤트 추가!
+            // DOM 요소 선택 (함수 내에서 다시 한번 확인)
+            const loginSubmitBtn = document.getElementById('login-submit');
+            const logoutBtnElem = document.getElementById('logout-btn');
+            const uploadBtnElem = document.getElementById('upload-btn');
+            const addCategoryBtnElem = document.getElementById('add-category-btn');
+            const saveHeroBtnElem = document.getElementById('save-hero-btn');
+            const closeModalBtnElem = document.getElementById('close-modal');
+            const prevBtnElem = document.getElementById('prev-btn');
+            const nextBtnElem = document.getElementById('next-btn');
+            const twitterLinkElem = document.getElementById('twitter-link');
+            const categoryDropdownElem = document.getElementById('category-dropdown');
+            const loginButtonElem = document.getElementById('login-button'); // loginButton 변수명 사용 일관성 위해 Elem 추가
+
+            if (loginButtonElem) { // 각 요소가 존재하는지 확인하고 이벤트 리스너 추가 (안전장치)
+                loginButtonElem.addEventListener('click', () => { 
+                    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                    if (isLoggedIn) { 
+                        if(adminPanel.style.display === 'block') { 
+                            window.scrollTo({ top: adminPanel.offsetTop - (document.querySelector('header')?.offsetHeight || 70), behavior: 'smooth' }); 
+                        } 
+                    } else { 
+                        loginModal.style.display = 'flex'; 
+                    }
+                });
+            } else { console.error("login-button 요소를 찾을 수 없다옹!"); }
             
-            closeModalBtn.addEventListener('click', closeImageModal); 
-            prevBtn.addEventListener('click', showPreviousPhotoInModal); 
-            nextBtn.addEventListener('click', showNextPhotoInModal);   
+            if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', login); 
+            else { console.error("login-submit 요소를 찾을 수 없다옹!"); }
+
+            if (logoutBtnElem) logoutBtnElem.addEventListener('click', logout);
+            if (uploadBtnElem) uploadBtnElem.addEventListener('click', uploadPhoto);
+            if (addCategoryBtnElem) addCategoryBtnElem.addEventListener('click', addCategory); 
+            if (saveHeroBtnElem) saveHeroBtnElem.addEventListener('click', saveHeroSettings); 
+            if (closeModalBtnElem) closeModalBtnElem.addEventListener('click', closeImageModal); 
+            if (prevBtnElem) prevBtnElem.addEventListener('click', showPreviousPhotoInModal); 
+            if (nextBtnElem) nextBtnElem.addEventListener('click', showNextPhotoInModal);   
+            if (twitterLinkElem) twitterLinkElem.addEventListener('click', (e) => { e.preventDefault(); window.open('https://x.com/UU_CATS', '_blank'); });
+            if (categoryDropdownElem) categoryDropdownElem.addEventListener('change', (e) => { currentFilterCategory = e.target.value; renderGallery(); });
             
-            document.addEventListener('keydown', (e) => { /* 이전과 동일 */ 
+            document.addEventListener('keydown', (e) => { 
                  if (imageModal.style.display === 'flex' && imageModal.classList.contains('show')) { if (e.key === 'ArrowLeft') showPreviousPhotoInModal(); else if (e.key === 'ArrowRight') showNextPhotoInModal(); else if (e.key === 'Escape') closeImageModal(); }
                  if (loginModal.style.display === 'flex' && e.key === 'Escape') { loginModal.style.display = 'none'; }
             });
-            window.addEventListener('click', (e) => { /* 이전과 동일 */ 
+            window.addEventListener('click', (e) => { 
                  if (e.target === imageModal) closeImageModal(); if (e.target === loginModal) loginModal.style.display = 'none'; 
-            });
-            twitterLink.addEventListener('click', (e) => { /* 이전과 동일 */ 
-                 e.preventDefault(); window.open('https://x.com/UU_CATS', '_blank'); 
-            });
-            categoryDropdown.addEventListener('change', (e) => { /* 이전과 동일 */ 
-                 currentFilterCategory = e.target.value; renderGallery(); 
             });
         }
         
-        // 초기화 실행
+        // === 초기화 실행 ===
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
