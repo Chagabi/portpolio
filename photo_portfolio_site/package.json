@@ -1,0 +1,12 @@
+{
+    "name": "uucats-repository",
+    "version": "1.0.0",
+    "description": "UUcats Repository for photos",
+    "main": "index.html",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "private": true
+  }
