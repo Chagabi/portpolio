@@ -436,12 +436,11 @@
         <div class="container header-content">
             <a href="#" class="logo">UUcats Repository</a>
             <div class="nav-links">
-                <a href="#">홈</a>
                 <a href="#" class="social-link" id="twitter-link">
                     <svg viewBox="0 0 24 24">
                         <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
-                    X (트위터)
+                    (UUcats X)
                 </a>
                 <a href="#" id="login-button">관리자</a>
             </div>
@@ -916,43 +915,85 @@
             }
         }
         
-        // 사진 업로드 함수다냥! (관리자용)
-        function uploadPhoto() {
-            const file = imageUploadInput.files[0];
-            if (!file) {
-                alert('업로드할 이미지를 선택해달라옹!');
-                return;
-            }
-            
-            const title = imageTitleInput.value.trim() || `새로운 냥냥이 사진 ${Date.now()}`;
-            const category = imageCategoryUploadDropdown.value;
+// 사진 업로드 함수다냥! (관리자용) - 여러 파일 업로드 가능하도록 수정!
+function uploadPhoto() {
+    const files = imageUploadInput.files; // 선택된 모든 파일을 가져온다옹!
+    if (files.length === 0) {
+        alert('업로드할 이미지를 하나 이상 선택해달라옹!');
+        return;
+    }
 
-            if (!category) {
-                alert('사진의 카테고리를 선택해달라옹!');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const newId = photos.length > 0 ? Math.max(...photos.map(p => p.id)) + 1 : 1;
-                photos.push({
-                    id: newId,
-                    url: e.target.result,
-                    title: title,
-                    category: category
-                });
-                renderGallery(); // 메인 갤러리도 업데이트!
-                renderAdminGallery(); // 관리자 갤러리 업데이트!
-                populateAllCategoryDropdowns(); // 카테고리 드롭다운 업데이트!
+    const category = imageCategoryUploadDropdown.value;
+    if (!category) {
+        alert('사진의 카테고리를 선택해달라옹!');
+        return;
+    }
+
+    let uploadedCount = 0; // 몇 개나 성공했는지 세어보자냥!
+
+    // 각 파일에 대해 반복한다옹!
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const title = imageTitleInput.value.trim() || `새로운 냥냥이 사진 <span class="math-inline">\{Date\.now\(\)\}\_</span>{i+1}`; // 각 파일에 고유한 기본 제목을 줄 수 있다옹
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            // 고유 ID 생성 로직은 반복문 안으로 들어와야 각 파일마다 새 ID를 받는다옹!
+            // 하지만 photos 배열은 공유되므로, ID 생성은 모든 파일 처리가 끝난 후,
+            // 혹은 photos에 추가하기 직전에 올바른 현재 photos.length를 기반으로 해야한다옹.
+            // 더 안전한 방법은 ID를 미리 계산하지 않고, push 할 때마다 고유값을 찾는 것이다옹.
+            // 여기서는 간단하게 최대 ID + 1 로직을 유지하되, 각 파일 처리 시점에 photos를 참조한다냥.
+            const newId = photos.length > 0 ? Math.max(0, ...photos.map(p => p.id)) + 1 : 1;
+            // Math.max()가 빈 배열에 대해 -Infinity를 반환하는 것을 막기 위해 Math.max(0, ...) 사용 가능
+
+            photos.push({
+                id: newId,
+                url: e.target.result,
+                title: title, // 각 파일별 제목
+                category: category
+            });
+
+            uploadedCount++; // 성공한 파일 개수 증가!
+
+            // 모든 파일이 처리되었는지 확인한다옹 (비동기라서 순서 보장이 안될 수 있으니 주의!)
+            // 모든 파일의 onload가 호출된 후에 UI 업데이트 및 저장을 하는 것이 좋다옹.
+            // 여기서는 각 파일마다 UI를 업데이트 하지만, 많은 파일을 올릴 땐 마지막에 한 번만 하는 게 효율적이다옹.
+            if (uploadedCount === files.length) {
+                renderGallery();
+                renderAdminGallery();
+                populateAllCategoryDropdowns();
                 saveDataToLocalStorage();
 
-                imageUploadInput.value = ''; // 입력 필드 초기화
-                imageTitleInput.value = '';
-                imageCategoryUploadDropdown.value = '';
-                alert('사진이 성공적으로 업로드되었다옹!');
-            };
-            reader.readAsDataURL(file);
-        }
+                imageUploadInput.value = ''; // 모든 파일 처리 후 입력 필드 초기화
+                imageTitleInput.value = ''; // 제목 필드도 초기화
+                imageCategoryUploadDropdown.value = ''; // 카테고리 필드도 초기화
+                alert(`${uploadedCount}개의 사진이 성공적으로 업로드되었다옹!`);
+            }
+        };
+
+        reader.onerror = function() {
+            console.error(`"${file.name}" 파일을 읽는데 실패했다옹.`);
+            uploadedCount++; // 오류가 나도 카운트는 올려서 모든 파일 처리를 기다린다옹.
+             if (uploadedCount === files.length) {
+                // 오류가 있었더라도, 성공한 것들만이라도 반영하기 위해 UI 업데이트
+                renderGallery();
+                renderAdminGallery();
+                populateAllCategoryDropdowns();
+                saveDataToLocalStorage();
+                alert(`일부 파일 업로드에 실패했지만, ${photos.length}개의 사진은 처리되었다옹.`);
+            }
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    // 반복문이 다 돌고 나면 입력 필드를 초기화하는 것이 좋다옹.
+    // 하지만 reader.onload가 비동기라서, 위의 로직처럼 모든 파일 처리가 끝난 시점에 초기화하는 것이 더 정확하다옹.
+    // imageUploadInput.value = '';
+    // imageTitleInput.value = '';
+    // imageCategoryUploadDropdown.value = '';
+}
 
 // 로그인 처리 (서버에 물어보는 방식으로 되돌렸다옹!)
         async function login() { 
