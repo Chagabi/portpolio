@@ -23,7 +23,7 @@
             padding: 20px 0;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000; /* 히어로 이미지보다 위에 오도록 z-index 조정 */
         }
         
         .container {
@@ -70,6 +70,49 @@
             width: 20px;
             height: 20px;
         }
+
+        /* === 히어로 섹션 스타일 시작 === */
+        .hero-section {
+            width: 100%;
+            height: 60vh; /* 화면 높이의 60% */
+            min-height: 300px; /* 최소 높이 */
+            max-height: 500px; /* 최대 높이 */
+            position: relative;
+            overflow: hidden;
+            background-color: #e0e0e0; /* 이미지 로딩 전 배경색 */
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 이미지가 비율 유지하며 꽉 차도록 */
+            filter: brightness(0.7); /* 이미지 살짝 어둡게 해서 글씨 잘 보이게 */
+        }
+
+        .hero-text-content {
+            position: absolute;
+            bottom: 10%; /* 아래에서 10% 위치 */
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .hero-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2em;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        /* === 히어로 섹션 스타일 끝 === */
         
         main {
             padding: 40px 0;
@@ -77,7 +120,7 @@
 
         .category-dropdown-container {
             margin-bottom: 20px;
-            text-align: right; /* 드롭다운 오른쪽 정렬 */
+            text-align: right; 
         }
 
         .category-dropdown {
@@ -92,7 +135,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
-            margin-top: 30px;
+            /* margin-top: 30px; 히어로 섹션 생겨서 main의 padding으로 간격 조절 */
         }
         
         .gallery-item {
@@ -125,25 +168,42 @@
             background-color: #fff;
         }
         
+        /* === 이미지 모달 스타일 개선 시작 === */
         .modal {
             display: none;
             position: fixed;
-            z-index: 200;
+            z-index: 1200; /* 다른 요소들보다 확실히 위에 오도록 */
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.9);
+            background-color: rgba(0,0,0,0.95); /* 좀 더 진하게 */
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            padding-bottom: 50px;
+            padding-bottom: 50px; /* 타이틀 공간 확보 */
+            opacity: 0; /* 처음엔 투명 */
+            transition: opacity 0.3s ease-in-out; /* 부드러운 등장 효과 */
+        }
+
+        .modal.show { /* 모달 보일 때 opacity 1로 */
+            opacity: 1;
         }
         
         .modal-content {
-            max-width: 85%;
-            max-height: 75%;
+            max-width: 90%; /* 화면 가로폭의 90% */
+            max-height: 80%; /* 화면 세로높이의 80% */
             margin-bottom: 15px;
+            border-radius: 4px; /* 살짝 둥글게 */
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            opacity: 0; /* 이미지 로딩 후 부드럽게 나타나도록 */
+            transform: scale(0.95); /* 살짝 작게 시작 */
+            transition: opacity 0.3s ease-in-out 0.1s, transform 0.3s ease-in-out 0.1s; /* 지연시간 주고 트랜지션 */
+        }
+
+        .modal.show .modal-content.loaded { /* 모달 보이고 이미지 로드되면 효과 적용 */
+            opacity: 1;
+            transform: scale(1);
         }
         
         .close {
@@ -154,6 +214,10 @@
             font-size: 40px;
             font-weight: bold;
             cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .close:hover {
+            transform: scale(1.1);
         }
         
         .modal-title {
@@ -162,244 +226,91 @@
             font-size: 18px;
             width: 100%;
             padding: 10px 20px;
-            background-color: rgba(0, 0, 0, 0.5);
+            /* background-color: rgba(0, 0, 0, 0.5); // 배경 어두워서 굳이 없어도 될듯 */
             border-radius: 5px;
             max-width: 85%;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out 0.2s;
+        }
+        .modal.show .modal-title {
+            opacity: 1;
         }
         
         .nav-btn {
             position: absolute;
-            top: 40%;
-            transform: translateY(-50%);
+            top: 50%; 
+            transform: translateY(-50%); /* 정확히 중앙 정렬 */
             color: white;
-            font-size: 30px;
+            font-size: 40px; /* 좀 더 크게 */
             font-weight: bold;
             cursor: pointer;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.3);
             width: 50px;
-            height: 50px;
-            line-height: 50px;
+            height: 80px; /* 세로로 길게 */
+            line-height: 80px;
             text-align: center;
-            border-radius: 50%;
-            transition: background-color 0.3s;
-            z-index: 20;
+            border-radius: 8px; /* 살짝 둥글게 */
+            transition: background-color 0.3s, opacity 0.3s;
+            z-index: 20; /* 모달 내부에서 이미지보다 위에 */
+            opacity: 0.7;
         }
         
         .nav-btn:hover {
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.6);
+            opacity: 1;
         }
         
-        .prev-btn {
-            left: 20px;
-        }
-        
-        .next-btn {
-            right: 20px;
-        }
+        .prev-btn { left: 15px; }
+        .next-btn { right: 15px; }
+        /* === 이미지 모달 스타일 개선 끝 === */
         
         /* 로그인 모달 */
-        .login-modal {
-            display: none;
-            position: fixed;
-            z-index: 200;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+        .login-modal { /* (이하 로그인 모달, 관리자 패널 등 기존 스타일 유지) */
+            display: none; position: fixed; z-index: 1300; /* 모달보다 위에 오도록 */
+            left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
+            justify-content: center; align-items: center;
         }
         
-        .login-form {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            width: 350px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+        .login-form { background-color: #fff; padding: 30px; border-radius: 8px; width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .login-form h2 { margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { display: inline-block; padding: 10px 20px; background-color: #4285f4; color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
+        .btn:hover { background-color: #3367d6; }
+        .btn-block { display: block; width: 100%; }
         
-        .login-form h2 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
+        .admin-panel { display: none; background-color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .admin-panel h2 { margin-bottom: 20px; }
+        .add-category-form { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
+        .add-category-form input[type="text"] { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .upload-form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .file-input { flex: 1; min-width: 200px; }
+        .gallery-admin { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .gallery-admin-item { position: relative; }
+        .gallery-admin-item img { width: 100%; height: 150px; object-fit: cover; border-radius: 4px; }
+        .delete-btn { position: absolute; top: 5px; right: 5px; background-color: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; line-height: 25px; text-align: center; cursor: pointer; font-weight: bold;}
         
-        .form-group {
-            margin-bottom: 15px;
-        }
+        .category-management-panel { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .category-management-panel h3 { margin-bottom: 15px; font-size: 18px; }
+        .category-management-panel ul { list-style: none; padding: 0; }
+        .category-management-panel li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .category-management-panel li:last-child { border-bottom: none; }
+        .category-management-panel .delete-category-btn { background-color: #ff6b6b; color: white; padding: 5px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }
+        .category-management-panel .delete-category-btn:disabled { background-color: #ccc; cursor: not-allowed; }
         
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #4285f4;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .btn:hover {
-            background-color: #3367d6;
-        }
-        
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-        
-        /* 관리자 패널 */
-        .admin-panel {
-            display: none;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .admin-panel h2 {
-            margin-bottom: 20px;
-        }
-        
-        .add-category-form {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .add-category-form input[type="text"] {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .upload-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .file-input {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .gallery-admin {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px; /* 카테고리 관리 섹션과 간격 */
-        }
-        
-        .gallery-admin-item {
-            position: relative;
-        }
-        
-        .gallery-admin-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        
-        .delete-btn { /* 사진 삭제 버튼 */
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            line-height: 25px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* === 카테고리 관리 섹션 스타일 시작 === */
-        .category-management-panel {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        .category-management-panel h3 {
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        .category-management-panel ul {
-            list-style: none;
-            padding: 0;
-        }
-        .category-management-panel li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .category-management-panel li:last-child {
-            border-bottom: none;
-        }
-        .category-management-panel .delete-category-btn {
-            background-color: #ff6b6b;
-            color: white;
-            padding: 5px 10px;
-            font-size: 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .category-management-panel .delete-category-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        /* === 카테고리 관리 섹션 스타일 끝 === */
-        
-        .logout-btn {
-            background-color: #f44336;
-            margin-top: 15px;
-        }
-        
-        .logout-btn:hover {
-            background-color: #d32f2f;
-        }
+        .logout-btn { background-color: #f44336; margin-top: 15px; }
+        .logout-btn:hover { background-color: #d32f2f; }
         
         @media (max-width: 768px) {
-            .gallery {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-            
-            .header-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .category-dropdown {
-                font-size: 14px;
-                padding: 10px 15px;
-            }
+            .gallery { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+            .header-content { flex-direction: column; gap: 15px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+            .category-dropdown { font-size: 14px; padding: 10px 15px; }
+            .hero-title { font-size: 2em; }
+            .hero-subtitle { font-size: 1em; }
+            .nav-btn { font-size: 25px; width: 40px; height: 60px; line-height: 60px; }
         }
     </style>
 </head>
@@ -419,31 +330,32 @@
             </div>
         </div>
     </header>
-    
+
+    <section class="hero-section">
+        <img src="/api/placeholder/1600/900" alt="대표 고양이 사진" class="hero-image" id="hero-image-main"> <div class="hero-text-content">
+            <h1 class="hero-title" id="hero-title-main">UUcats에 오신 것을 환영한다냥!</h1>
+            <p class="hero-subtitle" id="hero-subtitle-main">세상의 모든 귀여운 고양이들을 만나보라옹! 뒹굴뒹굴~</p>
+        </div>
+    </section>
     <main class="container">
         <div class="admin-panel" id="admin-panel">
             <h2>관리자 패널</h2>
-            
             <div class="add-category-form">
                 <input type="text" id="new-category-name" placeholder="새 카테고리 이름">
                 <button class="btn" id="add-category-btn">카테고리 추가</button>
             </div>
-            
             <div class="upload-form">
                 <input type="file" class="file-input" id="image-upload" accept="image/*">
                 <input type="text" placeholder="사진 제목" id="image-title" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                 <select id="image-category" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                     <option value="">카테고리 선택</option>
-                    </select>
+                </select>
                 <button class="btn" id="upload-btn">업로드</button>
             </div>
-            <div class="gallery-admin" id="gallery-admin">
-                </div>
-
+            <div class="gallery-admin" id="gallery-admin"></div>
             <div class="category-management-panel" id="category-management-panel">
                 <h3>카테고리 관리</h3>
-                <ul id="category-list-admin">
-                    </ul>
+                <ul id="category-list-admin"></ul>
             </div>
             <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
         </div>
@@ -451,11 +363,10 @@
         <div class="category-dropdown-container">
             <select id="category-dropdown" class="category-dropdown">
                 <option value="전체">모든 카테고리</option>
-                </select>
+            </select>
         </div>
         
-        <div class="gallery" id="gallery">
-            </div>
+        <div class="gallery" id="gallery"></div>
     </main>
     
     <div class="modal" id="image-modal">
@@ -482,7 +393,7 @@
     </div>
 
     <script>
-        // 로그인 처리 (서버에 물어보는 방식으로 변경이다냥!)
+        // 로그인 처리 (서버 함수 호출)
         async function login() {
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
@@ -514,16 +425,18 @@
         }
         
         let photos = [
-            { id: 1, url: '/api/placeholder/800/600', title: '풍경 사진', category: '풍경' },
-            { id: 2, url: '/api/placeholder/800/600', title: '인물 사진', category: '인물' },
-            { id: 3, url: '/api/placeholder/800/600', title: '건축물 사진', category: '건축' },
-            { id: 4, url: '/api/placeholder/800/600', title: '자연 사진', category: '풍경' },
-            { id: 5, url: '/api/placeholder/800/600', title: '동물 사진', category: '동물' },
-            { id: 6, url: '/api/placeholder/800/600', title: '거리 사진', category: '거리' }
+            // ... (기존 사진 데이터는 그대로 유지하거나, 필요하면 더 추가/변경하라옹!)
+            { id: 1, url: '/api/placeholder/800/600?text=풍경+1', title: '멋진 풍경이다옹', category: '풍경' },
+            { id: 2, url: '/api/placeholder/800/600?text=인물+1', title: '예쁜 사람이다옹', category: '인물' },
+            { id: 3, url: '/api/placeholder/800/600?text=건축+1', title: '웅장한 건물이다옹', category: '건축' },
+            { id: 4, url: '/api/placeholder/800/600?text=풍경+2', title: '또 다른 풍경이다옹', category: '풍경' },
+            { id: 5, url: '/api/placeholder/800/600?text=동물+1', title: '귀여운 냥이다옹', category: '동물' },
+            { id: 6, url: '/api/placeholder/800/600?text=거리+1', title: '활기찬 거리다옹', category: '거리' },
+            { id: 7, url: '/api/placeholder/1600/900?text=히어로냥', title: '대표 히어로 냥이!', category: '동물'} // 히어로 이미지용 샘플
         ];
         
         let categories = []; 
-        const defaultCategories = ['풍경', '인물', '건축', '동물', '거리'];
+        const defaultCategories = ['풍경', '인물', '건축', '동물', '거리']; // '전체'는 여기서 관리 안함
 
         function loadCategories() {
             const storedCategories = localStorage.getItem('uucats_categories');
@@ -565,18 +478,40 @@
         const categoryDropdown = document.getElementById('category-dropdown');
         const newCategoryNameInput = document.getElementById('new-category-name');
         const addCategoryBtn = document.getElementById('add-category-btn');
-        const categoryListAdmin = document.getElementById('category-list-admin'); // 카테고리 관리 목록 UL
+        const categoryListAdmin = document.getElementById('category-list-admin');
+        // 히어로 이미지 요소
+        const heroImageElement = document.getElementById('hero-image-main');
+        const heroTitleElement = document.getElementById('hero-title-main');
+        const heroSubtitleElement = document.getElementById('hero-subtitle-main');
         
         let currentFilterCategory = '전체';
-        let currentPhotoIndex = 0;
+        let currentModalPhotoList = []; // 모달에서 현재 보여주고 있는 사진 목록
+        let currentPhotoIndexInModal = 0; // 모달 내 현재 사진 인덱스
         
         function init() {
             loadCategories(); 
             populateCategoryDropdown();
             populateAdminCategoryDropdown(); 
             renderGallery();
-            checkLogin(); // checkLogin 안에서 renderCategoryManagement 호출 여부 결정
+            checkLogin(); 
             setupEventListeners();
+            setupHeroImage(); // 히어로 이미지 설정 함수 호출
+        }
+
+        // === 히어로 이미지 설정 함수 ===
+        function setupHeroImage() {
+            // 여기서 히어로 이미지와 텍스트를 설정할 수 있다옹.
+            // 지금은 photos 배열의 마지막 사진을 히어로 이미지로 사용해보겠다냥.
+            // 실제로는 관리자 패널에서 선택하거나, 특정 ID의 사진을 고정할 수 있다옹.
+            if (photos.length > 0) {
+                const heroPhoto = photos.find(p => p.id === 7) || photos[photos.length - 1]; // ID 7번 또는 마지막 사진
+                if (heroPhoto && heroImageElement) {
+                    heroImageElement.src = heroPhoto.url;
+                    heroImageElement.alt = heroPhoto.title;
+                }
+                if (heroTitleElement) heroTitleElement.textContent = "UUcats의 세계로 초대한다냥!";
+                if (heroSubtitleElement) heroSubtitleElement.textContent = "다양한 고양이들의 매력에 푹 빠져보라옹!";
+            }
         }
         
         function populateCategoryDropdown() {
@@ -612,48 +547,34 @@
 
         function addCategory() {
             const newCategoryValue = newCategoryNameInput.value.trim();
-            if (!newCategoryValue) {
-                alert('카테고리 이름을 입력해주라옹!');
-                return;
-            }
+            if (!newCategoryValue) { alert('카테고리 이름을 입력해주라옹!'); return; }
             if (categories.some(cat => cat.toLowerCase() === newCategoryValue.toLowerCase())) {
                 alert('이미 있는 카테고리다옹! (대소문자 구분 없음)');
-                newCategoryNameInput.value = ''; 
-                return;
+                newCategoryNameInput.value = ''; return;
             }
-
             categories.push(newCategoryValue);
             categories.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())); 
             saveCategories(); 
-
             alert(`"${newCategoryValue}" 카테고리가 추가되었다옹!`);
             newCategoryNameInput.value = ''; 
-
             populateAdminCategoryDropdown();
             populateCategoryDropdown(); 
-            renderCategoryManagement(); // 카테고리 관리 목록도 새로고침!
+            renderCategoryManagement();
         }
 
-        // === 카테고리 관리 기능 함수들 시작 ===
         function renderCategoryManagement() {
-            if (!categoryListAdmin) return; // 혹시 HTML 요소가 없을 경우 대비
-            categoryListAdmin.innerHTML = ''; // 기존 목록 비우기
-
+            if (!categoryListAdmin) return;
+            categoryListAdmin.innerHTML = ''; 
             categories.forEach(category => {
-                if (category.toLowerCase() === '전체'.toLowerCase()) return; // '전체' 카테고리는 관리 대상 아님
-
+                if (category.toLowerCase() === '전체'.toLowerCase()) return; 
                 const listItem = document.createElement('li');
-                
                 const categoryNameSpan = document.createElement('span');
                 categoryNameSpan.textContent = category;
                 listItem.appendChild(categoryNameSpan);
-
                 const deleteBtn = document.createElement('button');
                 deleteBtn.textContent = '삭제';
                 deleteBtn.className = 'delete-category-btn';
-                
                 const isCategoryInUse = photos.some(photo => photo.category.toLowerCase() === category.toLowerCase());
-                
                 if (isCategoryInUse) {
                     deleteBtn.disabled = true;
                     deleteBtn.title = '이 카테고리를 사용하는 사진이 있어서 삭제할 수 없다옹!';
@@ -674,28 +595,25 @@
         function deleteCategory(categoryToDelete) {
             categories = categories.filter(cat => cat.toLowerCase() !== categoryToDelete.toLowerCase());
             saveCategories();
-
             alert(`"${categoryToDelete}" 카테고리가 삭제되었다옹!`);
-
             populateAdminCategoryDropdown();
             populateCategoryDropdown();
-            renderCategoryManagement(); // 목록 새로고침
-            // 만약 현재 필터링된 카테고리가 삭제된 카테고리였다면 '전체'로 변경
+            renderCategoryManagement();
             if (currentFilterCategory.toLowerCase() === categoryToDelete.toLowerCase()) {
                 currentFilterCategory = '전체';
                 categoryDropdown.value = '전체';
                 renderGallery();
             }
         }
-        // === 카테고리 관리 기능 함수들 끝 ===
         
         function renderGallery() {
+            // ... (이전 renderGallery 함수와 거의 동일, 메시지 등)
             gallery.innerHTML = '';
             const filteredPhotos = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
                 ? photos 
                 : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
             
-            if (filteredPhotos.length === 0 && photos.length > 0) { // 사진은 있는데 해당 카테고리에만 없을 경우
+            if (filteredPhotos.length === 0 && photos.length > 0) { 
                 const emptyMessage = document.createElement('div');
                 emptyMessage.className = 'empty-gallery-message';
                 emptyMessage.innerHTML = `
@@ -709,7 +627,7 @@
                 `;
                 gallery.appendChild(emptyMessage);
                 return;
-            } else if (photos.length === 0) { // 아예 사진이 하나도 없을 경우
+            } else if (photos.length === 0) { 
                  const emptyMessage = document.createElement('div');
                 emptyMessage.className = 'empty-gallery-message';
                 emptyMessage.innerHTML = `
@@ -735,7 +653,7 @@
                     <img src="${photo.url}" alt="${photo.title}">
                     <div class="photo-title">${photo.title}</div>
                 `;
-                item.addEventListener('click', () => openImageModal(photo.id));
+                item.addEventListener('click', () => openImageModal(photo.id)); // 여기서 photo.id 전달
                 gallery.appendChild(item);
                 setTimeout(() => {
                     item.style.opacity = '1';
@@ -746,7 +664,6 @@
         
         function renderAdminGallery() {
             galleryAdmin.innerHTML = '';
-            // 사진을 최신순으로 (ID가 큰 순으로) 정렬해서 보여주자옹
             const sortedPhotos = [...photos].sort((a, b) => b.id - a.id); 
             sortedPhotos.forEach(photo => {
                 const item = document.createElement('div');
@@ -772,87 +689,110 @@
             });
         }
         
+        // === 이미지 모달 기능 개선 시작 ===
         function openImageModal(photoId) {
-            const_filteredPhotos = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
-                ? photos 
+            // 현재 필터링된 사진 목록을 기준으로 모달에서 보여줄 사진 목록을 설정한다옹.
+            currentModalPhotoList = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
+                ? [...photos] // 전체 사진 목록 복사
                 : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
-            currentPhotoIndex = _filteredPhotos.findIndex(photo => photo.id === photoId);
-            if (currentPhotoIndex === -1) {
-                 currentPhotoIndex = photos.findIndex(photo => photo.id === photoId);
-                 if (currentPhotoIndex !== -1) displayCurrentPhoto(photos); // 전체 목록에서 찾았으면 전체 목록 기준으로
-                 else return; // 사진을 못찾으면 모달 안띄움
-            } else {
-                displayCurrentPhoto(_filteredPhotos);
-            }
-            imageModal.style.display = 'flex';
-        }
-        
-        function displayCurrentPhoto(photoList = photos) { 
-            const photoToShow = photoList[currentPhotoIndex]; 
+            
+            // 클릭된 사진이 현재 모달 사진 목록에서 몇 번째인지 찾는다옹.
+            currentPhotoIndexInModal = currentModalPhotoList.findIndex(photo => photo.id === photoId);
 
-            if (photoToShow) {
-                modalImage.src = photoToShow.url;
-                modalTitle.innerHTML = `
-                    ${photoToShow.title}
-                    <br>
-                    <span style="font-size: 14px; opacity: 0.8;">@UU_CATS</span>
-                    <span style="display: inline-block; margin-left: 10px; font-size: 12px; background-color: rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 12px; backdrop-filter: blur(5px);">${photoToShow.category}</span>
-                `;
+            if (currentPhotoIndexInModal === -1) { // 혹시 필터된 목록에 없으면 전체에서 다시 찾아본다옹
+                currentModalPhotoList = [...photos]; // 전체 사진 목록으로 다시 설정
+                currentPhotoIndexInModal = currentModalPhotoList.findIndex(photo => photo.id === photoId);
+                if (currentPhotoIndexInModal === -1) {
+                    console.error("사진을 찾을 수 없다옹!", photoId);
+                    return; // 사진 못 찾으면 모달 안 띄움
+                }
+            }
+            
+            imageModal.style.display = 'flex'; // 먼저 모달을 보이게 하고
+            setTimeout(() => { // 약간의 시간차를 두고 show 클래스 추가해서 fadeIn 효과
+                imageModal.classList.add('show');
+                displayCurrentPhotoInModal(); // 그 다음에 첫 사진 표시
+            }, 10); // 아주 짧은 딜레이
+        }
+        
+        function displayCurrentPhotoInModal() {
+            if (currentPhotoIndexInModal >= 0 && currentPhotoIndexInModal < currentModalPhotoList.length) {
+                const photoToShow = currentModalPhotoList[currentPhotoIndexInModal];
+                
+                modalImage.style.opacity = '0'; // 일단 투명하게
+                modalImage.classList.remove('loaded');
+                modalTitle.style.opacity = '0';
+
+                setTimeout(() => { // 이미지 교체 준비 시간 (페이드 아웃 시간)
+                    modalImage.src = photoToShow.url;
+                    modalTitle.innerHTML = `
+                        ${photoToShow.title}
+                        <br>
+                        <span style="font-size: 14px; opacity: 0.8;">@UU_CATS</span>
+                        <span style="display: inline-block; margin-left: 10px; font-size: 12px; background-color: rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 12px; backdrop-filter: blur(5px);">${photoToShow.category}</span>
+                    `;
+
+                    // 이미지 로드가 완료되면 보이도록 처리
+                    modalImage.onload = () => {
+                        modalImage.classList.add('loaded'); // 로드 완료 클래스 추가
+                        modalTitle.style.opacity = '1';
+                    };
+                    // onload가 바로 실행 안될 경우 (캐시된 이미지 등) 대비
+                    if (modalImage.complete) { // 이미지가 이미 로드된 경우
+                         setTimeout(() => { // 약간의 딜레이 후 강제 적용
+                            modalImage.classList.add('loaded');
+                            modalTitle.style.opacity = '1';
+                         }, 50);
+                    }
+
+                }, 200); // CSS transition opacity 시간과 비슷하게 설정
             }
         }
         
-        function showPreviousPhoto() {
-            const_filteredPhotos = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
-                ? photos 
-                : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
-            currentPhotoIndex = (currentPhotoIndex - 1 + _filteredPhotos.length) % _filteredPhotos.length;
-            displayCurrentPhoto(_filteredPhotos);
+        function showPreviousPhotoInModal() {
+            currentPhotoIndexInModal = (currentPhotoIndexInModal - 1 + currentModalPhotoList.length) % currentModalPhotoList.length;
+            displayCurrentPhotoInModal();
         }
         
-        function showNextPhoto() {
-            const_filteredPhotos = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
-                ? photos 
-                : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
-            currentPhotoIndex = (currentPhotoIndex + 1) % _filteredPhotos.length;
-            displayCurrentPhoto(_filteredPhotos);
+        function showNextPhotoInModal() {
+            currentPhotoIndexInModal = (currentPhotoIndexInModal + 1) % currentModalPhotoList.length;
+            displayCurrentPhotoInModal();
         }
+
+        function closeImageModal() {
+            imageModal.classList.remove('show'); // 사라지는 효과
+            setTimeout(() => { // opacity transition 후 display none
+                imageModal.style.display = 'none';
+                modalImage.classList.remove('loaded'); // 다음을 위해 초기화
+                modalImage.src = ""; // 이미지 소스도 비워주면 좋다옹
+            }, 300); // CSS transition opacity 시간과 일치
+        }
+        // === 이미지 모달 기능 개선 끝 ===
         
         function deletePhoto(id) {
             photos = photos.filter(photo => photo.id !== id);
             renderGallery();
             renderAdminGallery();
             populateCategoryDropdown(); 
-            renderCategoryManagement(); // 사진 삭제 후 카테고리 사용 여부 바뀔 수 있으니 관리 목록도 갱신!
+            renderCategoryManagement();
         }
         
         function uploadPhoto() {
+            // ... (이전과 동일, 단 renderCategoryManagement() 호출 추가)
             const file = imageUpload.files[0];
-            if (!file) {
-                alert('이미지를 선택해주라옹!');
-                return;
-            }
-            
+            if (!file) { alert('이미지를 선택해주라옹!'); return; }
             const title = imageTitleInput.value.trim() || `업로드 이미지 ${Math.floor(Math.random() * 1000)}`;
             const category = imageCategorySelect.value;
-
-            if (!category) {
-                alert('카테고리를 선택해주라옹!');
-                return;
-            }
+            if (!category) { alert('카테고리를 선택해주라옹!'); return; }
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                const newId = photos.length > 0 ? Math.max(0, ...photos.map(p => p.id)) + 1 : 1; // ID 생성 더 안전하게
-                photos.push({
-                    id: newId,
-                    url: e.target.result,
-                    title: title,
-                    category: category
-                });
+                const newId = photos.length > 0 ? Math.max(0, ...photos.map(p => p.id)) + 1 : 1;
+                photos.push({ id: newId, url: e.target.result, title: title, category: category });
                 renderGallery();
                 renderAdminGallery();
                 populateCategoryDropdown(); 
-                renderCategoryManagement(); // 사진 추가 후 카테고리 사용 여부 바뀔 수 있으니 관리 목록도 갱신!
+                renderCategoryManagement(); // 카테고리 관리 목록 갱신
                 imageUpload.value = '';
                 imageTitleInput.value = '';
                 imageCategorySelect.value = '';
@@ -868,12 +808,11 @@
         
         function checkLogin() {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            
             if (isLoggedIn) {
                 adminPanel.style.display = 'block';
                 loginButton.textContent = '관리자 패널';
                 renderAdminGallery();
-                renderCategoryManagement(); // 로그인 시 카테고리 관리 목록 표시
+                renderCategoryManagement(); 
             } else {
                 adminPanel.style.display = 'none';
                 loginButton.textContent = '관리자';
@@ -885,10 +824,7 @@
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 if (isLoggedIn) {
                     if(adminPanel.style.display === 'block') {
-                        window.scrollTo({
-                            top: adminPanel.offsetTop - (document.querySelector('header')?.offsetHeight || 70),
-                            behavior: 'smooth'
-                        });
+                        window.scrollTo({ top: adminPanel.offsetTop - (document.querySelector('header')?.offsetHeight || 70), behavior: 'smooth' });
                     }
                 } else {
                     loginModal.style.display = 'flex';
@@ -898,25 +834,25 @@
             loginSubmit.addEventListener('click', login);
             logoutBtn.addEventListener('click', logout);
             uploadBtn.addEventListener('click', uploadPhoto);
-            addCategoryBtn.addEventListener('click', addCategory);
+            addCategoryBtn.addEventListener('click', addCategory); 
             
-            closeModal.addEventListener('click', () => imageModal.style.display = 'none');
-            prevBtn.addEventListener('click', showPreviousPhoto);
-            nextBtn.addEventListener('click', showNextPhoto);
+            closeModal.addEventListener('click', closeImageModal); // 개선된 닫기 함수로 변경
+            prevBtn.addEventListener('click', showPreviousPhotoInModal); // 개선된 이전 함수로 변경
+            nextBtn.addEventListener('click', showNextPhotoInModal);   // 개선된 다음 함수로 변경
             
             document.addEventListener('keydown', (e) => {
-                if (imageModal.style.display === 'flex') {
-                    if (e.key === 'ArrowLeft') showPreviousPhoto();
-                    else if (e.key === 'ArrowRight') showNextPhoto();
-                    else if (e.key === 'Escape') imageModal.style.display = 'none';
+                if (imageModal.style.display === 'flex' && imageModal.classList.contains('show')) { // 모달이 보일 때만 작동
+                    if (e.key === 'ArrowLeft') showPreviousPhotoInModal();
+                    else if (e.key === 'ArrowRight') showNextPhotoInModal();
+                    else if (e.key === 'Escape') closeImageModal(); // 개선된 닫기 함수로 변경
                 }
-                 if (loginModal.style.display === 'flex' && e.key === 'Escape') { // 로그인 모달도 Esc로 닫기
+                 if (loginModal.style.display === 'flex' && e.key === 'Escape') {
                     loginModal.style.display = 'none';
                  }
             });
             
             window.addEventListener('click', (e) => {
-                if (e.target === imageModal) imageModal.style.display = 'none';
+                if (e.target === imageModal) closeImageModal(); // 개선된 닫기 함수로 변경
                 if (e.target === loginModal) loginModal.style.display = 'none';
             });
             
