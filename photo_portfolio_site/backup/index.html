@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUcats Repository</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #4285f4;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .social-link svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        main {
+            padding: 40px 0;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: #fff;
+            cursor: pointer;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .photo-title {
+            padding: 10px;
+            text-align: center;
+            font-weight: 500;
+            color: #333;
+            position: relative;
+            z-index: 10;
+            background-color: #fff;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding-bottom: 50px;
+        }
+        
+        .modal-content {
+            max-width: 85%;
+            max-height: 75%;
+            margin-bottom: 15px;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .modal-title {
+            color: #fff;
+            text-align: center;
+            font-size: 18px;
+            width: 100%;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            max-width: 85%;
+        }
+        
+        .nav-btn {
+            position: absolute;
+            top: 40%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+            z-index: 20;
+        }
+        
+        .nav-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .prev-btn {
+            left: 20px;
+        }
+        
+        .next-btn {
+            right: 20px;
+        }
+        
+        /* 로그인 모달 */
+        .login-modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .login-form h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #3367d6;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        /* 관리자 패널 */
+        .admin-panel {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .admin-panel h2 {
+            margin-bottom: 20px;
+        }
+        
+        .upload-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .file-input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .gallery-admin {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .gallery-admin-item {
+            position: relative;
+        }
+        
+        .gallery-admin-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .logout-btn {
+            background-color: #f44336;
+            margin-top: 15px;
+        }
+        
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .category-dropdown {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">UUcats Repository</a>
+            <div class="nav-links">
+                <a href="#">홈</a>
+                <a href="#" class="social-link" id="twitter-link">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    X (트위터)
+                </a>
+                <a href="#" id="login-button">관리자</a>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="admin-panel" id="admin-panel">
+            <h2>관리자 패널</h2>
+            <div class="upload-form">
+                <input type="file" class="file-input" id="image-upload" accept="image/*">
+                <input type="text" placeholder="사진 제목" id="image-title" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <select id="image-category" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">카테고리 선택</option>
+                    <option value="풍경">풍경</option>
+                    <option value="인물">인물</option>
+                    <option value="건축">건축</option>
+                    <option value="동물">동물</option>
+                    <option value="거리">거리</option>
+                </select>
+                <button class="btn" id="upload-btn">업로드</button>
+            </div>
+            <div class="gallery-admin" id="gallery-admin">
+                <!-- 관리자 갤러리 아이템이 여기에 동적으로 추가됩니다 -->
+            </div>
+            <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
+        </div>
+        
+        <div class="category-dropdown-container">
+            <select id="category-dropdown" class="category-dropdown">
+                <option value="전체">모든 카테고리</option>
+                <!-- 카테고리 옵션이 여기에 동적으로 추가됩니다 -->
+            </select>
+        </div>
+        
+        <div class="gallery" id="gallery">
+            <!-- 갤러리 아이템이 여기에 동적으로 추가됩니다 -->
+        </div>
+    </main>
+    
+    <!-- 이미지 모달 -->
+    <div class="modal" id="image-modal">
+        <span class="close" id="close-modal">&times;</span>
+        <span class="nav-btn prev-btn" id="prev-btn">&#10094;</span>
+        <span class="nav-btn next-btn" id="next-btn">&#10095;</span>
+        <img class="modal-content" id="modal-image">
+        <div class="modal-title" id="modal-title"></div>
+    </div>
+    
+    <!-- 로그인 모달 -->
+    <div class="login-modal" id="login-modal">
+        <div class="login-form">
+            <h2>관리자 로그인</h2>
+            <div class="form-group">
+                <label for="username">아이디</label>
+                <input type="text" id="username" name="username">
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <button class="btn btn-block" id="login-submit">로그인</button>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASSWORD = 'password123';
+        
+        // 저장소 (실제 상황에서는 데이터베이스를 사용해야 합니다)
+        let photos = [
+            { id: 1, url: '/api/placeholder/800/600', title: '풍경 사진', category: '풍경' },
+            { id: 2, url: '/api/placeholder/800/600', title: '인물 사진', category: '인물' },
+            { id: 3, url: '/api/placeholder/800/600', title: '건축물 사진', category: '건축' },
+            { id: 4, url: '/api/placeholder/800/600', title: '자연 사진', category: '풍경' },
+            { id: 5, url: '/api/placeholder/800/600', title: '동물 사진', category: '동물' },
+            { id: 6, url: '/api/placeholder/800/600', title: '거리 사진', category: '거리' }
+        ];
+        
+        // 모든 카테고리 목록
+        const categories = ['전체', '풍경', '인물', '건축', '동물', '거리'];
+        
+        // DOM 요소
+        const gallery = document.getElementById('gallery');
+        const galleryAdmin = document.getElementById('gallery-admin');
+        const adminPanel = document.getElementById('admin-panel');
+        const loginButton = document.getElementById('login-button');
+        const loginModal = document.getElementById('login-modal');
+        const loginSubmit = document.getElementById('login-submit');
+        const logoutBtn = document.getElementById('logout-btn');
+        const uploadBtn = document.getElementById('upload-btn');
+        const imageUpload = document.getElementById('image-upload');
+        const imageTitle = document.getElementById('image-title');
+        const imageCategory = document.getElementById('image-category');
+        const imageModal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalTitle = document.getElementById('modal-title');
+        const closeModal = document.getElementById('close-modal');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const twitterLink = document.getElementById('twitter-link');
+        const categoryDropdown = document.getElementById('category-dropdown');
+        
+        // 현재 선택된 카테고리
+        let currentCategory = '전체';
+        
+        // 현재 모달에 표시 중인 이미지 인덱스
+        let currentPhotoIndex = 0;
+        
+        // 초기화
+        function init() {
+            populateCategoryDropdown();
+            renderGallery();
+            checkLogin();
+            setupEventListeners();
+        }
+        
+        // 카테고리 드롭다운 채우기
+        function populateCategoryDropdown() {
+            // 드롭다운 초기 옵션은 HTML에 이미 있으므로, '전체' 옵션 이후의 카테고리만 추가
+            categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>';
+            
+            // '전체'를 제외한 카테고리들만 추가
+            categories.filter(cat => cat !== '전체').forEach(category => {
+                const count = photos.filter(p => p.category === category).length;
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = `${category} (${count})`;
+                categoryDropdown.appendChild(option);
+            });
+        }
+        
+
+        
+        // 갤러리 렌더링
+        function renderGallery() {
+            gallery.innerHTML = '';
+            
+            // 선택된 카테고리에 맞는 사진만 필터링
+            const filteredPhotos = currentCategory === '전체' 
+                ? photos 
+                : photos.filter(photo => photo.category === currentCategory);
+            
+            if (filteredPhotos.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-gallery-message';
+                emptyMessage.innerHTML = `
+                    <div style="text-align: center; padding: 40px; width: 100%; color: #666;">
+                        <svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;">
+                            <path fill="currentColor" d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" />
+                        </svg>
+                        <p style="font-size: 16px; margin-bottom: 5px;">'${currentCategory}' 카테고리에 사진이 없습니다.</p>
+                        <p style="font-size: 14px; opacity: 0.7;">다른 카테고리를 선택하거나 새 사진을 업로드해보세요.</p>
+                    </div>
+                `;
+                gallery.appendChild(emptyMessage);
+                return;
+            }
+            
+            // 애니메이션을 위한 지연 로딩
+            filteredPhotos.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                item.style.transitionDelay = `${index * 0.05}s`;
+                
+                item.innerHTML = `
+                    <img src="${photo.url}" alt="${photo.title}">
+                    <div class="photo-title">${photo.title}</div>
+                `;
+                
+                item.addEventListener('click', () => openImageModal(photo.id));
+                gallery.appendChild(item);
+                
+                // 요소가 DOM에 추가된 후 애니메이션 적용
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 10);
+            });
+        }
+        
+        // 관리자 갤러리 렌더링
+        function renderAdminGallery() {
+            galleryAdmin.innerHTML = '';
+            photos.forEach(photo => {
+                const item = document.createElement('div');
+                item.className = 'gallery-admin-item';
+                item.innerHTML = `
+                    <img src="${photo.url}" alt="${photo.title}">
+                    <div style="padding: 5px; text-align: center; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${photo.title}
+                        <span style="display: block; color: #666; font-size: 11px;">${photo.category}</span>
+                    </div>
+                    <button class="delete-btn" data-id="${photo.id}">&times;</button>
+                `;
+                galleryAdmin.appendChild(item);
+            });
+            
+            // 삭제 버튼에 이벤트 연결
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.target.getAttribute('data-id'));
+                    deletePhoto(id);
+                });
+            });
+        }
+        
+        // 이미지 모달 열기
+        function openImageModal(photoId) {
+            currentPhotoIndex = photos.findIndex(photo => photo.id === photoId);
+            displayCurrentPhoto();
+            imageModal.style.display = 'flex';
+        }
+        
+        // 현재 사진 표시
+        function displayCurrentPhoto() {
+            if (currentPhotoIndex >= 0 && currentPhotoIndex < photos.length) {
+                const photo = photos[currentPhotoIndex];
+                modalImage.src = photo.url;
+                modalTitle.innerHTML = `
+                    ${photo.title}
+                    <br>
+                    <span style="font-size: 14px; opacity: 0.8;">@UU_CATS</span>
+                    <span style="display: inline-block; margin-left: 10px; font-size: 12px; background-color: rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 12px; backdrop-filter: blur(5px);">${photo.category}</span>
+                `;
+            }
+        }
+        
+        // 이전 사진으로 이동
+        function showPreviousPhoto() {
+            currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
+            displayCurrentPhoto();
+        }
+        
+        // 다음 사진으로 이동
+        function showNextPhoto() {
+            currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
+            displayCurrentPhoto();
+        }
+        
+        // 사진 삭제
+        function deletePhoto(id) {
+            photos = photos.filter(photo => photo.id !== id);
+            renderGallery();
+            renderAdminGallery();
+            populateCategoryDropdown(); // 카테고리 드롭다운도 업데이트
+        }
+        
+        // 사진 업로드
+        function uploadPhoto() {
+            const file = imageUpload.files[0];
+            if (!file) {
+                alert('이미지를 선택해주세요');
+                return;
+            }
+            
+            const title = imageTitle.value.trim() || `업로드 이미지 ${Math.floor(Math.random() * 1000)}`;
+            const category = imageCategory.value.trim() || '기타';
+            
+            // 실제로는 서버에 업로드해야 합니다
+            // 여기서는 파일을 읽어 URL을 생성하는 방식으로 처리
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const newId = Math.max(...photos.map(p => p.id), 0) + 1;
+                photos.push({
+                    id: newId,
+                    url: e.target.result,
+                    title: title,
+                    category: category
+                });
+                renderGallery();
+                renderAdminGallery();
+                populateCategoryDropdown();
+                imageUpload.value = '';
+                imageTitle.value = '';
+                imageCategory.value = '';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 로그인 처리
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                localStorage.setItem('isLoggedIn', 'true');
+                loginModal.style.display = 'none';
+                checkLogin();
+            } else {
+                alert('아이디 또는 비밀번호가 일치하지 않습니다');
+            }
+        }
+        
+        // 로그아웃 처리
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            checkLogin();
+        }
+        
+        // 로그인 상태 확인
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            
+            if (isLoggedIn) {
+                adminPanel.style.display = 'block';
+                loginButton.textContent = '관리자 패널';
+                renderAdminGallery();
+            } else {
+                adminPanel.style.display = 'none';
+                loginButton.textContent = '관리자';
+            }
+        }
+        
+        // 이벤트 리스너 설정
+        function setupEventListeners() {
+            // 로그인 모달
+            loginButton.addEventListener('click', () => {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                if (isLoggedIn) {
+                    window.scrollTo({
+                        top: adminPanel.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    loginModal.style.display = 'flex';
+                }
+            });
+            
+            // 로그인 제출
+            loginSubmit.addEventListener('click', login);
+            
+            // 로그아웃
+            logoutBtn.addEventListener('click', logout);
+            
+            // 이미지 업로드
+            uploadBtn.addEventListener('click', uploadPhoto);
+            
+            // 이미지 모달 닫기
+            closeModal.addEventListener('click', () => {
+                imageModal.style.display = 'none';
+            });
+            
+            // 이전/다음 이미지 버튼
+            prevBtn.addEventListener('click', showPreviousPhoto);
+            nextBtn.addEventListener('click', showNextPhoto);
+            
+            // 키보드 탐색 추가
+            document.addEventListener('keydown', (e) => {
+                if (imageModal.style.display === 'flex') {
+                    if (e.key === 'ArrowLeft') {
+                        showPreviousPhoto();
+                    } else if (e.key === 'ArrowRight') {
+                        showNextPhoto();
+                    } else if (e.key === 'Escape') {
+                        imageModal.style.display = 'none';
+                    }
+                }
+            });
+            
+            // 모달 외부 클릭시 닫기
+            window.addEventListener('click', (e) => {
+                if (e.target === imageModal) {
+                    imageModal.style.display = 'none';
+                }
+                if (e.target === loginModal) {
+                    loginModal.style.display = 'none';
+                }
+            });
+            
+                // 트위터 링크
+            twitterLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://x.com/UU_CATS', '_blank');
+            });
+        }
+        
+        // 초기화 실행
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
