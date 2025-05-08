@@ -954,25 +954,40 @@
             reader.readAsDataURL(file);
         }
 
-        // 로그인 처리 (임시 - 실제로는 서버 통신 필요)
-        async function login() {
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
+// 로그인 처리 (서버에 물어보는 방식으로 되돌렸다옹!)
+        async function login() { 
+            const usernameInput = document.getElementById('username'); 
+            const passwordInput = document.getElementById('password'); 
             const username = usernameInput.value;
             const password = passwordInput.value;
 
-            // 실제로는 서버에 아이디/비번을 보내서 확인해야 한다냥!
-            // 여기서는 간단하게 'admin'/'1234'로 하드코딩한다옹 (보안에 매우 취약하니 실제 사용 금지!)
-            if (username === 'admin' && password === '1234') { // 임시 아이디/비번
-                localStorage.setItem('isLoggedIn', 'true');
-                loginModal.style.display = 'none';
-                checkLogin(); // 로그인 후 관리자 패널 바로 보이도록!
-                alert('로그인 성공이다옹! 관리자 패널을 확인하라냥!');
-            } else {
-                alert('아이디 또는 비밀번호가 틀렸다옹. 다시 확인해보라냥.');
+            try {
+                // 서버의 'login-police'에게 물어본다옹!
+                // '/.netlify/functions/login-police' 경로가 맞는지 확인하라옹!
+                const response = await fetch('/.netlify/functions/login-police', { 
+                    method: 'POST', 
+                    headers: {
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({ username: username, password: password }) 
+                });
+
+                const result = await response.json(); 
+
+                if (response.ok && result.success) { 
+                    localStorage.setItem('isLoggedIn', 'true');
+                    loginModal.style.display = 'none';
+                    checkLogin();
+                    alert(result.message || '로그인 성공이다옹! 냥냥!'); // 서버 메시지가 있으면 그걸 쓰고, 없으면 기본 메시지!
+                } else {
+                    alert(result.message || '로그인에 실패했다옹. 아이디와 비밀번호를 다시 확인해보라냥.');
+                    usernameInput.value = '';
+                    passwordInput.value = '';
+                }
+            } catch (error) {
+                console.error('로그인 요청 중 에러 발생이다옹:', error);
+                alert('냐옹... 로그인 서버에 연결할 수 없다옹. 인터넷 연결을 확인하거나 잠시 후 다시 시도해보라냥!');
             }
-            usernameInput.value = ''; // 입력 필드 비우기
-            passwordInput.value = '';
         }
         
         // 로그아웃 처리 함수다냥!
