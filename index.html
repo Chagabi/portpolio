@@ -275,7 +275,6 @@
             margin-bottom: 20px;
         }
         
-        /* 카테고리 추가 폼 스타일 */
         .add-category-form {
             margin-bottom: 20px;
             display: flex;
@@ -288,7 +287,6 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        /* --- */
 
         .upload-form {
             display: flex;
@@ -306,6 +304,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
+            margin-bottom: 20px; /* 카테고리 관리 섹션과 간격 */
         }
         
         .gallery-admin-item {
@@ -319,7 +318,7 @@
             border-radius: 4px;
         }
         
-        .delete-btn {
+        .delete-btn { /* 사진 삭제 버튼 */
             position: absolute;
             top: 5px;
             right: 5px;
@@ -332,7 +331,46 @@
             line-height: 25px;
             text-align: center;
             cursor: pointer;
+            font-weight: bold;
         }
+
+        /* === 카테고리 관리 섹션 스타일 시작 === */
+        .category-management-panel {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .category-management-panel h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .category-management-panel ul {
+            list-style: none;
+            padding: 0;
+        }
+        .category-management-panel li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .category-management-panel li:last-child {
+            border-bottom: none;
+        }
+        .category-management-panel .delete-category-btn {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .category-management-panel .delete-category-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        /* === 카테고리 관리 섹션 스타일 끝 === */
         
         .logout-btn {
             background-color: #f44336;
@@ -390,6 +428,7 @@
                 <input type="text" id="new-category-name" placeholder="새 카테고리 이름">
                 <button class="btn" id="add-category-btn">카테고리 추가</button>
             </div>
+            
             <div class="upload-form">
                 <input type="file" class="file-input" id="image-upload" accept="image/*">
                 <input type="text" placeholder="사진 제목" id="image-title" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
@@ -400,6 +439,12 @@
             </div>
             <div class="gallery-admin" id="gallery-admin">
                 </div>
+
+            <div class="category-management-panel" id="category-management-panel">
+                <h3>카테고리 관리</h3>
+                <ul id="category-list-admin">
+                    </ul>
+            </div>
             <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
         </div>
         
@@ -447,24 +492,20 @@
             try {
                 const response = await fetch('/.netlify/functions/login-police', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: username, password: password })
                 });
-
                 const result = await response.json();
-
                 if (response.ok && result.success) {
                     localStorage.setItem('isLoggedIn', 'true');
                     loginModal.style.display = 'none';
-                    usernameInput.value = ''; // 성공 시 입력창 비우기
-                    passwordInput.value = ''; // 성공 시 입력창 비우기
+                    usernameInput.value = ''; 
+                    passwordInput.value = ''; 
                     checkLogin();
                     alert(result.message); 
                 } else {
                     alert(result.message || '로그인에 실패했다옹. 다시 확인해보라냥.');
-                    passwordInput.value = ''; // 실패 시 비밀번호만 비우기
+                    passwordInput.value = '';
                 }
             } catch (error) {
                 console.error('로그인 요청 중 에러냥:', error);
@@ -472,7 +513,6 @@
             }
         }
         
-        // 저장소 (실제 상황에서는 데이터베이스를 사용해야 합니다)
         let photos = [
             { id: 1, url: '/api/placeholder/800/600', title: '풍경 사진', category: '풍경' },
             { id: 2, url: '/api/placeholder/800/600', title: '인물 사진', category: '인물' },
@@ -482,7 +522,6 @@
             { id: 6, url: '/api/placeholder/800/600', title: '거리 사진', category: '거리' }
         ];
         
-        // 카테고리 데이터 관리
         let categories = []; 
         const defaultCategories = ['풍경', '인물', '건축', '동물', '거리'];
 
@@ -493,20 +532,18 @@
             } else {
                 categories = [...defaultCategories]; 
             }
-             // 중복된 기본 카테고리가 있다면 제거하고, 없는 기본 카테고리만 추가
             defaultCategories.forEach(defaultCat => {
-                if (!categories.includes(defaultCat)) {
+                if (!categories.some(cat => cat.toLowerCase() === defaultCat.toLowerCase())) {
                     categories.push(defaultCat);
                 }
             });
-            categories.sort(); // 항상 정렬된 상태 유지
+            categories.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         }
 
         function saveCategories() {
             localStorage.setItem('uucats_categories', JSON.stringify(categories));
         }
         
-        // DOM 요소
         const gallery = document.getElementById('gallery');
         const galleryAdmin = document.getElementById('gallery-admin');
         const adminPanel = document.getElementById('admin-panel');
@@ -516,8 +553,8 @@
         const logoutBtn = document.getElementById('logout-btn');
         const uploadBtn = document.getElementById('upload-btn');
         const imageUpload = document.getElementById('image-upload');
-        const imageTitleInput = document.getElementById('image-title'); // 변수명 명확하게 변경
-        const imageCategorySelect = document.getElementById('image-category'); // 변수명 명확하게 변경
+        const imageTitleInput = document.getElementById('image-title'); 
+        const imageCategorySelect = document.getElementById('image-category'); 
         const imageModal = document.getElementById('image-modal');
         const modalImage = document.getElementById('modal-image');
         const modalTitle = document.getElementById('modal-title');
@@ -528,48 +565,41 @@
         const categoryDropdown = document.getElementById('category-dropdown');
         const newCategoryNameInput = document.getElementById('new-category-name');
         const addCategoryBtn = document.getElementById('add-category-btn');
+        const categoryListAdmin = document.getElementById('category-list-admin'); // 카테고리 관리 목록 UL
         
-        // 현재 선택된 카테고리 (메인 갤러리용)
-        let currentFilterCategory = '전체'; // 변수명 변경 (currentCategory -> currentFilterCategory)
-        
-        // 현재 모달에 표시 중인 이미지 인덱스
+        let currentFilterCategory = '전체';
         let currentPhotoIndex = 0;
         
-        // 초기화
         function init() {
             loadCategories(); 
             populateCategoryDropdown();
             populateAdminCategoryDropdown(); 
             renderGallery();
-            checkLogin();
+            checkLogin(); // checkLogin 안에서 renderCategoryManagement 호출 여부 결정
             setupEventListeners();
         }
         
-        // 메인 카테고리 필터 드롭다운 채우기
         function populateCategoryDropdown() {
             categoryDropdown.innerHTML = ''; 
-
             const allOption = document.createElement('option');
             allOption.value = '전체';
             allOption.textContent = '모든 카테고리';
             categoryDropdown.appendChild(allOption);
             
             const uniqueCategoriesInPhotos = [...new Set(photos.map(p => p.category))];
-            const allDisplayCategories = [...new Set([...categories, ...uniqueCategoriesInPhotos])].sort();
-
+            const allDisplayCategories = [...new Set([...categories, ...uniqueCategoriesInPhotos])].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
             allDisplayCategories.forEach(category => {
-                if (category === '전체') return; 
-                const count = photos.filter(p => p.category === category).length;
+                if (category.toLowerCase() === '전체'.toLowerCase()) return; 
+                const count = photos.filter(p => p.category.toLowerCase() === category.toLowerCase()).length;
                 const option = document.createElement('option');
                 option.value = category;
                 option.textContent = `${category} (${count})`;
                 categoryDropdown.appendChild(option);
             });
-            categoryDropdown.value = currentFilterCategory; // 현재 선택된 필터 유지
+            categoryDropdown.value = currentFilterCategory;
         }
         
-        // 관리자용 카테고리 선택 드롭다운 채우기
         function populateAdminCategoryDropdown() {
             imageCategorySelect.innerHTML = '<option value="">카테고리 선택</option>'; 
             categories.forEach(category => {
@@ -580,40 +610,92 @@
             });
         }
 
-        // 새 카테고리 추가 함수
         function addCategory() {
-            const newCategory = newCategoryNameInput.value.trim();
-            if (!newCategory) {
+            const newCategoryValue = newCategoryNameInput.value.trim();
+            if (!newCategoryValue) {
                 alert('카테고리 이름을 입력해주라옹!');
                 return;
             }
-            // 대소문자 구분 없이 중복 체크
-            if (categories.map(cat => cat.toLowerCase()).includes(newCategory.toLowerCase())) {
+            if (categories.some(cat => cat.toLowerCase() === newCategoryValue.toLowerCase())) {
                 alert('이미 있는 카테고리다옹! (대소문자 구분 없음)');
                 newCategoryNameInput.value = ''; 
                 return;
             }
 
-            categories.push(newCategory);
-            categories.sort(); 
+            categories.push(newCategoryValue);
+            categories.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())); 
             saveCategories(); 
 
-            alert(`"${newCategory}" 카테고리가 추가되었다옹!`);
+            alert(`"${newCategoryValue}" 카테고리가 추가되었다옹!`);
             newCategoryNameInput.value = ''; 
 
             populateAdminCategoryDropdown();
             populateCategoryDropdown(); 
+            renderCategoryManagement(); // 카테고리 관리 목록도 새로고침!
         }
+
+        // === 카테고리 관리 기능 함수들 시작 ===
+        function renderCategoryManagement() {
+            if (!categoryListAdmin) return; // 혹시 HTML 요소가 없을 경우 대비
+            categoryListAdmin.innerHTML = ''; // 기존 목록 비우기
+
+            categories.forEach(category => {
+                if (category.toLowerCase() === '전체'.toLowerCase()) return; // '전체' 카테고리는 관리 대상 아님
+
+                const listItem = document.createElement('li');
+                
+                const categoryNameSpan = document.createElement('span');
+                categoryNameSpan.textContent = category;
+                listItem.appendChild(categoryNameSpan);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '삭제';
+                deleteBtn.className = 'delete-category-btn';
+                
+                const isCategoryInUse = photos.some(photo => photo.category.toLowerCase() === category.toLowerCase());
+                
+                if (isCategoryInUse) {
+                    deleteBtn.disabled = true;
+                    deleteBtn.title = '이 카테고리를 사용하는 사진이 있어서 삭제할 수 없다옹!';
+                } else {
+                    deleteBtn.disabled = false;
+                    deleteBtn.title = `"${category}" 카테고리를 삭제한다옹!`;
+                    deleteBtn.addEventListener('click', () => {
+                        if (confirm(`"${category}" 카테고리를 정말 삭제할거냥? 이 카테고리를 사용하는 사진은 없지만, 되돌릴 수 없다옹!`)) {
+                            deleteCategory(category);
+                        }
+                    });
+                }
+                listItem.appendChild(deleteBtn);
+                categoryListAdmin.appendChild(listItem);
+            });
+        }
+
+        function deleteCategory(categoryToDelete) {
+            categories = categories.filter(cat => cat.toLowerCase() !== categoryToDelete.toLowerCase());
+            saveCategories();
+
+            alert(`"${categoryToDelete}" 카테고리가 삭제되었다옹!`);
+
+            populateAdminCategoryDropdown();
+            populateCategoryDropdown();
+            renderCategoryManagement(); // 목록 새로고침
+            // 만약 현재 필터링된 카테고리가 삭제된 카테고리였다면 '전체'로 변경
+            if (currentFilterCategory.toLowerCase() === categoryToDelete.toLowerCase()) {
+                currentFilterCategory = '전체';
+                categoryDropdown.value = '전체';
+                renderGallery();
+            }
+        }
+        // === 카테고리 관리 기능 함수들 끝 ===
         
-        // 갤러리 렌더링
         function renderGallery() {
             gallery.innerHTML = '';
-            
-            const filteredPhotos = currentFilterCategory === '전체' 
+            const filteredPhotos = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
                 ? photos 
-                : photos.filter(photo => photo.category === currentFilterCategory);
+                : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
             
-            if (filteredPhotos.length === 0) {
+            if (filteredPhotos.length === 0 && photos.length > 0) { // 사진은 있는데 해당 카테고리에만 없을 경우
                 const emptyMessage = document.createElement('div');
                 emptyMessage.className = 'empty-gallery-message';
                 emptyMessage.innerHTML = `
@@ -621,8 +703,21 @@
                         <svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;">
                             <path fill="currentColor" d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" />
                         </svg>
-                        <p style="font-size: 16px; margin-bottom: 5px;">'${currentFilterCategory}' 카테고리에 사진이 없습니다.</p>
-                        <p style="font-size: 14px; opacity: 0.7;">다른 카테고리를 선택하거나 새 사진을 업로드해보세요.</p>
+                        <p style="font-size: 16px; margin-bottom: 5px;">냥냥! '${currentFilterCategory}' 카테고리에는 아직 사진이 없다옹.</p>
+                        <p style="font-size: 14px; opacity: 0.7;">다른 카테고리를 보거나 새 사진을 올려보라옹!</p>
+                    </div>
+                `;
+                gallery.appendChild(emptyMessage);
+                return;
+            } else if (photos.length === 0) { // 아예 사진이 하나도 없을 경우
+                 const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-gallery-message';
+                emptyMessage.innerHTML = `
+                    <div style="text-align: center; padding: 40px; width: 100%; color: #666;">
+                         <svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;">
+                            <path fill="currentColor" d="M20,5.5C20,4.67 19.33,4 18.5,4H5.5C4.67,4 4,4.67 4,5.5V18.5C4,19.33 4.67,20 5.5,20H18.5C19.33,20 20,19.33 20,18.5V5.5M17,17H7V7H17V17M15,9H9V11H15V9M15,13H9V15H15V13Z" />
+                        </svg>
+                        <p style="font-size: 16px; margin-bottom: 5px;">아직 아무 사진도 없다옹! 관리자라면 사진을 올려보라냥!</p>
                     </div>
                 `;
                 gallery.appendChild(emptyMessage);
@@ -636,15 +731,12 @@
                 item.style.transform = 'translateY(20px)';
                 item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                 item.style.transitionDelay = `${index * 0.05}s`;
-                
                 item.innerHTML = `
                     <img src="${photo.url}" alt="${photo.title}">
                     <div class="photo-title">${photo.title}</div>
                 `;
-                
                 item.addEventListener('click', () => openImageModal(photo.id));
                 gallery.appendChild(item);
-                
                 setTimeout(() => {
                     item.style.opacity = '1';
                     item.style.transform = 'translateY(0)';
@@ -652,10 +744,11 @@
             });
         }
         
-        // 관리자 갤러리 렌더링
         function renderAdminGallery() {
             galleryAdmin.innerHTML = '';
-            photos.forEach(photo => {
+            // 사진을 최신순으로 (ID가 큰 순으로) 정렬해서 보여주자옹
+            const sortedPhotos = [...photos].sort((a, b) => b.id - a.id); 
+            sortedPhotos.forEach(photo => {
                 const item = document.createElement('div');
                 item.className = 'gallery-admin-item';
                 item.innerHTML = `
@@ -672,30 +765,30 @@
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = parseInt(e.target.getAttribute('data-id'));
-                    if (confirm("정말로 이 사진을 삭제할거냥? 냥?")) { // 삭제 전 확인!
+                    if (confirm("정말로 이 사진을 삭제할거냥? 냥?")) {
                         deletePhoto(id);
                     }
                 });
             });
         }
         
-        // 이미지 모달 열기
         function openImageModal(photoId) {
-            const_filteredPhotos = currentFilterCategory === '전체' 
+            const_filteredPhotos = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
                 ? photos 
-                : photos.filter(photo => photo.category === currentFilterCategory);
+                : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
             currentPhotoIndex = _filteredPhotos.findIndex(photo => photo.id === photoId);
-            if (currentPhotoIndex === -1) { // 혹시 모를 경우, 전체 photos 배열에서 다시 찾기
+            if (currentPhotoIndex === -1) {
                  currentPhotoIndex = photos.findIndex(photo => photo.id === photoId);
+                 if (currentPhotoIndex !== -1) displayCurrentPhoto(photos); // 전체 목록에서 찾았으면 전체 목록 기준으로
+                 else return; // 사진을 못찾으면 모달 안띄움
+            } else {
+                displayCurrentPhoto(_filteredPhotos);
             }
-            displayCurrentPhoto(_filteredPhotos); // 필터된 목록 기준으로 넘겨주기
             imageModal.style.display = 'flex';
         }
         
-        // 현재 사진 표시 (모달용, 필터된 목록을 받을 수 있도록 수정)
-        function displayCurrentPhoto(photoList = photos) { // 기본값은 전체 photos
-            // 현재 보고있는 필터된 리스트 또는 전체 리스트에서 인덱스로 사진 찾기
-            const photoToShow = photoList[currentPhotoIndex] || photos[currentPhotoIndex]; // 안전장치
+        function displayCurrentPhoto(photoList = photos) { 
+            const photoToShow = photoList[currentPhotoIndex]; 
 
             if (photoToShow) {
                 modalImage.src = photoToShow.url;
@@ -708,33 +801,30 @@
             }
         }
         
-        // 이전 사진으로 이동 (모달용)
         function showPreviousPhoto() {
-            const_filteredPhotos = currentFilterCategory === '전체' 
+            const_filteredPhotos = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
                 ? photos 
-                : photos.filter(photo => photo.category === currentFilterCategory);
+                : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
             currentPhotoIndex = (currentPhotoIndex - 1 + _filteredPhotos.length) % _filteredPhotos.length;
             displayCurrentPhoto(_filteredPhotos);
         }
         
-        // 다음 사진으로 이동 (모달용)
         function showNextPhoto() {
-            const_filteredPhotos = currentFilterCategory === '전체' 
+            const_filteredPhotos = currentFilterCategory.toLowerCase() === '전체'.toLowerCase()
                 ? photos 
-                : photos.filter(photo => photo.category === currentFilterCategory);
+                : photos.filter(photo => photo.category.toLowerCase() === currentFilterCategory.toLowerCase());
             currentPhotoIndex = (currentPhotoIndex + 1) % _filteredPhotos.length;
             displayCurrentPhoto(_filteredPhotos);
         }
         
-        // 사진 삭제
         function deletePhoto(id) {
             photos = photos.filter(photo => photo.id !== id);
             renderGallery();
             renderAdminGallery();
             populateCategoryDropdown(); 
+            renderCategoryManagement(); // 사진 삭제 후 카테고리 사용 여부 바뀔 수 있으니 관리 목록도 갱신!
         }
         
-        // 사진 업로드
         function uploadPhoto() {
             const file = imageUpload.files[0];
             if (!file) {
@@ -752,7 +842,7 @@
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                const newId = photos.length > 0 ? Math.max(...photos.map(p => p.id)) + 1 : 1;
+                const newId = photos.length > 0 ? Math.max(0, ...photos.map(p => p.id)) + 1 : 1; // ID 생성 더 안전하게
                 photos.push({
                     id: newId,
                     url: e.target.result,
@@ -762,6 +852,7 @@
                 renderGallery();
                 renderAdminGallery();
                 populateCategoryDropdown(); 
+                renderCategoryManagement(); // 사진 추가 후 카테고리 사용 여부 바뀔 수 있으니 관리 목록도 갱신!
                 imageUpload.value = '';
                 imageTitleInput.value = '';
                 imageCategorySelect.value = '';
@@ -770,13 +861,11 @@
             reader.readAsDataURL(file);
         }
         
-        // 로그아웃 처리
         function logout() {
             localStorage.removeItem('isLoggedIn');
             checkLogin();
         }
         
-        // 로그인 상태 확인
         function checkLogin() {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             
@@ -784,21 +873,20 @@
                 adminPanel.style.display = 'block';
                 loginButton.textContent = '관리자 패널';
                 renderAdminGallery();
+                renderCategoryManagement(); // 로그인 시 카테고리 관리 목록 표시
             } else {
                 adminPanel.style.display = 'none';
                 loginButton.textContent = '관리자';
             }
         }
         
-        // 이벤트 리스너 설정
         function setupEventListeners() {
             loginButton.addEventListener('click', () => {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 if (isLoggedIn) {
-                    // 관리자 패널이 이미 보이면 스크롤, 아니면 보이게 (checkLogin에서 처리)
                     if(adminPanel.style.display === 'block') {
                         window.scrollTo({
-                            top: adminPanel.offsetTop - (document.querySelector('header')?.offsetHeight || 70), // 헤더 높이만큼 덜 스크롤
+                            top: adminPanel.offsetTop - (document.querySelector('header')?.offsetHeight || 70),
                             behavior: 'smooth'
                         });
                     }
@@ -810,12 +898,9 @@
             loginSubmit.addEventListener('click', login);
             logoutBtn.addEventListener('click', logout);
             uploadBtn.addEventListener('click', uploadPhoto);
-            addCategoryBtn.addEventListener('click', addCategory); // 새 카테고리 추가 버튼 이벤트
+            addCategoryBtn.addEventListener('click', addCategory);
             
-            closeModal.addEventListener('click', () => {
-                imageModal.style.display = 'none';
-            });
-            
+            closeModal.addEventListener('click', () => imageModal.style.display = 'none');
             prevBtn.addEventListener('click', showPreviousPhoto);
             nextBtn.addEventListener('click', showNextPhoto);
             
@@ -825,16 +910,14 @@
                     else if (e.key === 'ArrowRight') showNextPhoto();
                     else if (e.key === 'Escape') imageModal.style.display = 'none';
                 }
+                 if (loginModal.style.display === 'flex' && e.key === 'Escape') { // 로그인 모달도 Esc로 닫기
+                    loginModal.style.display = 'none';
+                 }
             });
             
             window.addEventListener('click', (e) => {
                 if (e.target === imageModal) imageModal.style.display = 'none';
-                if (e.target === loginModal) {
-                    loginModal.style.display = 'none';
-                    // 로그인 폼 필드 초기화 (선택적)
-                    // document.getElementById('username').value = '';
-                    // document.getElementById('password').value = '';
-                }
+                if (e.target === loginModal) loginModal.style.display = 'none';
             });
             
             twitterLink.addEventListener('click', (e) => {
@@ -842,14 +925,12 @@
                 window.open('https://x.com/UU_CATS', '_blank');
             });
 
-            // 메인 카테고리 드롭다운 변경 시 갤러리 다시 렌더링
             categoryDropdown.addEventListener('change', (e) => {
                 currentFilterCategory = e.target.value;
                 renderGallery();
             });
         }
         
-        // 초기화 실행
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
