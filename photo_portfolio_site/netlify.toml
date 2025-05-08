@@ -1,3 +1,0 @@
-[build]
-  functions = "netlify/functions" # 만약 네 함수 파일들이 'netlify/functions' 폴더 안에 있다면!
-                                  # 만약 'functions' 폴더 안에 있다면 "functions" 로 바꿔주라옹!
