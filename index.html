@@ -74,48 +74,48 @@
         /* === 히어로 섹션 스타일이다냥! === */
         .hero-section {
             width: 100%;
-            height: 800px;
+            height: 800px; /* 조금 더 높게 조정했다옹 */
             overflow: hidden;
-            position: relative;
+            position: relative; /* 문구 위치 잡기 편하게! */
             text-align: center;
-            background-color: #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
+            background-color: #e0e0e0; /* 기본 배경색 */
+            display: flex; /* 문구 중앙 정렬을 위해 추가했다옹 */
+            flex-direction: column; /* 문구를 이미지 아래로! */
+            justify-content: flex-end; /* 문구를 아래쪽에 붙인다옹 */
+            align-items: center; /* 가로 중앙 정렬 */
         }
 
         #hero-image-display {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
+            height: 100%; /* 부모 높이에 맞춤 */
+            object-fit: cover; /* 이미지가 비율 유지하며 꽉 차게! */
+            position: absolute; /* 문구랑 겹칠 수 있게! */
             top: 0;
             left: 0;
-            z-index: 1;
+            z-index: 1; /* 문구보다 뒤에 있도록! */
         }
 
         .hero-text-container {
-            position: relative;
-            z-index: 2;
+            position: relative; /* z-index 적용을 위해 */
+            z-index: 2; /* 이미지보다 위에 있도록! */
             color: white;
             padding: 20px;
-            background-color: rgba(0, 0, 0, 0.5);
-            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 가독성을 위한 반투명 배경 */
+            width: 100%; /* 가로 꽉 차게 */
             text-align: center;
-            border-bottom-left-radius: 8px;
+            border-bottom-left-radius: 8px; /* 살짝 둥글게~ */
             border-bottom-right-radius: 8px;
         }
 
         #hero-title-display {
-            font-size: 2.5em;
+            font-size: 2.5em; /* 큰 제목! */
             font-weight: bold;
             margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* 글자 그림자! */
         }
 
         #hero-subtitle-display {
-            font-size: 1.2em;
+            font-size: 1.2em; /* 작은 부제목! */
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
         /* === 히어로 섹션 스타일 끝이다냥! === */
@@ -286,7 +286,7 @@
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
-            margin-top: 5px;
+            margin-top: 5px; /* 버튼 간격 살짝! */
         }
         
         .btn:hover {
@@ -298,7 +298,7 @@
             width: 100%;
         }
 
-        .btn-danger {
+        .btn-danger { /* 삭제 버튼용 빨간색! */
             background-color: #ff4444;
         }
         .btn-danger:hover {
@@ -315,23 +315,23 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        .admin-panel h2, .admin-panel h3 {
-            margin-bottom: 15px;
-            margin-top: 20px;
+        .admin-panel h2, .admin-panel h3 { /* h3도 추가했옹 */
+            margin-bottom: 15px; /* 간격 살짝 줄였옹 */
+            margin-top: 20px; /* 섹션별 간격 */
         }
         .admin-panel h2:first-child {
-            margin-top: 0;
+            margin-top: 0; /* 첫번째 h2는 위쪽 간격 없음! */
         }
         
-        .upload-form, .hero-text-form, .category-form {
+        .upload-form, .hero-text-form, .category-form { /* 폼 스타일 통일이다냥 */
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
             flex-wrap: wrap;
-            align-items: flex-end;
+            align-items: flex-end; /* 버튼이랑 인풋 높이 맞추려고! */
         }
         
-        .file-input, .text-input {
+        .file-input, .text-input { /* 인풋 스타일 통일! */
             flex: 1;
             min-width: 200px;
             padding: 8px;
@@ -380,7 +380,7 @@
             background-color: #d32f2f;
         }
 
-        .category-list {
+        .category-list { /* 카테고리 목록 스타일 */
             list-style: none;
             padding: 0;
             margin-bottom: 15px;
@@ -449,10 +449,9 @@
     </header>
 
     <section class="hero-section">
-        <img id="hero-image-display" src="/api/placeholder/1200/500?text=Loading..." alt="히어로 이미지">
-        <div class="hero-text-container">
-            <h1 id="hero-title-display">로딩 중이다옹...</h1>
-            <p id="hero-subtitle-display">잠시만 기다려달라냥!</p>
+        <img id="hero-image-display" src="/api/placeholder/1200/500" alt="히어로 이미지"> <div class="hero-text-container">
+            <h1 id="hero-title-display">여기에 멋진 제목을!</h1>
+            <p id="hero-subtitle-display">여기는 부제목을 쓰는 공간이다옹!</p>
         </div>
     </section>
     <main class="container">
@@ -466,15 +465,15 @@
             </div>
             <div id="current-hero-image-admin" style="margin-top:10px; margin-bottom: 20px;">
                 <p><strong>현재 히어로 이미지:</strong></p>
-                <img id="admin-hero-preview" src="/api/placeholder/400/150?text=Loading..." alt="현재 히어로 이미지 미리보기" style="max-width: 400px; max-height: 150px; object-fit: cover; border-radius: 4px; margin-top: 5px;">
-                <button class="btn btn-danger" id="hero-image-delete-btn" style="display: block; margin-top: 10px;">히어로 이미지 삭제 (기본값으로)</button>
+                <img id="admin-hero-preview" src="/api/placeholder/400/150" alt="현재 히어로 이미지 미리보기" style="max-width: 400px; max-height: 150px; object-fit: cover; border-radius: 4px; margin-top: 5px;">
+                <button class="btn btn-danger" id="hero-image-delete-btn" style="display: block; margin-top: 10px;">히어로 이미지 삭제</button>
             </div>
             <h3>히어로 문구 관리</h3>
             <div class="hero-text-form">
                 <input type="text" id="hero-title-input" class="text-input" placeholder="큰 제목 입력">
                 <input type="text" id="hero-subtitle-input" class="text-input" placeholder="작은 부제목 입력">
                 <button class="btn" id="hero-text-save-btn">문구 저장</button>
-                <button class="btn btn-danger" id="hero-text-delete-btn">문구 전체 삭제 (기본값으로)</button>
+                <button class="btn btn-danger" id="hero-text-delete-btn">문구 전체 삭제</button>
             </div>
             <h3>카테고리 관리</h3>
             <div class="category-form">
@@ -482,29 +481,29 @@
                 <button class="btn" id="add-category-btn">카테고리 추가</button>
             </div>
             <ul id="category-list-admin" class="category-list">
-            </ul>
+                </ul>
             <h3>갤러리 사진 업로드</h3>
             <div class="upload-form">
                 <input type="file" class="file-input" id="image-upload" accept="image/*">
                 <input type="text" placeholder="사진 제목" id="image-title" class="text-input">
                 <select id="image-category-upload" class="text-input" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                     <option value="">카테고리 선택</option>
-                </select>
+                    </select>
                 <button class="btn" id="upload-btn">사진 업로드</button>
             </div>
             <div class="gallery-admin" id="gallery-admin">
-            </div>
+                </div>
             <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
         </div>
         
         <div class="category-dropdown-container">
             <select id="category-dropdown" class="category-dropdown" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #ddd;">
                 <option value="전체">모든 카테고리</option>
-            </select>
+                </select>
         </div>
         
         <div class="gallery" id="gallery">
-        </div>
+            </div>
     </main>
     
     <div class="modal" id="image-modal">
@@ -530,11 +529,10 @@
         </div>
     </div>
 
-    <script>
-        // --- 전역 변수들 ---
-        let photos = []; // 갤러리 사진 목록 (나중엔 DB에서 불러올거다옹!)
-        let categories = ['풍경', '인물', '건축', '동물', '거리']; // 기본 카테고리 (이것도 DB 관리 가능!)
-        let heroInfo = { // 히어로 정보 기본값 (DB에서 불러오기 전까지 사용)
+<script>
+        let photos = [];
+        let categories = ['풍경', '인물', '건축', '동물', '거리'];
+        let heroInfo = {
             imageUrl: '/api/placeholder/1200/500?text=Loading...',
             title: '로딩 중이다옹...',
             subtitle: '잠시만 기다려달라냥!'
@@ -542,7 +540,6 @@
         let currentCategoryFilter = '전체';
         let currentModalPhotoIndex = 0;
 
-        // --- DOM 요소들 ---
         const gallery = document.getElementById('gallery');
         const galleryAdmin = document.getElementById('gallery-admin');
         const adminPanel = document.getElementById('admin-panel');
@@ -556,7 +553,7 @@
         const imageCategoryUploadDropdown = document.getElementById('image-category-upload');
         const imageModal = document.getElementById('image-modal');
         const modalImage = document.getElementById('modal-image');
-        const modalTitleElement = document.getElementById('modal-title'); // 변수 이름 수정 (modalTitle -> modalTitleElement)
+        const modalTitleElement = document.getElementById('modal-title');
         const closeModal = document.getElementById('close-modal');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
@@ -577,35 +574,46 @@
         const addCategoryBtnAdmin = document.getElementById('add-category-btn');
         const categoryListAdmin = document.getElementById('category-list-admin');
 
-        // --- 기본값 정의 (히어로 정보용) ---
         const DEFAULT_HERO_IMAGE_URL = '/api/placeholder/1200/500?text=Hero+Image';
         const DEFAULT_HERO_TITLE = '여기에 멋진 제목을!';
         const DEFAULT_HERO_SUBTITLE = '여기는 부제목을 쓰는 공간이다옹!';
 
-        // --- 초기화 함수 ---
         async function init() {
-            // localStorage에서 갤러리 사진과 카테고리 정보 불러오기 (히어로는 DB에서!)
-            loadGalleryDataFromLocalStorage(); 
+            const storedCategories = localStorage.getItem('categories');
+            if (storedCategories) categories = JSON.parse(storedCategories);
+            else categories = ['풍경', '인물', '건축', '동물', '거리'];
 
             try {
-                console.log('init: 히어로 정보 가져오기 시도...');
-                const response = await fetch('/.netlify/functions/get-hero-info');
-                if (response.ok) {
-                    const data = await response.json();
-                    heroInfo.title = data.title || DEFAULT_HERO_TITLE;
-                    heroInfo.subtitle = data.subtitle || DEFAULT_HERO_SUBTITLE;
-                    heroInfo.imageUrl = data.imageUrl || DEFAULT_HERO_IMAGE_URL;
-                    console.log('init: Firestore에서 히어로 정보 로드 성공!', heroInfo);
+                const heroResponse = await fetch('/.netlify/functions/get-hero-info');
+                if (heroResponse.ok) {
+                    const heroData = await heroResponse.json();
+                    heroInfo.title = heroData.title || DEFAULT_HERO_TITLE;
+                    heroInfo.subtitle = heroData.subtitle || DEFAULT_HERO_SUBTITLE;
+                    heroInfo.imageUrl = heroData.imageUrl || DEFAULT_HERO_IMAGE_URL;
                 } else {
-                    console.error('init: 히어로 정보 가져오기 실패 (서버 응답):', await response.text());
-                    setDefaultHeroInfo(); // 실패 시 기본값으로 설정
+                    console.error('init: 히어로 정보 가져오기 실패 (서버 응답):', await heroResponse.text());
+                    setDefaultHeroInfo();
                 }
             } catch (e) {
                 console.error('init: 히어로 정보 가져오는 중 네트워크 에러:', e);
-                setDefaultHeroInfo(); // 네트워크 에러 시 기본값으로 설정
+                setDefaultHeroInfo();
+            }
+            updateHeroSection();
+
+            try {
+                const photosResponse = await fetch('/.netlify/functions/get-photos');
+                if (photosResponse.ok) {
+                    const photosData = await photosResponse.json();
+                    photos = photosData;
+                } else {
+                    console.error('init: 갤러리 사진 목록 가져오기 실패 (서버 응답):', await photosResponse.text());
+                    photos = [];
+                }
+            } catch (e) {
+                console.error('init: 갤러리 사진 목록 가져오는 중 네트워크 에러:', e);
+                photos = [];
             }
             
-            updateHeroSection();
             populateAllCategoryDropdowns();
             renderGallery();
             checkLogin();
@@ -613,19 +621,15 @@
         }
 
         function setDefaultHeroInfo() {
-            console.log('setDefaultHeroInfo: 히어로 정보를 기본값으로 설정한다옹.');
             heroInfo.title = DEFAULT_HERO_TITLE;
             heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
             heroInfo.imageUrl = DEFAULT_HERO_IMAGE_URL;
         }
 
-        // --- 히어로 섹션 업데이트 ---
         function updateHeroSection() {
-            console.log('updateHeroSection 호출됨, heroInfo:', heroInfo);
             heroImageDisplay.src = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
             heroTitleDisplay.textContent = heroInfo.title || '';
             heroSubtitleDisplay.textContent = heroInfo.subtitle || '';
-
             if (adminPanel.style.display === 'block') {
                 adminHeroPreview.src = heroInfo.imageUrl || '/api/placeholder/400/150?text=No+Image';
                 heroTitleInputAdmin.value = heroInfo.title || '';
@@ -633,39 +637,23 @@
             }
         }
 
-        // --- 히어로 이미지 업로드 ---
         async function handleHeroImageUpload() {
             const file = heroImageUploadInputAdmin.files[0];
-            if (!file) {
-                alert('히어로 이미지를 선택해달라옹!');
-                return;
-            }
-
+            if (!file) { alert('히어로 이미지를 선택해달라옹!'); return; }
             const formData = new FormData();
             formData.append('imageFile', file);
-            // 히어로 이미지 업로드 시, 현재 입력된 제목과 부제목도 함께 보낸다옹.
-            formData.append('heroTitle', heroTitleInputAdmin.value.trim() || heroInfo.title); // 비어있으면 현재 값
-            formData.append('heroSubtitle', heroSubtitleInputAdmin.value.trim() || heroInfo.subtitle); // 비어있으면 현재 값
-
+            formData.append('heroTitle', heroTitleInputAdmin.value.trim() || heroInfo.title);
+            formData.append('heroSubtitle', heroSubtitleInputAdmin.value.trim() || heroInfo.subtitle);
             try {
-                // 히어로 이미지 전용 Netlify Function 호출!
-                const response = await fetch('/.netlify/functions/upload-hero-image', {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const response = await fetch('/.netlify/functions/upload-hero-image', { method: 'POST', body: formData });
                 if (!response.ok) {
                     const errorResult = await response.json();
                     throw new Error(errorResult.message || 'Netlify Function에서 히어로 이미지 업로드 실패!');
                 }
-
                 const result = await response.json();
-                heroInfo.imageUrl = result.publicUrl; // GCS URL로 변경
-                // 서버에서 제목/부제목을 따로 반환하지 않으므로, 클라이언트에서 보낸 값으로 업데이트 (또는 다시 fetch)
-                // 여기서는 일단 이미지 URL만 업데이트하고, 텍스트는 saveHeroText에서 별도 관리
-                updateHeroSection(); 
+                heroInfo.imageUrl = result.publicUrl;
+                updateHeroSection();
                 alert('히어로 이미지가 성공적으로 업로드 및 저장되었다옹!');
-
             } catch (error) {
                 console.error('히어로 이미지 업로드 중 에러:', error);
                 alert(`냐옹... 히어로 이미지 업로드 실패: ${error.message}`);
@@ -674,28 +662,19 @@
             }
         }
 
-        // --- 히어로 이미지 삭제 (기본값으로 되돌리기) ---
         async function deleteHeroImage() {
             if (confirm('정말로 히어로 이미지를 기본 이미지로 되돌릴거냥? (서버 파일은 삭제되지 않는다옹!)')) {
-                // Firestore의 히어로 정보를 기본값으로 업데이트하는 Netlify Function 호출
                 try {
-                    const response = await fetch('/.netlify/functions/update-hero-text', { // 텍스트 업데이트 함수 재활용 가능
+                    const response = await fetch('/.netlify/functions/update-hero-text', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            title: DEFAULT_HERO_TITLE, 
-                            subtitle: DEFAULT_HERO_SUBTITLE,
-                            imageUrl: DEFAULT_HERO_IMAGE_URL // 이미지 URL도 같이 보냄 (update-hero-text 함수가 imageUrl도 받도록 수정 필요)
-                                                            // 또는 delete-hero-info 같은 새 함수 만들기
-                        })
+                        body: JSON.stringify({ title: DEFAULT_HERO_TITLE, subtitle: DEFAULT_HERO_SUBTITLE, imageUrl: DEFAULT_HERO_IMAGE_URL })
                     });
                     if(response.ok){
                         setDefaultHeroInfo();
                         updateHeroSection();
                         alert('히어로 정보가 기본값으로 초기화되었다옹!');
-                    } else {
-                         throw new Error(await response.text());
-                    }
+                    } else { throw new Error(await response.text()); }
                 } catch (error) {
                     console.error('히어로 정보 기본값으로 변경 실패:', error);
                     alert('냐옹... 히어로 정보 초기화에 실패했다옹.');
@@ -703,62 +682,43 @@
             }
         }
         
-        // --- 히어로 문구 저장 (Firestore에 업데이트) ---
         async function saveHeroText() {
             const titleToSave = heroTitleInputAdmin.value.trim();
             const subtitleToSave = heroSubtitleInputAdmin.value.trim();
-
-            // 현재 이미지 URL도 함께 보내서 Firestore에 일관되게 저장한다옹.
             const currentImageUrl = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
-
             try {
                 const response = await fetch('/.netlify/functions/update-hero-text', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        title: titleToSave, 
-                        subtitle: subtitleToSave,
-                        imageUrl: currentImageUrl // 이미지 URL도 함께 업데이트 (update-hero-text 함수가 imageUrl도 받도록 수정 필요)
-                    })
+                    body: JSON.stringify({ title: titleToSave, subtitle: subtitleToSave, imageUrl: currentImageUrl })
                 });
-
                 if (response.ok) {
                     const result = await response.json();
                     heroInfo.title = result.data.title;
                     heroInfo.subtitle = result.data.subtitle;
-                    // heroInfo.imageUrl = result.data.imageUrl; // 서버에서 imageUrl도 반환한다면!
                     updateHeroSection();
                     alert('히어로 문구가 Firestore에 저장되었다옹!');
-                } else {
-                    throw new Error(await response.text());
-                }
+                } else { throw new Error(await response.text()); }
             } catch (error) {
                 console.error('히어로 문구 저장 실패:', error);
                 alert(`냐옹... 히어로 문구 저장에 실패했다옹: ${error.message}`);
             }
         }
 
-        // --- 히어로 문구 전체 삭제 (기본값으로 되돌리기) ---
         async function deleteHeroText() {
              if (confirm('정말로 히어로 문구를 기본값으로 되돌릴거냥?')) {
                 try {
                     const response = await fetch('/.netlify/functions/update-hero-text', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            title: DEFAULT_HERO_TITLE, 
-                            subtitle: DEFAULT_HERO_SUBTITLE,
-                            imageUrl: heroInfo.imageUrl // 현재 이미지 URL은 유지
-                        })
+                        body: JSON.stringify({ title: DEFAULT_HERO_TITLE, subtitle: DEFAULT_HERO_SUBTITLE, imageUrl: heroInfo.imageUrl })
                     });
                      if(response.ok){
                         heroInfo.title = DEFAULT_HERO_TITLE;
                         heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
                         updateHeroSection();
                         alert('히어로 문구가 기본값으로 초기화되었다옹!');
-                    } else {
-                         throw new Error(await response.text());
-                    }
+                    } else { throw new Error(await response.text()); }
                 } catch (error) {
                     console.error('히어로 문구 기본값으로 변경 실패:', error);
                     alert('냐옹... 히어로 문구 초기화에 실패했다옹.');
@@ -766,36 +726,12 @@
             }
         }
         
-        // --- localStorage 관련 함수들 (갤러리용) ---
-        function loadGalleryDataFromLocalStorage() {
-            const storedPhotos = localStorage.getItem('photos');
-            if (storedPhotos) photos = JSON.parse(storedPhotos);
-            else photos = []; // 로컬스토리지에 없으면 빈 배열로 시작! (플레이스홀더 대신)
-
-            const storedCategories = localStorage.getItem('categories');
-            // 카테고리는 DB에서 관리하거나, photos에서 동적으로 생성하는 게 더 좋다옹!
-            // 지금은 일단 기본값을 유지하거나, photos에서 추출하는 방식으로 변경 가능.
-            if (storedCategories) categories = JSON.parse(storedCategories);
-            else categories = ['풍경', '인물', '건축', '동물', '거리']; // 기본값
-        }
-
-        function saveGalleryDataToLocalStorage() {
-            localStorage.setItem('photos', JSON.stringify(photos));
-            localStorage.setItem('categories', JSON.stringify(categories));
-        }
-
-        // --- 카테고리 관련 함수들 (기존과 거의 동일, localStorage 대신 saveGalleryDataToLocalStorage 사용) ---
         function populateAllCategoryDropdowns() {
-            categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>';
-            let uniqueCategories = ['풍경', '인물', '건축', '동물', '거리']; // photos에서 동적으로 가져오도록 수정 가능
-            if(photos && photos.length > 0){
-                const photoCategories = [...new Set(photos.map(p => p.category).filter(Boolean))];
-                uniqueCategories = [...new Set([...categories, ...photoCategories])].sort();
-            } else {
-                 uniqueCategories = categories.sort();
-            }
+            const uniqueCategoriesFromPhotos = photos.length > 0 ? [...new Set(photos.map(p => p.category).filter(Boolean))].sort() : [];
+            let displayCategories = uniqueCategoriesFromPhotos.length > 0 ? uniqueCategoriesFromPhotos : categories;
             
-            uniqueCategories.forEach(category => {
+            categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>';
+            displayCategories.forEach(category => {
                 const count = photos.filter(p => p.category === category).length;
                 const option = document.createElement('option');
                 option.value = category;
@@ -805,7 +741,7 @@
             categoryDropdown.value = currentCategoryFilter;
 
             imageCategoryUploadDropdown.innerHTML = '<option value="">카테고리 선택</option>';
-            uniqueCategories.forEach(category => {
+            displayCategories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category;
                 option.textContent = category;
@@ -813,11 +749,11 @@
             });
 
             if (adminPanel.style.display === 'block') {
-                renderAdminCategoryList(uniqueCategories);
+                renderAdminCategoryList(displayCategories);
             }
         }
 
-        function renderAdminCategoryList(cats = categories) { // 인자로 카테고리 목록 받기
+        function renderAdminCategoryList(cats = categories) {
             categoryListAdmin.innerHTML = '';
             cats.forEach(category => {
                 const listItem = document.createElement('li');
@@ -839,7 +775,7 @@
             categories.push(newCategoryName);
             categories.sort();
             populateAllCategoryDropdowns();
-            saveGalleryDataToLocalStorage(); // 갤러리용 localStorage 저장
+            localStorage.setItem('categories', JSON.stringify(categories)); // 카테고리는 아직 로컬에 저장
             newCategoryInputAdmin.value = '';
             alert(`'${newCategoryName}' 카테고리가 추가되었다옹!`);
         }
@@ -851,40 +787,30 @@
                     if(!confirm(`'${categoryNameToDelete}' 카테고리 사진 ${photosWithThisCategory.length}장 있음. 그래도 삭제? (사진 카테고리 빈 값됨)`)){
                         return;
                     }
-                    photos.forEach(photo => {
-                        if (photo.category === categoryNameToDelete) {
-                             photo.category = ''; // 카테고리 정보 비우기
-                        }
-                    });
+                    photos.forEach(photo => { if (photo.category === categoryNameToDelete) { photo.category = ''; } });
                 }
                 categories = categories.filter(cat => cat !== categoryNameToDelete);
                 populateAllCategoryDropdowns();
-                saveGalleryDataToLocalStorage(); // 갤러리용 localStorage 저장
-                renderGallery();
+                localStorage.setItem('categories', JSON.stringify(categories)); // 카테고리는 아직 로컬에 저장
+                renderGallery(); // Firestore에서 photos를 다시 불러오도록 수정해야 함! (또는 photos 배열 직접 수정)
                 alert(`'${categoryNameToDelete}' 카테고리가 삭제되었다옹!`);
             }
         }
         
-        // --- 갤러리 렌더링 및 사진 관리 (GCS 업로드, localStorage 저장) ---
         function renderGallery() {
             gallery.innerHTML = '';
-            const filteredPhotos = currentCategoryFilter === '전체' 
-                ? photos 
-                : photos.filter(photo => photo.category === currentCategoryFilter);
-            
+            const filteredPhotos = currentCategoryFilter === '전체' ? photos : photos.filter(photo => photo.category === currentCategoryFilter);
             if (filteredPhotos.length === 0) {
-                // ... (빈 갤러리 메시지 - 이전과 동일) ...
                 const emptyMessage = document.createElement('div');
-                emptyMessage.style.textAlign = 'center'; /* ... */
+                emptyMessage.style.textAlign = 'center'; emptyMessage.style.padding = '40px'; emptyMessage.style.width = '100%'; emptyMessage.style.color = '#666';
+                emptyMessage.innerHTML = `<svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;"><path fill="currentColor" d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" /></svg><p style="font-size: 16px; margin-bottom: 5px;">'${currentCategoryFilter}' 카테고리에 사진이 없다옹.</p><p style="font-size: 14px; opacity: 0.7;">다른 카테고리를 선택하거나 새 사진을 업로드해보라냥.</p>`;
                 gallery.appendChild(emptyMessage);
                 return;
             }
-            
             filteredPhotos.forEach((photo, index) => {
-                // ... (갤러리 아이템 생성 - 이전과 동일, 애니메이션 효과 포함) ...
-                const item = document.createElement('div'); /* ... */
+                const item = document.createElement('div'); item.className = 'gallery-item'; item.style.opacity = '0'; item.style.transform = 'translateY(20px)'; item.style.transition = 'opacity 0.5s ease, transform 0.5s ease'; item.style.transitionDelay = `${index * 0.05}s`;
                 item.innerHTML = `<img src="${photo.url}" alt="${photo.title}"><div class="photo-title">${photo.title}</div>`;
-                item.addEventListener('click', () => openImageModal(photo.id));
+                item.addEventListener('click', () => openImageModal(photo.id)); // photo.id는 Firestore 문서 ID가 된다옹!
                 gallery.appendChild(item);
                 setTimeout(() => { item.style.opacity = '1'; item.style.transform = 'translateY(0)'; }, 10);
             });
@@ -893,17 +819,20 @@
         function renderAdminGallery() {
             galleryAdmin.innerHTML = '';
             photos.slice().reverse().forEach(photo => {
-                // ... (관리자 갤러리 아이템 생성 - 이전과 동일) ...
-                const item = document.createElement('div'); /* ... */
-                item.innerHTML = `<img src="${photo.url}" alt="${photo.title}"><div style="padding: 5px; ...">${photo.title} ...</div><button class="delete-btn" data-id="${photo.id}">&times;</button>`;
+                const item = document.createElement('div'); item.className = 'gallery-admin-item';
+                item.innerHTML = `<img src="${photo.url}" alt="${photo.title}"><div style="padding: 5px; text-align: center; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${photo.title} <span style="display: block; color: #666; font-size: 11px;">${photo.category || '카테고리 없음'}</span></div><button class="delete-btn" data-id="${photo.id}" data-gcsfilename="${photo.gcsFileName || ''}">&times;</button>`;
                 galleryAdmin.appendChild(item);
             });
             document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => deletePhoto(parseInt(e.target.getAttribute('data-id'))));
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const gcsFileName = e.target.getAttribute('data-gcsfilename');
+                    deletePhoto(id, gcsFileName); // gcsFileName도 넘겨주도록 수정!
+                });
             });
         }
         
-        async function uploadPhoto() { // 갤러리 사진 업로드 (GCS 연동)
+        async function uploadPhoto() {
             const file = imageUploadInput.files[0];
             if (!file) { alert('업로드할 이미지를 선택해달라옹!'); return; }
             const title = imageTitleInput.value.trim() || `새로운 냥냥이 사진 ${Date.now()}`;
@@ -914,52 +843,63 @@
             formData.append('imageFile', file);
             formData.append('title', title);
             formData.append('category', category);
-            // formData.append('imageType', 'gallery'); // 명시적으로 보내도 좋음
-
+            
             try {
-                const response = await fetch('/.netlify/functions/upload-image-to-gcs', {
-                    method: 'POST',
-                    body: formData
-                });
+                const response = await fetch('/.netlify/functions/upload-image-to-gcs', { method: 'POST', body: formData });
                 if (!response.ok) {
                     const errorResult = await response.json();
                     throw new Error(errorResult.message || 'Netlify Function에서 파일 업로드 실패!');
                 }
-                const result = await response.json();
-                const newId = photos.length > 0 ? Math.max(...photos.map(p => p.id)) + 1 : 1;
-                photos.push({
-                    id: newId,
-                    url: result.publicUrl,
-                    title: result.title, // 서버에서 받은 title, category 사용
-                    category: result.category
-                });
-                renderGallery();
-                renderAdminGallery();
-                populateAllCategoryDropdowns();
-                saveGalleryDataToLocalStorage(); // 갤러리용 localStorage 저장
-                imageUploadInput.value = '';
-                imageTitleInput.value = '';
-                imageCategoryUploadDropdown.value = '';
+                // 업로드 성공 후에는 photos 배열을 서버에서 다시 불러와서 갱신한다옹!
+                await refreshPhotosFromServer(); 
+                imageUploadInput.value = ''; imageTitleInput.value = ''; imageCategoryUploadDropdown.value = '';
                 alert('사진이 성공적으로 업로드 및 저장되었다옹!');
             } catch (error) {
                 console.error('갤러리 사진 업로드 중 에러:', error);
                 alert(`냐옹... 사진 업로드 실패: ${error.message}`);
             }
         }
+        
+        // 서버에서 사진 목록을 다시 가져와서 화면을 갱신하는 함수
+        async function refreshPhotosFromServer() {
+            try {
+                const photosResponse = await fetch('/.netlify/functions/get-photos');
+                if (photosResponse.ok) {
+                    photos = await photosResponse.json();
+                    renderGallery();
+                    renderAdminGallery();
+                    populateAllCategoryDropdowns();
+                } else {
+                    console.error('refreshPhotosFromServer: 사진 목록 가져오기 실패');
+                }
+            } catch (e) {
+                console.error('refreshPhotosFromServer: 사진 목록 가져오는 중 네트워크 에러', e);
+            }
+        }
 
-        function deletePhoto(id) { // 갤러리 사진 삭제 (localStorage에서만)
-            // (나중엔 GCS 파일 삭제 및 DB 정보 삭제하는 Netlify Function 호출 필요!)
-            if (confirm('정말로 이 사진을 삭제할거냥? (로컬 저장소에서만 삭제된다옹)')) {
-                photos = photos.filter(photo => photo.id !== id);
-                renderGallery();
-                renderAdminGallery();
-                populateAllCategoryDropdowns();
-                saveGalleryDataToLocalStorage();
-                alert('사진이 (로컬에서) 삭제되었다옹!');
+        async function deletePhoto(photoId, gcsFileName) { // gcsFileName도 인자로 받도록!
+            if (!photoId) { alert('삭제할 사진의 ID가 없다옹!'); return; }
+            if (confirm('정말로 이 사진을 서버에서 삭제할거냥? 되돌릴 수 없다옹!')) {
+                try {
+                    const response = await fetch('/.netlify/functions/delete-photo', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ photoId: photoId, gcsFileName: gcsFileName })
+                    });
+                    if (!response.ok) {
+                        const errorResult = await response.json();
+                        throw new Error(errorResult.message || 'Netlify Function에서 사진 삭제 실패!');
+                    }
+                    // 삭제 성공 후에는 photos 배열을 서버에서 다시 불러와서 갱신한다옹!
+                    await refreshPhotosFromServer();
+                    alert('사진이 서버에서 삭제되었다옹!');
+                } catch (error) {
+                    console.error('사진 삭제 중 에러:', error);
+                    alert(`냐옹... 사진 삭제 실패: ${error.message}`);
+                }
             }
         }
         
-        // --- 모달 관련 함수들 (이전과 거의 동일) ---
         function openImageModal(photoId) {
             const photosToDisplay = currentCategoryFilter === '전체' ? photos : photos.filter(photo => photo.category === currentCategoryFilter);
             currentModalPhotoIndex = photosToDisplay.findIndex(photo => photo.id === photoId);
@@ -971,7 +911,7 @@
             if (currentModalPhotoIndex >= 0 && currentModalPhotoIndex < photoArray.length) {
                 const photo = photoArray[currentModalPhotoIndex];
                 modalImage.src = photo.url;
-                modalTitleElement.innerHTML = `${photo.title}<br><span style="font-size: 14px; opacity: 0.8;">@UU_CATS</span><span style="display: inline-block; ...">${photo.category || '카테고리 없음'}</span>`;
+                modalTitleElement.innerHTML = `${photo.title}<br><span style="font-size: 14px; opacity: 0.8;">@UU_CATS</span><span style="display: inline-block; margin-left: 10px; font-size: 12px; background-color: rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 12px; backdrop-filter: blur(5px);">${photo.category || '카테고리 없음'}</span>`;
             }
         }
         function showPreviousPhotoInModal() {
@@ -985,9 +925,7 @@
             displayCurrentPhotoInModal(photosToDisplay);
         }
         
-        // --- 로그인/로그아웃 및 UI 업데이트 (기존과 거의 동일) ---
         async function login() { 
-            // ... (이전 로그인 함수 내용과 동일 - /netlify/functions/login-police 호출) ...
             const usernameInput = document.getElementById('username'); 
             const passwordInput = document.getElementById('password'); 
             const username = usernameInput.value; const password = passwordInput.value;
@@ -1018,18 +956,17 @@
             if (isLoggedIn) {
                 adminPanel.style.display = 'block';
                 loginButton.textContent = '관리자 패널 보기';
-                renderAdminGallery(); // 갤러리 사진은 localStorage에서 불러옴
+                renderAdminGallery(); 
                 populateAllCategoryDropdowns();
-                updateHeroSection(); // 히어로 정보는 Firestore에서 불러온 heroInfo 사용
+                updateHeroSection(); 
             } else {
                 adminPanel.style.display = 'none';
                 loginButton.textContent = '관리자 로그인';
             }
         }
         
-        // --- 이벤트 리스너 설정 ---
         function setupEventListeners() {
-            loginButton.addEventListener('click', () => { /* ... (이전과 동일) ... */
+            loginButton.addEventListener('click', () => {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 if (isLoggedIn) {
                     if (adminPanel.style.display === 'block') { adminPanel.style.display = 'none'; loginButton.textContent = '관리자 패널 열기'; }
@@ -1038,7 +975,7 @@
             });
             loginSubmit.addEventListener('click', login);
             logoutBtn.addEventListener('click', logout);
-            uploadBtn.addEventListener('click', uploadPhoto); // 갤러리 사진 업로드
+            uploadBtn.addEventListener('click', uploadPhoto);
             closeModal.addEventListener('click', () => imageModal.style.display = 'none');
             prevBtn.addEventListener('click', showPreviousPhotoInModal);
             nextBtn.addEventListener('click', showNextPhotoInModal);
@@ -1048,22 +985,23 @@
             heroTextSaveBtnAdmin.addEventListener('click', saveHeroText);
             heroTextDeleteBtnAdmin.addEventListener('click', deleteHeroText);
             addCategoryBtnAdmin.addEventListener('click', handleAddCategory);
-            document.addEventListener('keydown', (e) => { /* ... (모달 키보드 이벤트 - 이전과 동일) ... */
+            document.addEventListener('keydown', (e) => {
                  if (imageModal.style.display === 'flex') {
                     if (e.key === 'ArrowLeft') showPreviousPhotoInModal();
                     else if (e.key === 'ArrowRight') showNextPhotoInModal();
                     else if (e.key === 'Escape') imageModal.style.display = 'none';
                 }
             });
-            window.addEventListener('click', (e) => { /* ... (모달 외부 클릭 - 이전과 동일) ... */
+            window.addEventListener('click', (e) => {
                 if (e.target === imageModal) imageModal.style.display = 'none';
                 if (e.target === loginModal) loginModal.style.display = 'none';
             });
             twitterLink.addEventListener('click', (e) => { e.preventDefault(); window.open('https://x.com/UU_CATS', '_blank'); });
         }
         
-        // --- 페이지 로드 완료 시 실행 ---
         document.addEventListener('DOMContentLoaded', init);
     </script>
+</body>
+</html>
 </body>
 </html>
