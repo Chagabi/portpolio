@@ -150,21 +150,39 @@ exports.handler = async (event, context) => {
 
         try {
             console.log('야옹... sharp로 이미지 처리 시작이다옹!');
-            const image = sharp(fileData, { failOn: 'truncated' }); // 손상된 이미지면 에러 발생시키기
+            const image = sharp(fileData, { 
+                failOn: 'truncated', // 손상된 이미지는 에러!
+                // 냐옹! 아주 큰 이미지를 다룰 때는 메모리 사용량을 제한하는 옵션을 고려해볼 수 있다옹!
+                // 하지만 이 옵션은 sharp 버전에 따라 다르고, 주의해서 사용해야 한다냥.
+                // 예: limitInputPixels: 6000 * 4000 (이건 최대 픽셀 수 제한인데, 더 줄여야 할 수도 있다옹)
+                //     density: 72 // DPI 낮추기 (화질에 영향)
+            });
 
-            // 이미지 크기를 조절한다옹.
             processedImageBuffer = await image
                 .resize({
-                    width: 1280,      // 최대 가로 크기
-                    height: 1280,     // 최대 세로 크기
-                    fit: sharp.fit.inside, // 이미지가 이 크기 안에 딱 맞게 (비율 유지)
-                    withoutEnlargement: true // 원본보다 작을 때만 리사이즈 (확대 방지)
+                    width: 1280,      // 냐옹! 최대 가로 크기를 확 줄인다옹! (1920도 크다냥!)
+                    height: 1280,     // 최대 세로 크기도!
+                    fit: sharp.fit.inside, 
+                    withoutEnlargement: true 
                 })
-                .webp({ // WEBP로 변환하고 품질 설정
-                    quality: 80,     // 0-100 사이, 웹에서는 75-85 정도면 충분하다냥
-                    effort: 4        // 압축 노력 (0-6, 높을수록 느리지만 압축률 향상)
+                .webp({ 
+                    quality: 75,     // 품질을 조금 더 낮춰서 파일 크기를 줄인다옹!
+                    effort: 1        // 압축 속도 빠르게! (0-6)
                 })
-                .toBuffer(); // 처리된 이미지를 버퍼로 만든다옹
+                .toBuffer(); 
+
+            const nameWithoutExtension = (originalFileName || 'unknown-file').replace(/\.[^/.]+$/, "");
+            finalGcsFileName = `gallery/${Date.now()}-${nameWithoutExtension.replace(/\s+/g, '_').substring(0, 50)}.webp`;
+            console.log(`야옹! sharp로 이미지 처리 완료! 새 파일 이름: ${finalGcsFileName}, 처리 후 크기: ${processedImageBuffer.length / 1024} KB`);
+
+        } catch (sharpError) {
+            console.error("!!!!! SHARP 이미지 처리 중 심각한 에러 !!!!!");
+            console.error("Sharp 에러 객체 전체:", JSON.stringify(sharpError, Object.getOwnPropertyNames(sharpError), 2));
+            return {
+                statusCode: 422, 
+                body: JSON.stringify({ message: `이미지 처리 중 문제가 발생했다옹. 파일이 너무 크거나 지원하지 않는 형식일 수 있다냥. (에러: ${sharpError.message})` })
+            };
+        }
 
             // 새 파일 이름 (확장자 .webp로 변경)
             const safeOriginalName = (originalFileName || 'unknown-file').replace(/\.[^/.]+$/, ""); // 원본 확장자 제거
