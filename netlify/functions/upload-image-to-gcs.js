@@ -1,4 +1,4 @@
-// netlify/functions/upload-image-to-gcs.js (sharp로 이미지 처리 추가된 최종 버전이다옹!)
+// netlify/functions/upload-image-to-gcs.js (문법 오류 수정 및 리사이즈 1920으로 복귀!)
 
 const { Storage } = require('@google-cloud/storage');
 const Busboy = require('busboy');
@@ -13,7 +13,7 @@ const GCS_PROJECT_ID_ENV = process.env.GCS_PROJECT_ID;
 const GCS_CLIENT_EMAIL_ENV = process.env.GCS_CLIENT_EMAIL;
 const GCS_PRIVATE_KEY_ENV = process.env.GCS_PRIVATE_KEY;
 
-let gcsInitializationError = null; // GCS 초기화 에러를 저장할 변수
+let gcsInitializationError = null;
 if (GCS_PROJECT_ID_ENV && GCS_CLIENT_EMAIL_ENV && GCS_PRIVATE_KEY_ENV) {
     try {
         const gcsCredentials = {
@@ -37,7 +37,7 @@ const FIREBASE_CLIENT_EMAIL_ENV = process.env.FIREBASE_CLIENT_EMAIL;
 const FIREBASE_PRIVATE_KEY_ENV = process.env.FIREBASE_PRIVATE_KEY;
 
 let db;
-let firebaseInitializationError = null; // Firebase 초기화 에러를 저장할 변수
+let firebaseInitializationError = null;
 
 if (FIREBASE_PROJECT_ID_ENV && FIREBASE_CLIENT_EMAIL_ENV && FIREBASE_PRIVATE_KEY_ENV) {
     try {
@@ -59,12 +59,11 @@ if (FIREBASE_PROJECT_ID_ENV && FIREBASE_CLIENT_EMAIL_ENV && FIREBASE_PRIVATE_KEY
     console.error(firebaseInitializationError);
 }
 
-// 멀티파트 폼 데이터 파싱 함수 (좀 더 꼼꼼하게 에러 처리!)
 const parseMultipartForm = (event) => {
     return new Promise((resolve, reject) => {
         const busboy = Busboy({
             headers: { 'content-type': event.headers['content-type'] || event.headers['Content-Type'] },
-            limits: { fileSize: 15 * 1024 * 1024 } // 예: 파일 크기 15MB로 제한 (조절 가능)
+            limits: { fileSize: 15 * 1024 * 1024 } // 예: 파일 크기 15MB로 제한
         });
         const fields = {};
         let fileData = null;
@@ -75,14 +74,13 @@ const parseMultipartForm = (event) => {
             originalFileName = fileInfo.filename;
             fileMimeType = fileInfo.mimeType;
             const buffers = [];
-
             fileStream.on('data', (data) => buffers.push(data));
             fileStream.on('end', () => { fileData = Buffer.concat(buffers); });
             fileStream.on('error', (err) => {
                 console.error('파일 스트림 읽기 에러:', err);
-                reject(new Error(`파일 스트림 오류: ${err.message}`)); // 구체적인 에러 메시지
+                reject(new Error(`파일 스트림 오류: ${err.message}`));
             });
-            fileStream.on('limit', () => { // 파일 크기 제한 초과 시
+            fileStream.on('limit', () => {
                 console.warn(`파일 크기 제한 초과: ${originalFileName}`);
                 reject(new Error('파일 크기가 너무 크다옹! (최대 15MB)'));
             });
@@ -90,22 +88,17 @@ const parseMultipartForm = (event) => {
 
         busboy.on('field', (fieldname, val) => { fields[fieldname] = val; });
         busboy.on('finish', () => {
-            if (!fileData && Object.keys(fields).length === 0 && !originalFileName) { // 아무것도 없는 요청인지 확인
-                 // 이 경우는 파일 없는 요청으로 간주하고 빈 객체 resolve (핸들러에서 추가 판단)
-                 console.warn('Busboy finish: 파일이나 필드가 전혀 없다옹.');
-            }
             resolve({ ...fields, fileData, originalFileName, fileMimeType });
         });
         busboy.on('error', err => {
             console.error('Busboy 파싱 에러:', err);
-            reject(new Error(`요청 파싱 오류: ${err.message}`)); // 구체적인 에러 메시지
+            reject(new Error(`요청 파싱 오류: ${err.message}`));
         });
 
         const encoding = event.isBase64Encoded ? 'base64' : 'binary';
         if (event.body) {
             busboy.end(Buffer.from(event.body, encoding));
         } else {
-            // body가 없는 요청은 파일 업로드가 아니므로, reject보다는 빈 객체 resolve 후 핸들러에서 판단
             console.warn('요청 body가 비어있다옹. (parseMultipartForm)');
             resolve({ ...fields, fileData: null, originalFileName: null, fileMimeType: null });
         }
@@ -118,20 +111,18 @@ exports.handler = async (event, context) => {
         return { statusCode: 405, body: JSON.stringify({ message: 'POST 요청만 받는다옹!' }) };
     }
 
-    // 핸들러 시작 시 초기화 에러 확인
     if (gcsInitializationError) {
         return { statusCode: 500, body: JSON.stringify({ message: `서버 설정 오류: ${gcsInitializationError}` }) };
     }
     if (firebaseInitializationError) {
         return { statusCode: 500, body: JSON.stringify({ message: `서버 설정 오류: ${firebaseInitializationError}` }) };
     }
-    if (!gcsStorage || !db) { // 최종적으로 다시 한번 확인
+    if (!gcsStorage || !db) {
         console.error('GCS 또는 Firebase 인스턴스가 여전히 초기화되지 않았다옹!');
         return { statusCode: 500, body: JSON.stringify({ message: '서버 내부 설정 오류 (인스턴스 누락)' }) };
     }
 
-
-    try {
+    try { // 냐옹! 여기가 핸들러 전체를 감싸는 try 블록의 시작이다옹!
         const { fileData, originalFileName, fileMimeType, title, category } = await parseMultipartForm(event);
 
         if (!fileData) {
@@ -143,67 +134,45 @@ exports.handler = async (event, context) => {
 
         console.log(`야옹! 원본 파일: ${originalFileName}, MIME: ${fileMimeType}, 원본 크기: ${fileData.length / 1024} KB`);
 
-        // --- 냐옹! 이미지 처리 (sharp 사용) ---
         let processedImageBuffer;
-        const targetMimeType = 'image/webp'; // WEBP로 변환할 거다옹!
+        const targetMimeType = 'image/webp';
         let finalGcsFileName;
 
+        // --- 냐옹! 여기가 이미지 처리를 위한 try 블록이다옹! ---
         try {
             console.log('야옹... sharp로 이미지 처리 시작이다옹!');
-            const image = sharp(fileData, { 
-                failOn: 'truncated', // 손상된 이미지는 에러!
-                // 냐옹! 아주 큰 이미지를 다룰 때는 메모리 사용량을 제한하는 옵션을 고려해볼 수 있다옹!
-                // 하지만 이 옵션은 sharp 버전에 따라 다르고, 주의해서 사용해야 한다냥.
-                // 예: limitInputPixels: 6000 * 4000 (이건 최대 픽셀 수 제한인데, 더 줄여야 할 수도 있다옹)
-                //     density: 72 // DPI 낮추기 (화질에 영향)
-            });
+            const image = sharp(fileData, { failOn: 'truncated' });
 
             processedImageBuffer = await image
                 .resize({
-                    width: 1280,      // 냐옹! 최대 가로 크기를 확 줄인다옹! (1920도 크다냥!)
-                    height: 1280,     // 최대 세로 크기도!
-                    fit: sharp.fit.inside, 
-                    withoutEnlargement: true 
+                    width: 1920,      // 냐옹! 리사이징 크기를 다시 1920으로!
+                    height: 1920,     // 비율 유지를 위해 한쪽만 주거나, fit 옵션 활용!
+                    fit: sharp.fit.inside,
+                    withoutEnlargement: true
                 })
-                .webp({ 
-                    quality: 75,     // 품질을 조금 더 낮춰서 파일 크기를 줄인다옹!
-                    effort: 1        // 압축 속도 빠르게! (0-6)
+                .webp({
+                    quality: 80,     // 품질은 80으로 유지 (조절 가능)
+                    effort: 4
                 })
-                .toBuffer(); 
+                .toBuffer();
 
-            const nameWithoutExtension = (originalFileName || 'unknown-file').replace(/\.[^/.]+$/, "");
-            finalGcsFileName = `gallery/${Date.now()}-${nameWithoutExtension.replace(/\s+/g, '_').substring(0, 50)}.webp`;
+            const safeOriginalName = (originalFileName || 'unknown-file').replace(/\.[^/.]+$/, "");
+            finalGcsFileName = `gallery/${Date.now()}-${safeOriginalName.replace(/\s+/g, '_').substring(0, 50)}.webp`;
             console.log(`야옹! sharp로 이미지 처리 완료! 새 파일 이름: ${finalGcsFileName}, 처리 후 크기: ${processedImageBuffer.length / 1024} KB`);
 
-        } catch (sharpError) {
+        } catch (sharpError) { // 냐옹! 여기가 이미지 처리 try에 대한 catch 블록이다옹!
             console.error("!!!!! SHARP 이미지 처리 중 심각한 에러 !!!!!");
             console.error("Sharp 에러 객체 전체:", JSON.stringify(sharpError, Object.getOwnPropertyNames(sharpError), 2));
             return {
-                statusCode: 422, 
+                statusCode: 422,
                 body: JSON.stringify({ message: `이미지 처리 중 문제가 발생했다옹. 파일이 너무 크거나 지원하지 않는 형식일 수 있다냥. (에러: ${sharpError.message})` })
             };
-        }
-
-            // 새 파일 이름 (확장자 .webp로 변경)
-            const safeOriginalName = (originalFileName || 'unknown-file').replace(/\.[^/.]+$/, ""); // 원본 확장자 제거
-            finalGcsFileName = `gallery/${Date.now()}-${safeOriginalName.replace(/\s+/g, '_').substring(0, 50)}.webp`; // 너무 길지 않게 자르기
-            console.log(`야옹! sharp로 이미지 처리 완료! 새 파일 이름: ${finalGcsFileName}, 처리 후 크기: ${processedImageBuffer.length / 1024} KB`);
-
-        } catch (sharpError) {
-            console.error("!!!!! SHARP 이미지 처리 중 심각한 에러 !!!!!", sharpError);
-            console.error("에러 상세 정보:", JSON.stringify(sharpError, null, 2));
-            // sharp 에러 시, 클라이언트에게 JSON 형태로 에러를 알려준다옹!
-            return {
-                statusCode: 422, // Unprocessable Entity (이미지 처리 불가)
-                body: JSON.stringify({ message: `이미지 처리 중 문제가 발생했다옹: ${sharpError.message || '알 수 없는 이미지 변환 오류'}. 다른 파일을 시도해보라옹.` })
-            };
-        }
-        // --- 이미지 처리 끝 ---
+        } // 냐옹! 여기가 이미지 처리 try...catch의 끝이다옹!
 
         const file = gcsStorage.bucket(BUCKET_NAME).file(finalGcsFileName);
 
         await file.save(processedImageBuffer, {
-            metadata: { contentType: targetMimeType } // 최종 MIME 타입 (image/webp) 사용!
+            metadata: { contentType: targetMimeType }
         });
 
         const publicUrl = `https://storage.googleapis.com/${BUCKET_NAME}/${finalGcsFileName}`;
@@ -213,11 +182,11 @@ exports.handler = async (event, context) => {
             imageUrl: publicUrl,
             title: title,
             category: category,
-            gcsFileName: finalGcsFileName, // 처리된 GCS 파일 이름 저장
+            gcsFileName: finalGcsFileName,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            originalFileName: originalFileName, // 원본 파일 이름도 기록 (선택 사항)
-            originalMimeType: fileMimeType,   // 원본 MIME 타입도 기록 (선택 사항)
-            fileSizeKB: Math.round(processedImageBuffer.length / 1024) // 처리 후 파일 크기 (선택 사항)
+            originalFileName: originalFileName,
+            originalMimeType: fileMimeType,
+            fileSizeKB: Math.round(processedImageBuffer.length / 1024)
         };
 
         const docRef = await db.collection('photos').add(photoDataToSave);
@@ -231,20 +200,19 @@ exports.handler = async (event, context) => {
             }),
         };
 
-    } catch (error) {
+    } catch (error) { // 냐옹! 여기가 핸들러 전체를 감싸는 try에 대한 catch 블록이다옹!
         console.error('Netlify Function (갤러리 업로드 핸들러) 에러:', error);
         let statusCode = 500;
         let errorMessage = error.message || '알 수 없는 서버 오류가 발생했다옹.';
 
-        // Busboy에서 reject된 에러 (예: 파일 크기 초과)는 message에 이미 내용이 있다옹.
         if (error.message && (error.message.includes('파일 크기가 너무 크다옹') || error.message.includes('파일 스트림 오류') || error.message.includes('요청 파싱 오류'))) {
-            statusCode = 400; // Bad Request 또는 413 Payload Too Large
-            if(error.message.includes('파일 크기가 너무 크다옹')) statusCode = 413;
+            statusCode = 400;
+            if (error.message.includes('파일 크기가 너무 크다옹')) statusCode = 413;
         }
         
-        return { 
-            statusCode: statusCode, 
-            body: JSON.stringify({ message: errorMessage }) 
+        return {
+            statusCode: statusCode,
+            body: JSON.stringify({ message: errorMessage })
         };
-    }
+    } // 냐옹! 여기가 핸들러 전체 try...catch의 끝이다옹!
 };
