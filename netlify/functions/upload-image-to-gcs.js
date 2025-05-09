@@ -3,19 +3,37 @@
 const { Storage } = require('@google-cloud/storage');
 const Busboy = require('busboy'); // 파일 처리 도우미!
 
-// Google Cloud 서비스 계정 키 (JSON) 내용은 이전처럼 Netlify 환경 변수에!
-// const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
-// const storage = new Storage({ credentials });
-const storage = new Storage(); // 환경 변수가 잘 설정되어 있다면!
+let storage;
+const BUCKET_NAME = 'uucats-repository-images'; // 네 버킷 이름, 아주 잘 넣었다옹! 👍
 
-const BUCKET_NAME = 'uucats-repository-images'; // ⭐⭐⭐ 네 버킷 이름으로 꼭 바꿔주라옹! ⭐⭐⭐
+// Netlify 환경 변수에서 서비스 계정 키 JSON 내용을 읽어온다옹.
+// 이 환경 변수 이름은 네가 Netlify에 설정한 이름과 같아야 한다냥!
+// 보통 'GOOGLE_APPLICATION_CREDENTIALS_JSON'을 많이 쓴다옹.
+const GCS_CREDENTIALS_JSON = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+
+if (GCS_CREDENTIALS_JSON) {
+    try {
+        const credentials = JSON.parse(GCS_CREDENTIALS_JSON);
+        storage = new Storage({ credentials });
+        console.log('야옹! 구글 클라우드 서비스 계정 키를 환경 변수에서 성공적으로 불러왔다옹!');
+    } catch (e) {
+        console.error('냐옹... GOOGLE_APPLICATION_CREDENTIALS_JSON 환경 변수를 JSON으로 파싱하는데 실패했다옹! 내용을 다시 확인해달라냥!', e);
+        // storage 객체가 초기화되지 않으면 아래 로직에서 에러가 발생한다냥.
+        // 이 경우 함수가 더 이상 진행되지 않도록 에러를 던지는 게 좋다옹.
+        throw new Error('서비스 계정 키 JSON 파싱 실패! Netlify 환경 변수 설정을 확인해달라옹!');
+    }
+} else {
+    console.error('냐아아앙!!! GOOGLE_APPLICATION_CREDENTIALS_JSON 환경 변수를 찾을 수 없다옹! Netlify에 설정했는지 확인해달라냥!');
+    // storage = new Storage(); // 이 경우 "Could not load the default credentials" 에러가 발생한다냥.
+    throw new Error('서비스 계정 키 환경 변수가 설정되지 않았다옹! Netlify 설정을 확인해달라옹!');
+}
 
 // Busboy로 multipart/form-data 파싱하는 헬퍼 함수다옹
-// Netlify는 event.body를 base64로 줄 수 있어서 isBase64Encoded를 확인해야 한다옹
 const parseMultipartForm = (event) => {
     return new Promise((resolve, reject) => {
         const busboy = Busboy({
             headers: {
+                // 헤더 이름은 대소문자를 가릴 수 있으니 둘 다 확인한다옹!
                 'content-type': event.headers['content-type'] || event.headers['Content-Type']
             }
         });
@@ -24,14 +42,15 @@ const parseMultipartForm = (event) => {
         let fileMimeType = null;
         let originalFileName = null;
 
-        busboy.on('file', (fieldname, file, Kiko) => { // Kiko 대신 filename, encoding, mimetype 객체가 들어온다냥!
-            originalFileName = Kiko.filename;
-            fileMimeType = Kiko.mimeType;
+        // busboy의 'file' 이벤트에서 세 번째 인자는 객체로 들어온다옹 (filename, encoding, mimetype 포함)
+        busboy.on('file', (fieldname, fileStream, fileInfo) => {
+            originalFileName = fileInfo.filename;
+            fileMimeType = fileInfo.mimeType;
             const buffers = [];
-            file.on('data', (data) => {
+            fileStream.on('data', (data) => {
                 buffers.push(data);
             });
-            file.on('end', () => {
+            fileStream.on('end', () => {
                 fileData = Buffer.concat(buffers);
             });
         });
@@ -44,11 +63,19 @@ const parseMultipartForm = (event) => {
             resolve({ ...fields, fileData, originalFileName, fileMimeType });
         });
 
-        busboy.on('error', err => reject(err) );
+        busboy.on('error', err => {
+            console.error('Busboy 파싱 중 에러 발생이다옹!', err);
+            reject(err);
+        });
 
         // event.body가 base64로 인코딩 되어 있는지 확인!
         const encoding = event.isBase64Encoded ? 'base64' : 'binary';
-        busboy.end(Buffer.from(event.body, encoding));
+        // event.body가 undefined나 null이 아닌지 확인 후 Buffer.from을 사용한다옹.
+        if (event.body) {
+            busboy.end(Buffer.from(event.body, encoding));
+        } else {
+            reject(new Error('요청 body가 비어있다옹! 파일이 제대로 전달되지 않은 것 같다냥.'));
+        }
     });
 };
 
@@ -58,53 +85,59 @@ exports.handler = async (event, context) => {
         return { statusCode: 405, body: JSON.stringify({ message: 'POST 요청만 받는다냥!' }) };
     }
 
+    // storage 객체가 성공적으로 초기화되었는지 한번 더 확인한다옹.
+    if (!storage) {
+        console.error('냐옹! Storage 객체가 초기화되지 않아서 파일 업로드를 진행할 수 없다옹!');
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: '서버 내부 설정 오류다옹. 관리자 고양이에게 문의해달라냥!' }),
+        };
+    }
+
     try {
-        // 1. 클라이언트가 보낸 FormData를 파싱한다옹 (파일과 다른 필드들 분리!)
         const { fileData, originalFileName, fileMimeType, title, category } = await parseMultipartForm(event);
 
         if (!fileData) {
             return { statusCode: 400, body: JSON.stringify({ message: '이미지 파일이 없다옹! 다시 확인해달라냥!' }) };
         }
 
-        // 2. Google Cloud Storage에 업로드할 파일 이름과 경로 설정!
-        //    겹치지 않도록 현재 시간과 원래 파일 이름을 조합하는 게 좋다옹.
-        const gcsFileName = `gallery/<span class="math-inline">\{Date\.now\(\)\}\-</span>{originalFileName}`;
+        // 혹시 originalFileName이 undefined일 경우를 대비해서 기본 파일 이름을 만들어준다옹.
+        const safeOriginalFileName = originalFileName || 'unknown-file';
+        const gcsFileName = `gallery/${Date.now()}-${safeOriginalFileName.replace(/\s+/g, '_')}`; // 공백을 밑줄로 변경
         const file = storage.bucket(BUCKET_NAME).file(gcsFileName);
 
-        // 3. 파일 스트림을 사용해서 GCS로 업로드!
         await file.save(fileData, {
-            metadata: { contentType: fileMimeType }, // 파일 타입 지정!
-            // public: true, // 이렇게 하면 바로 공개 URL이 생성될 수 있지만, 권한 설정을 잘 해둬야 한다냥.
-                        // 또는 아래처럼 setPublic을 나중에 호출할 수도 있다옹.
+            metadata: { contentType: fileMimeType || 'application/octet-stream' }, // MIME 타입이 없으면 기본값 사용
         });
 
-        // (선택 사항) 파일을 공개로 설정해서 누구나 볼 수 있게 한다옹.
-        // 버킷 권한 설정에서 allUsers에게 '스토리지 객체 뷰어'를 줬다면 이게 필요하다옹.
-        // 또는 버킷 자체가 균일하게 공개되어 있다면 이 과정이 필요 없을 수도 있다옹.
         await file.makePublic();
 
+        const publicUrl = `https://storage.googleapis.com/${BUCKET_NAME}/${gcsFileName}`;
 
-        // 4. 업로드된 파일의 공개 URL을 만든다옹.
-        const publicUrl = `https://storage.googleapis.com/<span class="math-inline">\{BUCKET\_NAME\}/</span>{gcsFileName}`;
-
-        // (중요!) 여기서 사진 정보를 데이터베이스에 저장해야 한다옹!
-        // 예를 들어, publicUrl, title, category, gcsFileName 등을 DB에 저장!
-        // 지금은 그냥 클라이언트에게 URL만 넘겨주겠다옹.
+        console.log(`야옹! 파일 업로드 성공! ${publicUrl}`);
 
         return {
             statusCode: 200,
             body: JSON.stringify({
                 message: '파일 업로드 성공이다옹! 냐항!',
                 publicUrl: publicUrl,
-                fileNameInGCS: gcsFileName // 나중에 삭제하거나 관리할 때 필요할 수 있다냥.
+                fileNameInGCS: gcsFileName
             }),
         };
 
     } catch (error) {
-        console.error('Netlify Function에서 파일 업로드 중 심각한 에러 발생이다옹:', error);
+        // 에러 객체와 메시지를 더 자세히 로깅한다옹.
+        console.error('Netlify Function에서 파일 업로드 중 심각한 에러 발생이다옹! 냐아아앙!', error);
+        let errorMessage = '서버에서 야옹... 알 수 없는 문제가 생겼다옹.';
+        if (error instanceof Error) { // error가 Error 객체인지 확인
+            errorMessage = `서버에서 야옹... 문제가 생겼다옹: ${error.message}`;
+        } else if (typeof error === 'string') {
+            errorMessage = `서버에서 야옹... 문제가 생겼다옹: ${error}`;
+        }
+
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: `서버에서 야옹... 문제가 생겼다옹. ${error.message || ''}` }),
+            body: JSON.stringify({ message: errorMessage }),
         };
     }
 };
