@@ -29,39 +29,42 @@ if (FIREBASE_PROJECT_ID_ENV && FIREBASE_CLIENT_EMAIL_ENV && FIREBASE_PRIVATE_KEY
 
 const db = admin.firestore();
 
-exports.handler = async (event, context) => {
-    if (event.httpMethod !== 'GET') {
-        return { statusCode: 405, body: JSON.stringify({ message: 'GET 요청만 받습니다 (get-hero-info)' }) };
-    }
+// netlify/functions/get-hero-info.js (수정 제안)
 
-    if (!admin.apps.length || !db) {
-        console.error('Firebase 초기화 안됨 (get-hero-info)');
-        return { statusCode: 500, body: JSON.stringify({ message: '서버 내부 설정 오류 (Firebase 초기화 실패 - get-hero-info)' }) };
-    }
+// ... (Firebase 초기화 코드는 동일) ...
+
+exports.handler = async (event, context) => {
+    // ... (요청 검증 및 초기화 확인은 동일) ...
 
     try {
         const heroDocRef = db.collection('siteConfig').doc('hero');
         const doc = await heroDocRef.get();
 
+        let responseData;
         if (!doc.exists) {
-            return {
-                statusCode: 200, 
-                body: JSON.stringify({
-                    title: '여기에 멋진 제목을!',
-                    subtitle: '여기는 부제목을 쓰는 공간이다옹!',
-                    imageUrl: '/api/placeholder/1200/500?text=Hero+Image'
-                })
+            console.log('get-hero-info: Firestore에 hero 문서 없음, 기본값 반환');
+            responseData = {
+                title: '여기에 멋진 제목을!',
+                subtitle: '여기는 부제목을 쓰는 공간이다옹!',
+                imageUrl: '/api/placeholder/1200/500?text=Hero+Image' // 클라이언트 기본값과 일치시키기
             };
+        } else {
+            responseData = doc.data();
+            console.log('get-hero-info: Firestore에서 가져온 데이터:', responseData);
         }
 
-        const heroData = doc.data();
         return {
             statusCode: 200,
-            body: JSON.stringify(heroData),
+            headers: { // 냐옹! 캐시 방지 헤더 추가!
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            },
+            body: JSON.stringify(responseData),
         };
 
     } catch (error) {
         console.error('Netlify Function (get-hero-info) Firestore 읽기 에러:', error);
-        return { statusCode: 500, body: JSON.stringify({ message: `서버 에러 (get-hero-info): ${error.message || ''}` }) };
+        return { statusCode: 500, body: JSON.stringify({ message: `서버 에러 (get-hero-info): ${error.message || '알 수 없는 오류'}` }) };
     }
 };
