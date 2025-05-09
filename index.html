@@ -615,15 +615,31 @@
             localStorage.setItem('heroInfo', JSON.stringify(heroInfo));
         }
         
-        // 초기화 함수다냥!
-        function init() {
-            loadDataFromLocalStorage(); // 데이터 먼저 불러오고!
-            updateHeroSection(); // 히어로 섹션 업데이트!
-            populateAllCategoryDropdowns(); // 모든 카테고리 드롭다운 채우기!
-            renderGallery();
-            checkLogin(); // 로그인 상태 확인하고 관리자 패널 준비!
-            setupEventListeners();
+async function init() { // async로 변경!
+    // loadDataFromLocalStorage(); // 이 줄은 이제 안녕이다옹!
+
+    // Firestore에서 히어로 정보 가져오기!
+    try {
+        const response = await fetch('/.netlify/functions/get-hero-info');
+        if (response.ok) {
+            const data = await response.json();
+            heroInfo.title = data.title;
+            heroInfo.subtitle = data.subtitle;
+            heroInfo.imageUrl = data.imageUrl;
+        } else {
+            console.error('히어로 정보 가져오기 실패:', await response.text());
+            // 기본값 유지 또는 에러 처리
         }
+    } catch (e) {
+        console.error('히어로 정보 가져오는 중 네트워크 에러:', e);
+    }
+
+    updateHeroSection(); // 가져온 정보로 히어로 섹션 업데이트!
+    populateAllCategoryDropdowns();
+    renderGallery(); // 갤러리 로드 (이것도 나중엔 DB에서!)
+    checkLogin();
+    setupEventListeners();
+}
 
         // === 히어로 섹션 업데이트 함수다냥! ===
         function updateHeroSection() {
@@ -693,13 +709,32 @@ async function handleHeroImageUpload() { // async 키워드 추가!
         }
 
         // === 히어로 문구 저장 함수 (관리자) ===
-        function saveHeroText() {
-            heroInfo.title = heroTitleInputAdmin.value.trim();
-            heroInfo.subtitle = heroSubtitleInputAdmin.value.trim();
+async function saveHeroText() { // async로 변경!
+    const titleToSave = heroTitleInputAdmin.value.trim();
+    const subtitleToSave = heroSubtitleInputAdmin.value.trim();
+
+    try {
+        const response = await fetch('/.netlify/functions/update-hero-text', { // 새 함수 호출!
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: titleToSave, subtitle: subtitleToSave })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            heroInfo.title = result.data.title; // 서버에서 업데이트된 데이터로 갱신
+            heroInfo.subtitle = result.data.subtitle;
             updateHeroSection();
-            saveDataToLocalStorage();
-            alert('히어로 문구가 저장되었다옹!');
+            // saveDataToLocalStorage(); // 이제 localStorage 안녕!
+            alert('히어로 문구가 Firestore에 저장되었다옹!');
+        } else {
+            throw new Error(await response.text());
         }
+    } catch (error) {
+        console.error('히어로 문구 저장 실패:', error);
+        alert('냐옹... 히어로 문구 저장에 실패했다옹.');
+    }
+}
 
         // === 히어로 문구 전체 삭제 함수 (관리자) ===
         function deleteHeroText() {
