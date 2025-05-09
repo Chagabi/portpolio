@@ -1,28 +1,42 @@
-// netlify/functions/get-hero-info.js
+// netlify/functions/get-hero-info.js (개별 환경 변수 사용 버전)
 
 const admin = require('firebase-admin');
 
-// --- Firebase Admin SDK 초기화 (위의 함수와 동일하게!) ---
-const FIREBASE_ADMIN_CONFIG = process.env.FIREBASE_ADMIN_SDK_CONFIG_JSON;
-if (FIREBASE_ADMIN_CONFIG) {
+const FIREBASE_PROJECT_ID_ENV = process.env.FIREBASE_PROJECT_ID;
+const FIREBASE_CLIENT_EMAIL_ENV = process.env.FIREBASE_CLIENT_EMAIL;
+const FIREBASE_PRIVATE_KEY_ENV = process.env.FIREBASE_PRIVATE_KEY;
+
+if (FIREBASE_PROJECT_ID_ENV && FIREBASE_CLIENT_EMAIL_ENV && FIREBASE_PRIVATE_KEY_ENV) {
     try {
-        const serviceAccount = JSON.parse(FIREBASE_ADMIN_CONFIG);
+        const firebaseServiceAccount = {
+            projectId: FIREBASE_PROJECT_ID_ENV,
+            clientEmail: FIREBASE_CLIENT_EMAIL_ENV,
+            privateKey: FIREBASE_PRIVATE_KEY_ENV.replace(/\\n/g, '\n')
+        };
         if (admin.apps.length === 0) {
-            admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-            console.log('야옹! (get-hero) Firebase Admin SDK 초기화 성공!');
+            admin.initializeApp({
+                credential: admin.credential.cert(firebaseServiceAccount)
+            });
         }
-    } catch (e) { console.error('냐옹... (get-hero) Firebase 초기화 실패!', e); }
-} else { console.error('냐아아앙!!! (get-hero) FIREBASE_ADMIN_SDK_CONFIG_JSON 환경 변수 없음!'); }
+    } catch (e) {
+        console.error('Firebase (get-hero-info) 개별 환경 변수 에러 또는 초기화 실패:', e);
+        throw new Error('Firebase (get-hero-info) 서비스 계정 키 설정 또는 파싱 실패!');
+    }
+} else {
+    console.error('Firebase (get-hero-info) 개별 환경 변수 (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY) 중 일부 또는 전체가 없음!');
+    throw new Error('Firebase (get-hero-info) 서비스 계정 환경 변수가 설정되지 않았음!');
+}
 
 const db = admin.firestore();
 
 exports.handler = async (event, context) => {
     if (event.httpMethod !== 'GET') {
-        return { statusCode: 405, body: JSON.stringify({ message: 'GET 요청만 받는다냥!' }) };
+        return { statusCode: 405, body: JSON.stringify({ message: 'GET 요청만 받습니다 (get-hero-info)' }) };
     }
 
-    if (!admin.apps.length) { // Firebase 초기화 안됐으면 에러
-        return { statusCode: 500, body: JSON.stringify({ message: '서버 내부 설정 오류 (Firebase 초기화 안됨)' }) };
+    if (!admin.apps.length || !db) {
+        console.error('Firebase 초기화 안됨 (get-hero-info)');
+        return { statusCode: 500, body: JSON.stringify({ message: '서버 내부 설정 오류 (Firebase 초기화 실패 - get-hero-info)' }) };
     }
 
     try {
@@ -30,27 +44,24 @@ exports.handler = async (event, context) => {
         const doc = await heroDocRef.get();
 
         if (!doc.exists) {
-            console.log('야옹... Firestore에 히어로 정보가 아직 없다옹!');
-            // 기본값을 반환하거나, 클라이언트에서 처리하도록 null 또는 빈 객체 반환
             return {
-                statusCode: 200, // 또는 404 Not Found
+                statusCode: 200, 
                 body: JSON.stringify({
                     title: '여기에 멋진 제목을!',
                     subtitle: '여기는 부제목을 쓰는 공간이다옹!',
-                    imageUrl: '/api/placeholder/1200/500?text=Hero+Image' // 기본 플레이스홀더
+                    imageUrl: '/api/placeholder/1200/500?text=Hero+Image'
                 })
             };
         }
 
         const heroData = doc.data();
-        console.log('야옹! Firestore에서 히어로 정보 가져오기 성공!');
         return {
             statusCode: 200,
             body: JSON.stringify(heroData),
         };
 
     } catch (error) {
-        console.error('Netlify Function (get-hero) Firestore 읽기 에러:', error);
-        return { statusCode: 500, body: JSON.stringify({ message: `서버 에러 (get-hero): ${error.message || ''}` }) };
+        console.error('Netlify Function (get-hero-info) Firestore 읽기 에러:', error);
+        return { statusCode: 500, body: JSON.stringify({ message: `서버 에러 (get-hero-info): ${error.message || ''}` }) };
     }
 };
