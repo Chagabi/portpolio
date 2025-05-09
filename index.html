@@ -1,177 +1,6 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UUcats Repository</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        body { background-color: #f5f5f5; color: #333; }
-        header { background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px 0; position: sticky; top: 0; z-index: 100; }
-        .container { width: 90%; max-width: 1200px; margin: 0 auto; }
-        .header-content { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 24px; font-weight: bold; color: #333; text-decoration: none; }
-        .nav-links { display: flex; gap: 20px; }
-        .nav-links a { text-decoration: none; color: #333; transition: color 0.3s; }
-        .nav-links a:hover { color: #4285f4; }
-        .social-link { display: flex; align-items: center; gap: 5px; }
-        .social-link svg { width: 20px; height: 20px; }
-        .hero-section { width: 100%; height: 800px; overflow: hidden; position: relative; text-align: center; background-color: #e0e0e0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
-        #hero-image-display { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1; }
-        .hero-text-container { position: relative; z-index: 2; color: white; padding: 20px; background-color: rgba(0, 0, 0, 0.5); width: 100%; text-align: center; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
-        #hero-title-display { font-size: 2.5em; font-weight: bold; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); }
-        #hero-subtitle-display { font-size: 1.2em; text-shadow: 1px 1px 3px rgba(0,0,0,0.7); }
-        main { padding: 40px 0; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
-        .gallery-item { position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-color: #fff; cursor: pointer; }
-        .gallery-item img { width: 100%; height: 250px; object-fit: cover; transition: transform 0.3s; }
-        .gallery-item:hover img { transform: scale(1.05); }
-        .photo-title { padding: 10px; text-align: center; font-weight: 500; color: #333; position: relative; z-index: 10; background-color: #fff; }
-        .modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; flex-direction: column; padding-bottom: 50px; }
-        .modal-content { max-width: 85%; max-height: 75%; margin-bottom: 15px; }
-        .close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
-        .modal-title { color: #fff; text-align: center; font-size: 18px; width: 100%; padding: 10px 20px; background-color: rgba(0, 0, 0, 0.5); border-radius: 5px; max-width: 85%; }
-        .nav-btn { position: absolute; top: 40%; transform: translateY(-50%); color: white; font-size: 30px; font-weight: bold; cursor: pointer; background-color: rgba(0, 0, 0, 0.5); width: 50px; height: 50px; line-height: 50px; text-align: center; border-radius: 50%; transition: background-color 0.3s; z-index: 20; }
-        .nav-btn:hover { background-color: rgba(0, 0, 0, 0.8); }
-        .prev-btn { left: 20px; }
-        .next-btn { right: 20px; }
-        .login-modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-        .login-form { background-color: #fff; padding: 30px; border-radius: 8px; width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .login-form h2 { margin-bottom: 20px; text-align: center; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        .btn { display: inline-block; padding: 10px 20px; background-color: #4285f4; color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; margin-top: 5px; }
-        .btn:hover { background-color: #3367d6; }
-        .btn-block { display: block; width: 100%; }
-        .btn-danger { background-color: #ff4444; }
-        .btn-danger:hover { background-color: #cc0000; }
-        .admin-panel { display: none; background-color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .admin-panel h2, .admin-panel h3 { margin-bottom: 15px; margin-top: 20px; }
-        .admin-panel h2:first-child { margin-top: 0; }
-        .upload-form, .hero-text-form, .category-form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
-        .file-input, .text-input { flex: 1; min-width: 200px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-        .gallery-admin { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .gallery-admin-item { position: relative; }
-        .gallery-admin-item img { width: 100%; height: 150px; object-fit: cover; border-radius: 4px; }
-        .delete-btn { position: absolute; top: 5px; right: 5px; background-color: #ff4444; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; line-height: 25px; text-align: center; cursor: pointer; }
-        .logout-btn { background-color: #f44336; margin-top: 15px; }
-        .logout-btn:hover { background-color: #d32f2f; }
-        .category-list { list-style: none; padding: 0; margin-bottom: 15px; }
-        .category-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px; border: 1px solid #eee; margin-bottom: 5px; border-radius: 4px; }
-        .category-list li button { padding: 3px 8px; font-size: 12px; }
-        @media (max-width: 768px) {
-            .gallery { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
-            .header-content { flex-direction: column; gap: 15px; }
-            .nav-links { flex-wrap: wrap; justify-content: center; }
-            .category-dropdown { font-size: 14px; padding: 10px 15px; }
-            #hero-title-display { font-size: 1.8em; }
-            #hero-subtitle-display { font-size: 1em; }
-            .hero-text-container { padding: 15px; }
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container header-content">
-            <a href="#" class="logo">UUcats Repository</a>
-            <div class="nav-links">
-                <a href="#">홈</a>
-                <a href="#" class="social-link" id="twitter-link">
-                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    X (트위터)
-                </a>
-                <a href="#" id="login-button">관리자</a>
-            </div>
-        </div>
-    </header>
-
-    <section class="hero-section">
-        <img id="hero-image-display" src="/api/placeholder/1200/500?text=Loading..." alt="히어로 이미지">
-        <div class="hero-text-container">
-            <h1 id="hero-title-display">로딩 중이다옹...</h1>
-            <p id="hero-subtitle-display">잠시만 기다려달라냥!</p>
-        </div>
-    </section>
-    <main class="container">
-        <div class="admin-panel" id="admin-panel">
-            <h2>관리자 패널</h2>
-            <h3>히어로 이미지 관리</h3>
-            <div class="upload-form">
-                <input type="file" class="file-input" id="hero-image-upload-input" accept="image/*">
-                <button class="btn" id="hero-image-upload-btn">히어로 이미지 업로드</button>
-            </div>
-            <div id="current-hero-image-admin" style="margin-top:10px; margin-bottom: 20px;">
-                <p><strong>현재 히어로 이미지:</strong></p>
-                <img id="admin-hero-preview" src="/api/placeholder/400/150?text=Loading..." alt="현재 히어로 이미지 미리보기" style="max-width: 400px; max-height: 150px; object-fit: cover; border-radius: 4px; margin-top: 5px;">
-                <button class="btn btn-danger" id="hero-image-delete-btn" style="display: block; margin-top: 10px;">히어로 이미지 삭제 (기본값으로)</button>
-            </div>
-            <h3>히어로 문구 관리</h3>
-            <div class="hero-text-form">
-                <input type="text" id="hero-title-input" class="text-input" placeholder="큰 제목 입력">
-                <input type="text" id="hero-subtitle-input" class="text-input" placeholder="작은 부제목 입력">
-                <button class="btn" id="hero-text-save-btn">문구 저장</button>
-                <button class="btn btn-danger" id="hero-text-delete-btn">문구 전체 삭제 (기본값으로)</button>
-            </div>
-            <h3>카테고리 관리</h3>
-            <div class="category-form">
-                <input type="text" id="new-category-input" class="text-input" placeholder="새 카테고리 이름">
-                <button class="btn" id="add-category-btn">카테고리 추가</button>
-            </div>
-            <ul id="category-list-admin" class="category-list"></ul>
-            <h3>갤러리 사진 업로드</h3>
-            <div class="upload-form">
-                <input type="file" class="file-input" id="image-upload" accept="image/*">
-                <input type="text" placeholder="사진 제목" id="image-title" class="text-input">
-                <select id="image-category-upload" class="text-input" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <option value="">카테고리 선택</option>
-                </select>
-                <button class="btn" id="upload-btn">사진 업로드</button>
-            </div>
-            <div class="gallery-admin" id="gallery-admin"></div>
-            <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
-        </div>
-        
-        <div class="category-dropdown-container">
-            <select id="category-dropdown" class="category-dropdown" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #ddd;">
-                <option value="전체">모든 카테고리</option>
-            </select>
-        </div>
-        
-        <div class="gallery" id="gallery"></div>
-    </main>
-    
-    <div class="modal" id="image-modal">
-        <span class="close" id="close-modal">&times;</span>
-        <span class="nav-btn prev-btn" id="prev-btn">&#10094;</span>
-        <span class="nav-btn next-btn" id="next-btn">&#10095;</span>
-        <img class="modal-content" id="modal-image">
-        <div class="modal-title" id="modal-title"></div>
-    </div>
-    
-    <div class="login-modal" id="login-modal">
-        <div class="login-form">
-            <h2>관리자 로그인</h2>
-            <div class="form-group">
-                <label for="username">아이디</label>
-                <input type="text" id="username" name="username">
-            </div>
-            <div class="form-group">
-                <label for="password">비밀번호</label>
-                <input type="password" id="password" name="password">
-            </div>
-            <button class="btn btn-block" id="login-submit">로그인</button>
-        </div>
-    </div>
-
-    <script>
+<script>
         let photos = [];
-        let categories = ['풍경', '인물', '건축', '동물', '거리'];
+        let categories = ['풍경', '인물', '건축', '동물', '거리']; // 기본 카테고리
         let heroInfo = {
             imageUrl: '/api/placeholder/1200/500?text=Loading...',
             title: '로딩 중이다옹...',
@@ -220,8 +49,19 @@
 
         async function init() {
             const storedCategories = localStorage.getItem('categories');
-            if (storedCategories) categories = JSON.parse(storedCategories);
-            else categories = ['풍경', '인물', '건축', '동물', '거리'];
+            if (storedCategories) {
+                try {
+                    categories = JSON.parse(storedCategories);
+                } catch (e) {
+                    console.error("로컬 스토리지에서 카테고리 파싱 실패옹:", e);
+                    categories = ['풍경', '인물', '건축', '동물', '거리']; // 기본값으로 복원
+                    localStorage.setItem('categories', JSON.stringify(categories)); // 기본값으로 다시 저장
+                }
+            } else {
+                categories = ['풍경', '인물', '건축', '동물', '거리']; // 기본값 설정
+                localStorage.setItem('categories', JSON.stringify(categories)); // 기본값 로컬 스토리지에 저장
+            }
+
 
             try {
                 const heroResponse = await fetch('/.netlify/functions/get-hero-info');
@@ -254,9 +94,9 @@
                 photos = [];
             }
             
-            populateAllCategoryDropdowns();
-            renderGallery();
-            checkLogin();
+            populateAllCategoryDropdowns(); // 카테고리 먼저 채우고
+            renderGallery(); // 그 다음 갤러리 렌더링
+            checkLogin(); // 로그인 상태 확인 및 어드민 UI 처리
             setupEventListeners();
         }
 
@@ -268,8 +108,9 @@
 
         function updateHeroSection() {
             heroImageDisplay.src = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
-            heroTitleDisplay.textContent = heroInfo.title || '';
-            heroSubtitleDisplay.textContent = heroInfo.subtitle || '';
+            heroTitleDisplay.textContent = heroInfo.title || ''; // textContent로 변경
+            heroSubtitleDisplay.textContent = heroInfo.subtitle || ''; // textContent로 변경
+
             if (adminPanel.style.display === 'block') {
                 adminHeroPreview.src = heroInfo.imageUrl || '/api/placeholder/400/150?text=No+Image';
                 heroTitleInputAdmin.value = heroInfo.title || '';
@@ -280,10 +121,15 @@
         async function handleHeroImageUpload() {
             const file = heroImageUploadInputAdmin.files[0];
             if (!file) { alert('히어로 이미지를 선택해달라옹!'); return; }
+
             const formData = new FormData();
             formData.append('imageFile', file);
+            // 제목과 부제목은 서버에서 현재 값을 읽도록 클라이언트에서는 보내지 않거나,
+            // 만약 현재 입력된 값으로 업데이트하고 싶다면 함께 보낼 수 있다옹.
+            // 여기서는 현재 입력 필드의 값 또는 기존 heroInfo 값을 사용한다옹.
             formData.append('heroTitle', heroTitleInputAdmin.value.trim() || heroInfo.title);
             formData.append('heroSubtitle', heroSubtitleInputAdmin.value.trim() || heroInfo.subtitle);
+
             try {
                 const response = await fetch('/.netlify/functions/upload-hero-image', { method: 'POST', body: formData });
                 if (!response.ok) {
@@ -291,36 +137,49 @@
                     throw new Error(errorResult.message || 'Netlify Function에서 히어로 이미지 업로드 실패!');
                 }
                 const result = await response.json();
-                heroInfo.imageUrl = result.publicUrl;
-                // Firestore에 제목/부제목도 같이 저장했으므로, 클라이언트 heroInfo도 업데이트 (선택적)
+                heroInfo.imageUrl = result.publicUrl; 
+                // 서버에서 제목/부제목도 같이 업데이트 했다면, 그 값을 받아와서 heroInfo에 반영할 수 있다옹.
+                // 여기서는 업로드 시 사용된 값을 heroInfo에 반영한다옹.
                 heroInfo.title = heroTitleInputAdmin.value.trim() || heroInfo.title;
                 heroInfo.subtitle = heroSubtitleInputAdmin.value.trim() || heroInfo.subtitle;
+
                 updateHeroSection();
                 alert('히어로 이미지가 성공적으로 업로드 및 저장되었다옹!');
             } catch (error) {
                 console.error('히어로 이미지 업로드 중 에러:', error);
                 alert(`냐옹... 히어로 이미지 업로드 실패: ${error.message}`);
             } finally {
-                heroImageUploadInputAdmin.value = '';
+                heroImageUploadInputAdmin.value = ''; // 파일 입력 필드 초기화
             }
         }
 
         async function deleteHeroImage() {
-            if (confirm('정말로 히어로 이미지를 기본 이미지로 되돌릴거냥? (서버 파일은 삭제되지 않는다옹!)')) {
+            if (confirm('정말로 히어로 이미지를 기본 이미지로 되돌릴거냥?')) {
                 try {
+                    // 서버에 이미지 URL만 기본값으로 업데이트 요청 (제목/부제목은 현재 값 유지 또는 기본값으로)
                     const response = await fetch('/.netlify/functions/update-hero-text', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title: DEFAULT_HERO_TITLE, subtitle: DEFAULT_HERO_SUBTITLE, imageUrl: DEFAULT_HERO_IMAGE_URL })
+                        body: JSON.stringify({ 
+                            title: heroInfo.title, // 현재 제목 유지 또는 DEFAULT_HERO_TITLE
+                            subtitle: heroInfo.subtitle, // 현재 부제목 유지 또는 DEFAULT_HERO_SUBTITLE
+                            imageUrl: DEFAULT_HERO_IMAGE_URL 
+                        })
                     });
                     if(response.ok){
-                        setDefaultHeroInfo();
+                        heroInfo.imageUrl = DEFAULT_HERO_IMAGE_URL; // 클라이언트 heroInfo 업데이트
+                        // 필요하다면 title, subtitle도 기본값으로 설정
+                        // heroInfo.title = DEFAULT_HERO_TITLE;
+                        // heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
                         updateHeroSection();
-                        alert('히어로 정보가 기본값으로 초기화되었다옹!');
-                    } else { throw new Error(await response.text()); }
+                        alert('히어로 이미지가 기본값으로 변경되었다옹!');
+                    } else { 
+                        const errorText = await response.text();
+                        throw new Error(errorText || '히어로 이미지 기본값 변경 실패'); 
+                    }
                 } catch (error) {
-                    console.error('히어로 정보 기본값으로 변경 실패:', error);
-                    alert('냐옹... 히어로 정보 초기화에 실패했다옹.');
+                    console.error('히어로 이미지 기본값으로 변경 실패:', error);
+                    alert('냐옹... 히어로 이미지 초기화에 실패했다옹.');
                 }
             }
         }
@@ -328,21 +187,27 @@
         async function saveHeroText() {
             const titleToSave = heroTitleInputAdmin.value.trim();
             const subtitleToSave = heroSubtitleInputAdmin.value.trim();
+            // 이미지 URL은 현재 heroInfo의 것을 사용한다옹.
             const currentImageUrl = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
+
             try {
                 const response = await fetch('/.netlify/functions/update-hero-text', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title: titleToSave, subtitle: subtitleToSave, imageUrl: currentImageUrl })
                 });
+
                 if (response.ok) {
-                    const result = await response.json();
+                    const result = await response.json(); // 서버에서 반환된 데이터 사용
                     heroInfo.title = result.data.title;
                     heroInfo.subtitle = result.data.subtitle;
-                    heroInfo.imageUrl = result.data.imageUrl; // 서버에서 imageUrl도 반환하여 업데이트!
+                    heroInfo.imageUrl = result.data.imageUrl; // imageUrl도 서버 응답으로 업데이트
                     updateHeroSection();
                     alert('히어로 문구가 Firestore에 저장되었다옹!');
-                } else { throw new Error(await response.text()); }
+                } else { 
+                    const errorText = await response.text();
+                    throw new Error(errorText || '히어로 문구 저장 실패'); 
+                }
             } catch (error) {
                 console.error('히어로 문구 저장 실패:', error);
                 alert(`냐옹... 히어로 문구 저장에 실패했다옹: ${error.message}`);
@@ -352,17 +217,27 @@
         async function deleteHeroText() {
              if (confirm('정말로 히어로 문구를 기본값으로 되돌릴거냥?')) {
                 try {
+                     // 이미지 URL은 현재 heroInfo의 것을 사용한다옹.
+                    const currentImageUrl = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
                     const response = await fetch('/.netlify/functions/update-hero-text', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title: DEFAULT_HERO_TITLE, subtitle: DEFAULT_HERO_SUBTITLE, imageUrl: heroInfo.imageUrl })
+                        body: JSON.stringify({ 
+                            title: DEFAULT_HERO_TITLE, 
+                            subtitle: DEFAULT_HERO_SUBTITLE, 
+                            imageUrl: currentImageUrl // 현재 이미지 URL은 유지하면서 텍스트만 기본값으로
+                        })
                     });
                      if(response.ok){
                         heroInfo.title = DEFAULT_HERO_TITLE;
                         heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
+                        // heroInfo.imageUrl은 변경하지 않음 (텍스트만 삭제)
                         updateHeroSection();
                         alert('히어로 문구가 기본값으로 초기화되었다옹!');
-                    } else { throw new Error(await response.text()); }
+                    } else { 
+                        const errorText = await response.text();
+                        throw new Error(errorText || '히어로 문구 초기화 실패');
+                    }
                 } catch (error) {
                     console.error('히어로 문구 기본값으로 변경 실패:', error);
                     alert('냐옹... 히어로 문구 초기화에 실패했다옹.');
@@ -370,41 +245,62 @@
             }
         }
         
+        // 냐옹! 여기가 수정된 populateAllCategoryDropdowns 함수다옹!
         function populateAllCategoryDropdowns() {
-            const uniqueCategoriesFromPhotos = photos.length > 0 ? [...new Set(photos.map(p => p.category).filter(Boolean))].sort() : [];
-            let displayCategories = uniqueCategoriesFromPhotos.length > 0 ? uniqueCategoriesFromPhotos : categories;
+            // 사진에서 실제 사용된 카테고리 목록을 가져온다옹 (중복 제거 및 정렬)
+            const uniqueCategoriesFromPhotos = photos.length > 0 
+                ? [...new Set(photos.map(p => p.category).filter(cat => cat && cat.trim() !== ''))].sort() 
+                : [];
             
-            categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>';
+            // 로컬 스토리지나 기본 categories 배열과 병합 및 중복 제거하여 최종 카테고리 목록 생성
+            let displayCategories = [...new Set([...categories, ...uniqueCategoriesFromPhotos])].filter(cat => cat && cat.trim() !== '').sort();
+            if (displayCategories.length === 0 && categories.length > 0) { // 사진에 카테고리가 없지만 기본 카테고리는 있을 때
+                displayCategories = [...categories].sort();
+            } else if (displayCategories.length === 0 && categories.length === 0) { // 아무 카테고리도 없을 때 (사진도 없고, 기본도 없고)
+                // 필요하다면 여기에 기본 카테고리 몇 개를 다시 넣어줄 수도 있다옹.
+                // categories = ['풍경', '동물']; 
+                // displayCategories = [...categories];
+            }
+
+
+            // 메인 화면 카테고리 드롭다운 업데이트
+            categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>'; // 기본 '전체' 옵션
             displayCategories.forEach(category => {
                 const count = photos.filter(p => p.category === category).length;
                 const option = document.createElement('option');
                 option.value = category;
-                option.textContent = `<span class="math-inline">\{category\} \(</span>{count})`;
+                // 냐옹! 여기를 textContent로 바꾸고, 템플릿 리터럴을 간단하게 쓴다옹!
+                option.textContent = `${category} (${count})`; 
                 categoryDropdown.appendChild(option);
             });
-            categoryDropdown.value = currentCategoryFilter;
+            categoryDropdown.value = currentCategoryFilter; // 현재 필터 유지
 
-            imageCategoryUploadDropdown.innerHTML = '<option value="">카테고리 선택</option>';
+            // 관리자 패널의 사진 업로드용 카테고리 드롭다운 업데이트
+            imageCategoryUploadDropdown.innerHTML = '<option value="">카테고리 선택</option>'; // 기본 '선택' 옵션
             displayCategories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category;
-                option.textContent = category;
+                option.textContent = category; // 여기는 카테고리 이름만!
                 imageCategoryUploadDropdown.appendChild(option);
             });
 
+            // 관리자 패널의 카테고리 목록 (추가/삭제용) 업데이트
             if (adminPanel.style.display === 'block') {
                 renderAdminCategoryList(displayCategories);
             }
         }
 
-        function renderAdminCategoryList(cats = categories) {
+        function renderAdminCategoryList(cats = []) { // 기본값을 빈 배열로
             categoryListAdmin.innerHTML = '';
-            cats.forEach(category => {
+            // categories 변수 (로컬 스토리지에서 불러온 관리용 카테고리 목록)를 기준으로 표시
+            const adminDisplayCategories = [...new Set([...categories, ...cats])].filter(cat => cat && cat.trim() !== '').sort();
+
+            adminDisplayCategories.forEach(category => {
                 const listItem = document.createElement('li');
                 listItem.textContent = category;
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = '삭제';
-                deleteButton.className = 'btn btn-danger btn-sm';
+                deleteButton.className = 'btn btn-danger btn-sm'; // 작은 버튼 스타일
                 deleteButton.onclick = () => handleDeleteCategory(category);
                 listItem.appendChild(deleteButton);
                 categoryListAdmin.appendChild(listItem);
@@ -415,69 +311,137 @@
             const newCategoryName = newCategoryInputAdmin.value.trim();
             if (!newCategoryName) { alert('카테고리 이름을 입력해달라옹!'); return; }
             if (categories.includes(newCategoryName)) { alert('이미 있는 카테고리다옹!'); return; }
-            if (newCategoryName.toLowerCase() === '전체') { alert("'전체'는 사용 불가!"); return; }
+            if (newCategoryName.toLowerCase() === '전체') { alert("'전체'는 카테고리 이름으로 사용할 수 없다옹!"); return; }
+            
             categories.push(newCategoryName);
-            categories.sort();
-            populateAllCategoryDropdowns();
-            localStorage.setItem('categories', JSON.stringify(categories));
-            newCategoryInputAdmin.value = '';
+            categories.sort(); // 추가 후 정렬
+            localStorage.setItem('categories', JSON.stringify(categories)); // 로컬 스토리지에 저장
+            
+            populateAllCategoryDropdowns(); // 모든 드롭다운 및 목록 업데이트
+            newCategoryInputAdmin.value = ''; // 입력 필드 비우기
             alert(`'${newCategoryName}' 카테고리가 추가되었다옹!`);
         }
 
-        function handleDeleteCategory(categoryNameToDelete) {
-            if (confirm(`정말로 '${categoryNameToDelete}' 카테고리를 삭제할거냥?`)) {
+        async function handleDeleteCategory(categoryNameToDelete) {
+            if (confirm(`정말로 '${categoryNameToDelete}' 카테고리를 목록에서 삭제할거냥?\n(이 카테고리로 설정된 사진들은 카테고리가 없는 상태가 된다옹.)`)) {
                 const photosWithThisCategory = photos.filter(p => p.category === categoryNameToDelete);
+                
                 if (photosWithThisCategory.length > 0) {
-                    if(!confirm(`'${categoryNameToDelete}' 카테고리 사진 ${photosWithThisCategory.length}장 있음. 그래도 삭제? (사진 카테고리 빈 값됨)`)){
-                        return;
+                    if(!confirm(`'${categoryNameToDelete}' 카테고리를 사용하는 사진이 ${photosWithThisCategory.length}장 있다옹. 정말 삭제할거냥?\n삭제하면 해당 사진들의 카테고리 정보가 빈 값으로 변경된다옹.`)){
+                        return; // 사용자가 취소하면 여기서 중단
                     }
-                    photos.forEach(async photo => { 
-                        if (photo.category === categoryNameToDelete) { 
-                            // Firestore에서 해당 사진 문서의 category 필드를 업데이트하는 Netlify Function 호출 필요!
-                            // 예: await fetch('/.netlify/functions/update-photo-category', { method: 'POST', body: JSON.stringify({ photoId: photo.id, newCategory: '' }) });
-                            photo.category = ''; // 클라이언트에서도 일단 반영
-                        } 
-                    });
+                    // 서버에 각 사진의 카테고리를 빈 값으로 업데이트하는 로직 필요!
+                    // 지금은 클라이언트에서만 임시로 변경하고, 서버 새로고침 시 다시 원래대로 돌아올 수 있다옹.
+                    // 이상적으로는 아래 로직을 서버 함수 호출로 대체해야 한다옹.
+                    for (const photo of photosWithThisCategory) {
+                        console.log(`서버에 photoId: ${photo.id}의 카테고리를 ''로 업데이트 요청해야 한다옹!`);
+                        // 예시: await fetch('/.netlify/functions/update-photo-category', { 
+                        // method: 'POST', 
+                        // body: JSON.stringify({ photoId: photo.id, newCategory: '' }) 
+                        // });
+                        photo.category = ''; // 클라이언트 데이터 우선 변경
+                    }
                 }
+
                 categories = categories.filter(cat => cat !== categoryNameToDelete);
-                populateAllCategoryDropdowns();
-                localStorage.setItem('categories', JSON.stringify(categories));
-                refreshPhotosFromServer(); // 사진 카테고리 변경 후 전체 목록 새로고침
-                alert(`'${categoryNameToDelete}' 카테고리가 삭제되었다옹!`);
+                localStorage.setItem('categories', JSON.stringify(categories)); // 변경된 카테고리 목록 저장
+                
+                // 카테고리가 변경되었으므로, 전체 사진 목록을 서버에서 다시 가져와서
+                // 사진 객체들의 카테고리 정보도 최신화하고 UI를 다시 그린다옹.
+                await refreshPhotosFromServer(); 
+                // populateAllCategoryDropdowns(); // refreshPhotosFromServer 안에 이미 포함되어 있다옹.
+                
+                alert(`'${categoryNameToDelete}' 카테고리가 삭제되었다옹! 해당 카테고리를 가진 사진들의 카테고리가 초기화되었다옹.`);
             }
         }
         
+        // 냐옹! 여기가 수정된 renderGallery 함수다옹!
         function renderGallery() {
             gallery.innerHTML = '';
             const filteredPhotos = currentCategoryFilter === '전체' ? photos : photos.filter(photo => photo.category === currentCategoryFilter);
+            
             if (filteredPhotos.length === 0) {
                 const emptyMessage = document.createElement('div');
-                emptyMessage.style.textAlign = 'center'; emptyMessage.style.padding = '40px'; emptyMessage.style.width = '100%'; emptyMessage.style.color = '#666';
-                emptyMessage.innerHTML = `<svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;"><path fill="currentColor" d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" /></svg><p style="font-size: 16px; margin-bottom: 5px;">'${currentCategoryFilter}' 카테고리에 사진이 없다옹.</p><p style="font-size: 14px; opacity: 0.7;">다른 카테고리를 선택하거나 새 사진을 업로드해보라냥.</p>`;
+                emptyMessage.style.textAlign = 'center'; 
+                emptyMessage.style.padding = '40px'; 
+                emptyMessage.style.width = '100%'; 
+                emptyMessage.style.color = '#666';
+                let messageText = `'${currentCategoryFilter}' 카테고리에 사진이 없다옹.`;
+                if (currentCategoryFilter === '전체' && photos.length === 0) {
+                    messageText = '아직 업로드된 사진이 하나도 없다옹! 관리자 모드에서 새 사진을 올려보라냥!';
+                } else if (currentCategoryFilter === '전체' && photos.length > 0) {
+                     // 이 경우는 filteredPhotos.length가 0이 될 수 없으므로, 실제로는 여기로 오지 않는다옹.
+                    messageText = '사진은 있지만 알 수 없는 이유로 표시되지 않는다옹. 새로고침 해보라냥!';
+                }
+
+                emptyMessage.innerHTML = `<svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;"><path fill="currentColor" d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" /></svg><p style="font-size: 16px; margin-bottom: 5px;">${messageText}</p><p style="font-size: 14px; opacity: 0.7;">다른 카테고리를 선택하거나 새 사진을 업로드해보라냥.</p>`;
                 gallery.appendChild(emptyMessage);
                 return;
             }
+
             filteredPhotos.forEach((photo, index) => {
-                const item = document.createElement('div'); item.className = 'gallery-item'; item.style.opacity = '0'; item.style.transform = 'translateY(20px)'; item.style.transition = 'opacity 0.5s ease, transform 0.5s ease'; item.style.transitionDelay = `${index * 0.05}s`;
-                item.innerHTML = `<img src="<span class="math-inline">\{photo\.imageUrl\}" alt\="</span>{photo.title}"><div class="photo-title">${photo.title}</div>`;
+                const item = document.createElement('div'); 
+                item.className = 'gallery-item'; 
+                item.style.opacity = '0'; 
+                item.style.transform = 'translateY(20px)'; 
+                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease'; 
+                item.style.transitionDelay = `${index * 0.05}s`;
+                
+                // 냐옹! 여기도 백틱(템플릿 리터럴)을 올바르게 사용한다옹!
+                // photo.imageUrl과 photo.title이 실제로 유효한 값인지 확인하는 게 좋다옹.
+                const imageUrl = photo.imageUrl || '/api/placeholder/300/250?text=이미지+없다옹'; // 기본 이미지
+                const title = photo.title || '제목 없다옹';
+
+                item.innerHTML = `<img src="${imageUrl}" alt="${title}"><div class="photo-title">${title}</div>`;
                 item.addEventListener('click', () => openImageModal(photo.id));
                 gallery.appendChild(item);
-                setTimeout(() => { item.style.opacity = '1'; item.style.transform = 'translateY(0)'; }, 10);
+                
+                // 애니메이션을 위해 DOM에 추가된 후 스타일 변경
+                setTimeout(() => { 
+                    item.style.opacity = '1'; 
+                    item.style.transform = 'translateY(0)'; 
+                }, 10); // 아주 짧은 지연
             });
         }
         
+        // 냐옹! 여기가 수정된 renderAdminGallery 함수다옹!
         function renderAdminGallery() {
             galleryAdmin.innerHTML = '';
+            // 최근 업로드된 사진이 위로 오도록 photos 배열을 복사해서 뒤집는다옹.
             photos.slice().reverse().forEach(photo => {
-                const item = document.createElement('div'); item.className = 'gallery-admin-item';
-                item.innerHTML = `<img src="<span class="math-inline">\{photo\.imageUrl\}" alt\="</span>{photo.title}"><div style="padding: 5px; text-align: center; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="math-inline">\{photo\.title\} <span style\="display\: block; color\: \#666; font\-size\: 11px;"\></span>{photo.category || '카테고리 없음'}</span></div><button class="delete-btn" data-id="<span class="math-inline">\{photo\.id\}" data\-gcsfilename\="</span>{photo.gcsFileName || ''}">&times;</button>`;
+                const item = document.createElement('div'); 
+                item.className = 'gallery-admin-item';
+                
+                const imageUrl = photo.imageUrl || '/api/placeholder/200/150?text=이미지X';
+                const title = photo.title || '제목 없음';
+                const categoryText = photo.category || '카테고리 없음';
+                const gcsFileName = photo.gcsFileName || ''; // gcsFileName이 없을 경우 빈 문자열
+
+                // 냐옹! 여기도 백틱(템플릿 리터럴)을 올바르게! data- 속성 값도 따옴표로 감싸준다옹!
+                item.innerHTML = `
+                    <img src="${imageUrl}" alt="${title}">
+                    <div style="padding: 5px; text-align: center; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${title} 
+                        <span style="display: block; color: #666; font-size: 11px;">${categoryText}</span>
+                    </div>
+                    <button class="delete-btn" data-id="${photo.id}" data-gcsfilename="${gcsFileName}">&times;</button>`;
                 galleryAdmin.appendChild(item);
             });
-            document.querySelectorAll('.delete-btn').forEach(btn => {
+
+            // 삭제 버튼 이벤트 리스너는 한 번만 설정하는 게 좋다옹 (renderAdminGallery 호출될 때마다 중복 방지)
+            // 하지만 여기서는 매번 다시 그리므로, 새로 그려진 버튼들에 대해 다시 설정해야 한다옹.
+            document.querySelectorAll('#gallery-admin .delete-btn').forEach(btn => {
+                // 혹시 모를 중복 리스너 방지를 위해 기존 리스너 제거 (더 확실한 방법은 다른 곳에서 한 번만 설정)
+                // btn.replaceWith(btn.cloneNode(true)); // 리스너 제거하는 한 가지 트릭
+                // const newBtn = btn.cloneNode(true);
+                // btn.parentNode.replaceChild(newBtn, btn);
+
+                // 여기서는 간단하게 바로 추가한다옹.
                 btn.addEventListener('click', (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    const gcsFileName = e.target.getAttribute('data-gcsfilename');
-                    deletePhoto(id, gcsFileName);
+                    // currentTarget을 사용하면 이벤트가 실제로 바인딩된 버튼을 가리킨다옹.
+                    const id = e.currentTarget.getAttribute('data-id');
+                    const gcsFileNameValue = e.currentTarget.getAttribute('data-gcsfilename');
+                    deletePhoto(id, gcsFileNameValue);
                 });
             });
         }
@@ -485,6 +449,7 @@
         async function uploadPhoto() {
             const file = imageUploadInput.files[0];
             if (!file) { alert('업로드할 이미지를 선택해달라옹!'); return; }
+            
             const title = imageTitleInput.value.trim() || `새로운 냥냥이 사진 ${Date.now()}`;
             const category = imageCategoryUploadDropdown.value;
             if (!category) { alert('사진의 카테고리를 선택해달라옹!'); return; }
@@ -501,7 +466,9 @@
                     throw new Error(errorResult.message || 'Netlify Function에서 파일 업로드 실패!');
                 }
                 await refreshPhotosFromServer(); 
-                imageUploadInput.value = ''; imageTitleInput.value = ''; imageCategoryUploadDropdown.value = '';
+                imageUploadInput.value = ''; 
+                imageTitleInput.value = ''; 
+                imageCategoryUploadDropdown.value = ''; // 드롭다운도 초기화
                 alert('사진이 성공적으로 업로드 및 저장되었다옹!');
             } catch (error) {
                 console.error('갤러리 사진 업로드 중 에러:', error);
@@ -514,17 +481,33 @@
                 const photosResponse = await fetch('/.netlify/functions/get-photos');
                 if (photosResponse.ok) {
                     photos = await photosResponse.json();
-                    renderGallery();
-                    renderAdminGallery();
-                    populateAllCategoryDropdowns();
+                    // 데이터 로드 후 UI 업데이트 순서 중요!
+                    populateAllCategoryDropdowns(); // 카테고리 먼저 업데이트
+                    renderGallery();                 // 메인 갤러리 업데이트
+                    if (localStorage.getItem('isLoggedIn') === 'true') { // 로그인 상태일 때만 어드민 갤러리 업데이트
+                        renderAdminGallery();
+                    }
                 } else {
                     console.error('refreshPhotosFromServer: 사진 목록 가져오기 실패');
+                    photos = []; // 실패 시 사진 목록 비우기
+                    populateAllCategoryDropdowns(); // 카테고리 드롭다운은 빈 상태로라도 업데이트
+                    renderGallery();                 // 갤러리도 빈 상태로 업데이트
+                     if (localStorage.getItem('isLoggedIn') === 'true') {
+                        renderAdminGallery();
+                    }
                 }
             } catch (e) {
                 console.error('refreshPhotosFromServer: 사진 목록 가져오는 중 네트워크 에러', e);
+                photos = []; // 에러 시 사진 목록 비우기
+                populateAllCategoryDropdowns();
+                renderGallery();
+                 if (localStorage.getItem('isLoggedIn') === 'true') {
+                    renderAdminGallery();
+                }
             }
         }
 
+        // deletePhoto 함수에 setTimeout 추가 (이전에 제안했던 내용)
         async function deletePhoto(photoId, gcsFileName) {
             if (!photoId) { alert('삭제할 사진의 ID가 없다옹!'); return; }
             if (confirm('정말로 이 사진을 서버에서 삭제할거냥? 되돌릴 수 없다옹!')) {
@@ -538,8 +521,15 @@
                         const errorResult = await response.json();
                         throw new Error(errorResult.message || 'Netlify Function에서 사진 삭제 실패!');
                     }
-                    await refreshPhotosFromServer();
-                    alert('사진이 서버에서 삭제되었다옹!');
+                    
+                    alert('사진이 서버에서 삭제되었다옹!'); // 성공 알림 먼저!
+
+                    // 살짝 기다렸다가 목록 새로고침 (서버 데이터 반영 시간 고려)
+                    setTimeout(async () => {
+                        await refreshPhotosFromServer();
+                        console.log('삭제 후, 0.5초 뒤에 사진 목록 새로고침 완료다옹!');
+                    }, 500); // 0.5초 지연 (필요에 따라 조절)
+
                 } catch (error) {
                     console.error('사진 삭제 중 에러:', error);
                     alert(`냐옹... 사진 삭제 실패: ${error.message}`);
@@ -548,26 +538,88 @@
         }
         
         function openImageModal(photoId) {
-            const photosToDisplay = currentCategoryFilter === '전체' ? photos : photos.filter(photo => photo.category === currentCategoryFilter);
-            currentModalPhotoIndex = photosToDisplay.findIndex(photo => photo.id === photoId);
-            if (currentModalPhotoIndex === -1) { currentModalPhotoIndex = photos.findIndex(photo => photo.id === photoId); }
-            displayCurrentPhotoInModal(photosToDisplay);
+            // 현재 필터링된 사진 목록 또는 전체 사진 목록에서 해당 photoId를 찾는다옹.
+            let photosToSearch = photos; // 기본값은 전체 사진
+            if (currentCategoryFilter !== '전체') {
+                photosToSearch = photos.filter(photo => photo.category === currentCategoryFilter);
+                // 만약 필터된 목록에 없다면 전체 목록에서도 찾아본다옹 (혹시 모를 상황 대비)
+                if (!photosToSearch.find(p => p.id === photoId)) {
+                    photosToSearch = photos;
+                }
+            }
+            
+            currentModalPhotoIndex = photosToSearch.findIndex(photo => photo.id === photoId);
+
+            if (currentModalPhotoIndex === -1) { 
+                console.error(`모달에서 사진 ID '${photoId}'를 찾을 수 없다옹!`);
+                // 혹시 모르니 전체 사진 목록에서 다시 한번 시도
+                currentModalPhotoIndex = photos.findIndex(photo => photo.id === photoId);
+                if (currentModalPhotoIndex === -1) return; // 그래도 없으면 그냥 종료
+                photosToSearch = photos; // 검색 대상을 전체 사진으로 변경
+            }
+            
+            displayCurrentPhotoInModal(photosToSearch); // 검색한 배열을 전달
             imageModal.style.display = 'flex';
         }
-        function displayCurrentPhotoInModal(photoArray) {
-            if (currentModalPhotoIndex >= 0 && currentModalPhotoIndex < photoArray.length) {
-                const photo = photoArray[currentModalPhotoIndex];
-                modalImage.src = photo.imageUrl;
-                modalTitleElement.innerHTML = `<span class="math-inline">\{photo\.title\}<br\><span style\="font\-size\: 14px; opacity\: 0\.8;"\>@UU\_CATS</span\><span style\="display\: inline\-block; margin\-left\: 10px; font\-size\: 12px; background\-color\: rgba\(255,255,255,0\.3\); padding\: 3px 10px; border\-radius\: 12px; backdrop\-filter\: blur\(5px\);"\></span>{photo.category || '카테고리 없음'}</span>`;
+
+        // 냐옹! 여기가 수정된 displayCurrentPhotoInModal 함수다옹!
+        function displayCurrentPhotoInModal(photoArrayToDisplay) { // 매개변수 이름 변경
+            if (currentModalPhotoIndex >= 0 && currentModalPhotoIndex < photoArrayToDisplay.length) {
+                const photo = photoArrayToDisplay[currentModalPhotoIndex];
+                if (!photo) { // 혹시 photo 객체가 undefined일 경우 대비
+                    console.error("표시할 사진 객체가 없다옹!", currentModalPhotoIndex, photoArrayToDisplay);
+                    return;
+                }
+                
+                modalImage.src = photo.imageUrl || '/api/placeholder/800/600?text=이미지+없다옹';
+                
+                // innerHTML을 사용할 때는 XSS 공격에 주의해야 하지만, 여기서는 직접 입력한 데이터를 표시하므로 괜찮다옹.
+                // 하지만 가능하다면 textContent를 부분적으로 사용하는 것이 더 안전할 수 있다냥.
+                const title = photo.title || '제목 없음';
+                const category = photo.category || '카테고리 없음';
+                
+                // 냐옹! 여기도 백틱(템플릿 리터럴)을 올바르게! HTML 문자열로 구성한다옹.
+                modalTitleElement.innerHTML = `
+                    ${title}<br>
+                    <span style="font-size: 14px; opacity: 0.8;">@UU_CATS</span>
+                    <span style="display: inline-block; margin-left: 10px; font-size: 12px; background-color: rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 12px; backdrop-filter: blur(5px);">
+                        ${category}
+                    </span>`;
+            } else {
+                // 모달 네비게이션 버튼 숨기기 또는 비활성화 로직 추가 가능
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            }
+            // 사진이 있으면 네비게이션 버튼 다시 보이게
+             if (photoArrayToDisplay.length > 1) {
+                prevBtn.style.display = 'block';
+                nextBtn.style.display = 'block';
+            } else {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
             }
         }
+
         function showPreviousPhotoInModal() {
-            const photosToDisplay = currentCategoryFilter === '전체' ? photos : photos.filter(photo => photo.category === currentCategoryFilter);
+            let photosToDisplay = photos;
+            if (currentCategoryFilter !== '전체') {
+                photosToDisplay = photos.filter(photo => photo.category === currentCategoryFilter);
+                 if (photosToDisplay.length === 0 && photos.length > 0) photosToDisplay = photos; // 필터된 결과 없으면 전체에서
+            }
+            if (photosToDisplay.length === 0) return; // 사진 없으면 아무것도 안함
+
             currentModalPhotoIndex = (currentModalPhotoIndex - 1 + photosToDisplay.length) % photosToDisplay.length;
             displayCurrentPhotoInModal(photosToDisplay);
         }
+
         function showNextPhotoInModal() {
-            const photosToDisplay = currentCategoryFilter === '전체' ? photos : photos.filter(photo => photo.category === currentCategoryFilter);
+            let photosToDisplay = photos;
+             if (currentCategoryFilter !== '전체') {
+                photosToDisplay = photos.filter(photo => photo.category === currentCategoryFilter);
+                if (photosToDisplay.length === 0 && photos.length > 0) photosToDisplay = photos; // 필터된 결과 없으면 전체에서
+            }
+            if (photosToDisplay.length === 0) return; // 사진 없으면 아무것도 안함
+
             currentModalPhotoIndex = (currentModalPhotoIndex + 1) % photosToDisplay.length;
             displayCurrentPhotoInModal(photosToDisplay);
         }
@@ -575,77 +627,122 @@
         async function login() { 
             const usernameInput = document.getElementById('username'); 
             const passwordInput = document.getElementById('password'); 
-            const username = usernameInput.value; const password = passwordInput.value;
+            const username = usernameInput.value; 
+            const password = passwordInput.value;
+
+            if (!username || !password) {
+                alert('아이디와 비밀번호를 모두 입력해달라옹!');
+                return;
+            }
+
             try {
                 const response = await fetch('/.netlify/functions/login-police', { 
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: username, password: password }) 
                 });
                 const result = await response.json(); 
                 if (response.ok && result.success) { 
                     localStorage.setItem('isLoggedIn', 'true');
-                    loginModal.style.display = 'none'; checkLogin();
+                    loginModal.style.display = 'none'; 
+                    usernameInput.value = ''; // 입력 필드 초기화
+                    passwordInput.value = ''; // 입력 필드 초기화
+                    checkLogin(); // 관리자 UI 업데이트
                     alert(result.message || '로그인 성공이다옹!');
                 } else {
-                    alert(result.message || '로그인 실패!');
-                    usernameInput.value = ''; passwordInput.value = '';
+                    alert(result.message || '아이디 또는 비밀번호가 틀렸다옹!');
+                    passwordInput.value = ''; // 비밀번호 필드만 초기화
                 }
-            } catch (error) { console.error('로그인 에러:', error); alert('로그인 서버 연결 실패!'); }
+            } catch (error) { 
+                console.error('로그인 에러:', error); 
+                alert('냐옹... 로그인 중 서버에 문제가 생겼다옹!'); 
+            }
         }
+
         function logout() {
-            localStorage.removeItem('isLoggedIn');
-            adminPanel.style.display = 'none';
-            loginButton.textContent = '관리자';
-            alert('로그아웃 되었다옹!');
+            if (confirm('정말로 로그아웃 할거냥?')) {
+                localStorage.removeItem('isLoggedIn');
+                adminPanel.style.display = 'none';
+                loginButton.textContent = '관리자 로그인'; // 버튼 텍스트 변경
+                alert('로그아웃 되었다옹!');
+            }
         }
+
         function checkLogin() {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             if (isLoggedIn) {
                 adminPanel.style.display = 'block';
-                loginButton.textContent = '관리자 패널 보기';
+                loginButton.textContent = '관리자 패널 보기'; // 로그인 시 버튼 텍스트
+                // 관리자 로그인 시 필요한 데이터 로딩 및 UI 렌더링
                 renderAdminGallery(); 
-                populateAllCategoryDropdowns();
-                updateHeroSection(); 
+                populateAllCategoryDropdowns(); // 카테고리 목록 (관리자용 포함) 다시 그리기
+                updateHeroSection(); // 히어로 섹션 정보 (관리자 입력 필드 등) 업데이트
             } else {
                 adminPanel.style.display = 'none';
-                loginButton.textContent = '관리자 로그인';
+                loginButton.textContent = '관리자 로그인'; // 로그아웃 시 버튼 텍스트
             }
         }
         
         function setupEventListeners() {
             loginButton.addEventListener('click', () => {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                if (isLoggedIn) {
-                    if (adminPanel.style.display === 'block') { adminPanel.style.display = 'none'; loginButton.textContent = '관리자 패널 열기'; }
-                    else { adminPanel.style.display = 'block'; loginButton.textContent = '관리자 패널 닫기'; checkLogin(); window.scrollTo({ top: adminPanel.offsetTop - 80, behavior: 'smooth' }); }
-                } else { loginModal.style.display = 'flex'; }
+                if (isLoggedIn) { // 이미 로그인 상태라면
+                    if (adminPanel.style.display === 'block') { // 관리자 패널이 열려있으면
+                        adminPanel.style.display = 'none';      // 닫고
+                        loginButton.textContent = '관리자 패널 열기'; // 버튼 텍스트 변경
+                    } else { // 관리자 패널이 닫혀있으면
+                        adminPanel.style.display = 'block';     // 열고
+                        loginButton.textContent = '관리자 패널 닫기'; // 버튼 텍스트 변경
+                        checkLogin(); // 패널 내용 최신화 (중요!)
+                        // 부드럽게 스크롤 (옵션)
+                        window.scrollTo({ top: adminPanel.offsetTop - 80, behavior: 'smooth' }); 
+                    }
+                } else { // 로그아웃 상태라면
+                    loginModal.style.display = 'flex'; // 로그인 모달 띄우기
+                }
             });
+
             loginSubmit.addEventListener('click', login);
             logoutBtn.addEventListener('click', logout);
             uploadBtn.addEventListener('click', uploadPhoto);
             closeModal.addEventListener('click', () => imageModal.style.display = 'none');
             prevBtn.addEventListener('click', showPreviousPhotoInModal);
             nextBtn.addEventListener('click', showNextPhotoInModal);
-            categoryDropdown.addEventListener('change', (e) => { currentCategoryFilter = e.target.value; renderGallery(); });
+            
+            categoryDropdown.addEventListener('change', (e) => { 
+                currentCategoryFilter = e.target.value; 
+                renderGallery(); 
+            });
+
             heroImageUploadBtnAdmin.addEventListener('click', handleHeroImageUpload);
             heroImageDeleteBtnAdmin.addEventListener('click', deleteHeroImage);
             heroTextSaveBtnAdmin.addEventListener('click', saveHeroText);
             heroTextDeleteBtnAdmin.addEventListener('click', deleteHeroText);
             addCategoryBtnAdmin.addEventListener('click', handleAddCategory);
+            
+            // 키보드 이벤트 (모달 내에서)
             document.addEventListener('keydown', (e) => {
-                 if (imageModal.style.display === 'flex') {
+                 if (imageModal.style.display === 'flex') { // 모달이 열려있을 때만 작동
                     if (e.key === 'ArrowLeft') showPreviousPhotoInModal();
                     else if (e.key === 'ArrowRight') showNextPhotoInModal();
                     else if (e.key === 'Escape') imageModal.style.display = 'none';
                 }
             });
+
+            // 모달 바깥 영역 클릭 시 닫기
             window.addEventListener('click', (e) => {
                 if (e.target === imageModal) imageModal.style.display = 'none';
                 if (e.target === loginModal) loginModal.style.display = 'none';
             });
-            twitterLink.addEventListener('click', (e) => { e.preventDefault(); window.open('https://x.com/UU_CATS', '_blank'); });
+
+            // 트위터 링크 (새 창에서 열기)
+            twitterLink.addEventListener('click', (e) => { 
+                e.preventDefault(); // 기본 동작 막기
+                window.open('https://x.com/UU_CATS', '_blank'); 
+            });
         }
         
+        // 페이지 로드 완료 후 init 함수 실행
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
