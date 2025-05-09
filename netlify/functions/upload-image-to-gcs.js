@@ -155,8 +155,8 @@ exports.handler = async (event, context) => {
             // 이미지 크기를 조절한다옹.
             processedImageBuffer = await image
                 .resize({
-                    width: 1920,      // 최대 가로 크기
-                    height: 1920,     // 최대 세로 크기
+                    width: 1280,      // 최대 가로 크기
+                    height: 1280,     // 최대 세로 크기
                     fit: sharp.fit.inside, // 이미지가 이 크기 안에 딱 맞게 (비율 유지)
                     withoutEnlargement: true // 원본보다 작을 때만 리사이즈 (확대 방지)
                 })
