@@ -110,8 +110,6 @@ exports.handler = async (event, context) => {
             metadata: { contentType: fileMimeType || 'application/octet-stream' }, // MIME 타입이 없으면 기본값 사용
         });
 
-        await file.makePublic();
-
         const publicUrl = `https://storage.googleapis.com/${BUCKET_NAME}/${gcsFileName}`;
 
         console.log(`야옹! 파일 업로드 성공! ${publicUrl}`);
