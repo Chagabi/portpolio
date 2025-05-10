@@ -815,50 +815,69 @@
             }
         }
         
-        // 냐옹! 여기가 수정된 populateAllCategoryDropdowns 함수다옹!
-        function populateAllCategoryDropdowns() {
-            // 사진에서 실제 사용된 카테고리 목록을 가져온다옹 (중복 제거 및 정렬)
-            const uniqueCategoriesFromPhotos = photos.length > 0 
-                ? [...new Set(photos.map(p => p.category).filter(cat => cat && cat.trim() !== ''))].sort() 
-                : [];
-            
-            // 로컬 스토리지나 기본 categories 배열과 병합 및 중복 제거하여 최종 카테고리 목록 생성
-            let displayCategories = [...new Set([...categories, ...uniqueCategoriesFromPhotos])].filter(cat => cat && cat.trim() !== '').sort();
-            if (displayCategories.length === 0 && categories.length > 0) { // 사진에 카테고리가 없지만 기본 카테고리는 있을 때
-                displayCategories = [...categories].sort();
-            } else if (displayCategories.length === 0 && categories.length === 0) { // 아무 카테고리도 없을 때 (사진도 없고, 기본도 없고)
-                // 필요하다면 여기에 기본 카테고리 몇 개를 다시 넣어줄 수도 있다옹.
-                // categories = ['풍경', '동물']; 
-                // displayCategories = [...categories];
-            }
+function populateAllCategoryDropdowns() {
+    console.log('populateAllCategoryDropdowns 시작! 현재 categories:', JSON.parse(JSON.stringify(categories))); // categories 내용 확인 (순환 참조 방지)
+    console.log('현재 photos:', photos.length > 0 ? photos.slice(0,2) : '사진 없음'); // 사진 일부 확인
 
+    // 1. categories (전역 객체 배열)에서 카테고리 "이름"만 추출한다옹.
+    const categoryNamesFromGlobal = categories.map(cat => cat.name);
+    console.log('categoryNamesFromGlobal (이름만 추출):', categoryNamesFromGlobal);
 
-            // 메인 화면 카테고리 드롭다운 업데이트
-            categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>'; // 기본 '전체' 옵션
-            displayCategories.forEach(category => {
-                const count = photos.filter(p => p.category === category).length;
-                const option = document.createElement('option');
-                option.value = category;
-                // 냐옹! 여기를 textContent로 바꾸고, 템플릿 리터럴을 간단하게 쓴다옹!
-                option.textContent = `${category} (${count})`; 
-                categoryDropdown.appendChild(option);
-            });
-            categoryDropdown.value = currentCategoryFilter; // 현재 필터 유지
+    // 2. photos 배열에서 실제 사용된 카테고리 "이름" 목록을 가져온다옹 (중복 제거 및 정렬).
+    const uniqueCategoryNamesFromPhotos = photos.length > 0 
+        ? [...new Set(photos.map(p => p.category).filter(catName => catName && typeof catName === 'string' && catName.trim() !== ''))].sort() 
+        : [];
+    console.log('uniqueCategoryNamesFromPhotos (사진에서 추출한 이름):', uniqueCategoryNamesFromPhotos);
+    
+    // 3. 위 두 이름 목록을 합치고, 다시 한번 중복을 제거하고, 최종적으로 정렬된 "이름" 목록을 만든다옹.
+    //    이것이 바로 모든 드롭다운에 표시될 카테고리 이름들이다냥!
+    let displayCategoryNames = [...new Set([...categoryNamesFromGlobal, ...uniqueCategoryNamesFromPhotos])]
+                                .filter(catName => catName && typeof catName === 'string' && catName.trim() !== '') // 최종적으로 문자열이고 비어있지 않은 것만!
+                                .sort((a, b) => a.localeCompare(b)); // 이름순 정렬!
+    console.log('최종 displayCategoryNames (드롭다운용 이름 목록):', displayCategoryNames);
 
-            // 관리자 패널의 사진 업로드용 카테고리 드롭다운 업데이트
-            imageCategoryUploadDropdown.innerHTML = '<option value="">카테고리 선택</option>'; // 기본 '선택' 옵션
-            displayCategories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.textContent = category; // 여기는 카테고리 이름만!
-                imageCategoryUploadDropdown.appendChild(option);
-            });
+    // 만약 displayCategoryNames가 비었는데, categories (객체배열)에는 카테고리가 있었다면,
+    // (예: 사진에 아직 카테고리가 사용되지 않았지만, 관리자가 카테고리를 만들어둔 경우)
+    // categories에 있는 이름들을 사용한다옹.
+    if (displayCategoryNames.length === 0 && categoryNamesFromGlobal.length > 0) {
+        displayCategoryNames = [...categoryNamesFromGlobal].sort((a, b) => a.localeCompare(b));
+        console.log('사진에 카테고리 없지만, 전역 카테고리 있어서 displayCategoryNames 업데이트:', displayCategoryNames);
+    } else if (displayCategoryNames.length === 0 && categoryNamesFromGlobal.length === 0) {
+        // 아무 카테고리도 없을 때 (사진에도 없고, 관리자가 만든 것도 없을 때)
+        console.log('표시할 카테고리 이름이 하나도 없다옹!');
+        // 필요하다면 여기에 '카테고리 없음' 같은 기본 메시지를 드롭다운에 표시할 수도 있다옹.
+    }
 
-            // 관리자 패널의 카테고리 목록 (추가/삭제용) 업데이트
-            if (adminPanel.style.display === 'block') {
-                renderAdminCategoryList(displayCategories);
-            }
-        }
+    // --- 이제 이 displayCategoryNames (문자열 배열)를 사용해서 드롭다운들을 채운다옹 ---
+
+    // 메인 화면 카테고리 드롭다운 업데이트
+    categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>'; // 기본 '전체' 옵션
+    displayCategoryNames.forEach(categoryName => { // categoryName은 이제 항상 문자열이다옹!
+        const count = photos.filter(p => p.category === categoryName).length;
+        const option = document.createElement('option');
+        option.value = categoryName;
+        option.textContent = `${categoryName} (${count})`; 
+        categoryDropdown.appendChild(option);
+    });
+    categoryDropdown.value = currentCategoryFilter; // 현재 필터 유지
+
+    // 관리자 패널의 사진 업로드용 카테고리 드롭다운 업데이트
+    imageCategoryUploadDropdown.innerHTML = '<option value="">카테고리 선택</option>'; // 기본 '선택' 옵션
+    displayCategoryNames.forEach(categoryName => { // categoryName은 이제 항상 문자열이다옹!
+        const option = document.createElement('option');
+        option.value = categoryName;
+        option.textContent = categoryName; // 여기는 카테고리 이름만!
+        imageCategoryUploadDropdown.appendChild(option);
+    });
+
+    // 관리자 패널의 카테고리 목록 (추가/삭제용) 업데이트
+    // 이 목록은 renderAdminCategoryList 함수가 담당하고, 그 함수는 전역 categories (객체 배열)를 직접 사용한다옹.
+    if (adminPanel.style.display === 'block') {
+        // ⭐ 중요: renderAdminCategoryList를 인자 없이 호출한다옹! ⭐
+        renderAdminCategoryList(); 
+    }
+    console.log('populateAllCategoryDropdowns 끝났다옹!');
+}
 
 // 기존 함수 선언: function renderAdminCategoryList(catsToDisplay = []) { ... }
 // 아래처럼 매개변수를 없애고, 전역 `categories` 변수를 직접 사용하도록 하자옹!
