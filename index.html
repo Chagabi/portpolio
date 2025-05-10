@@ -877,53 +877,97 @@
             });
         }
 
-        function handleAddCategory() {
-            const newCategoryName = newCategoryInputAdmin.value.trim();
-            if (!newCategoryName) { alert('카테고리 이름을 입력해달라옹!'); return; }
-            if (categories.includes(newCategoryName)) { alert('이미 있는 카테고리다옹!'); return; }
-            if (newCategoryName.toLowerCase() === '전체') { alert("'전체'는 카테고리 이름으로 사용할 수 없다옹!"); return; }
-            
-            categories.push(newCategoryName);
-            categories.sort(); // 추가 후 정렬
-            localStorage.setItem('categories', JSON.stringify(categories)); // 로컬 스토리지에 저장
-            
-            populateAllCategoryDropdowns(); // 모든 드롭다운 및 목록 업데이트
-            newCategoryInputAdmin.value = ''; // 입력 필드 비우기
-            alert(`'${newCategoryName}' 카테고리가 추가되었다옹!`);
+async function handleAddCategory() {
+    const newCategoryName = newCategoryInputAdmin.value.trim();
+    if (!newCategoryName) {
+        alert('카테고리 이름을 입력해달라옹!');
+        return;
+    }
+    // "전체"라는 이름의 카테고리는 만들 수 없게 하자옹!
+    if (newCategoryName.toLowerCase() === '전체') {
+        alert("'전체'는 카테고리 이름으로 사용할 수 없다옹!");
+        newCategoryInputAdmin.value = ''; // 입력 필드 비우기
+        return;
+    }
+
+    // 클라이언트에서 먼저 중복 검사를 할 수도 있다옹 (선택 사항)
+    // 하지만 서버에서도 중복 검사를 하니까 더 안전하다냥!
+    // if (categories.map(cat => cat.name).includes(newCategoryName)) { // categories가 객체 배열일 경우
+    // if (categories.includes(newCategoryName)) { // categories가 이름 배열일 경우 (현재 우리 코드!)
+    //     alert('이미 있는 카테고리 이름이다옹! (클라이언트 체크)');
+    //     return;
+    // }
+
+    try {
+        console.log(`'${newCategoryName}' 카테고리를 서버에 추가 시도한다옹!`);
+        const response = await fetch('/.netlify/functions/add-category', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: newCategoryName }), // 서버에 보낼 데이터! {name: "카테고리이름"} 형태
+        });
+
+        const result = await response.json(); // 서버의 응답을 JSON으로 변환
+
+        if (!response.ok) {
+            // 서버에서 에러 응답이 오면 (예: 중복, 잘못된 요청 등)
+            // result 안에 서버 함수에서 보낸 message가 들어있을 거다냥!
+            throw new Error(result.message || `냐옹! 카테고리 추가 실패: ${response.status}`);
         }
 
-        async function handleDeleteCategory(categoryNameToDelete) {
-            if (confirm(`정말로 '${categoryNameToDelete}' 카테고리를 목록에서 삭제할거냥?\n(이 카테고리로 설정된 사진들은 카테고리가 없는 상태가 된다옹.)`)) {
-                const photosWithThisCategory = photos.filter(p => p.category === categoryNameToDelete);
-                
-                if (photosWithThisCategory.length > 0) {
-                    if(!confirm(`'${categoryNameToDelete}' 카테고리를 사용하는 사진이 ${photosWithThisCategory.length}장 있다옹. 정말 삭제할거냥?\n삭제하면 해당 사진들의 카테고리 정보가 빈 값으로 변경된다옹.`)){
-                        return; // 사용자가 취소하면 여기서 중단
-                    }
-                    // 서버에 각 사진의 카테고리를 빈 값으로 업데이트하는 로직 필요!
-                    // 지금은 클라이언트에서만 임시로 변경하고, 서버 새로고침 시 다시 원래대로 돌아올 수 있다옹.
-                    // 이상적으로는 아래 로직을 서버 함수 호출로 대체해야 한다옹.
-                    for (const photo of photosWithThisCategory) {
-                        console.log(`서버에 photoId: ${photo.id}의 카테고리를 ''로 업데이트 요청해야 한다옹!`);
-                        // 예시: await fetch('/.netlify/functions/update-photo-category', { 
-                        // method: 'POST', 
-                        // body: JSON.stringify({ photoId: photo.id, newCategory: '' }) 
-                        // });
-                        photo.category = ''; // 클라이언트 데이터 우선 변경
-                    }
-                }
+        // 성공적으로 추가되었을 때! (서버에서 상태 코드 201을 보내줬을 때)
+        console.log('서버에서 카테고리 추가 성공! 응답:', result);
+        alert(`'${result.name}' 카테고리가 성공적으로 추가되었다옹! 야호!`);
 
-                categories = categories.filter(cat => cat !== categoryNameToDelete);
-                localStorage.setItem('categories', JSON.stringify(categories)); // 변경된 카테고리 목록 저장
-                
-                // 카테고리가 변경되었으므로, 전체 사진 목록을 서버에서 다시 가져와서
-                // 사진 객체들의 카테고리 정보도 최신화하고 UI를 다시 그린다옹.
-                await refreshPhotosFromServer(); 
-                // populateAllCategoryDropdowns(); // refreshPhotosFromServer 안에 이미 포함되어 있다옹.
-                
-                alert(`'${categoryNameToDelete}' 카테고리가 삭제되었다옹! 해당 카테고리를 가진 사진들의 카테고리가 초기화되었다옹.`);
-            }
+        // 새 카테고리가 추가됐으니, 클라이언트의 categories 배열도 업데이트하고 화면도 새로 그려야 한다옹!
+        // 방법 1: 서버에서 모든 카테고리를 다시 불러와서 categories 배열을 통째로 갱신 (가장 확실!)
+        await refreshCategoriesFromServer(); // 이 함수는 아래에 새로 만들 거다옹!
+
+        // 방법 2: 서버 응답(result)에 있는 새 카테고리 정보를 현재 categories 배열에 추가 (더 빠를 수 있지만, 정렬 등이 필요할 수 있음)
+        // categories.push(result.name); // categories가 이름 배열일 경우
+        // categories.sort(); // 이름 순으로 정렬
+        // populateAllCategoryDropdowns(); // 화면 업데이트
+
+        newCategoryInputAdmin.value = ''; // 입력 필드 비우기
+
+    } catch (error) {
+        console.error('handleAddCategory 에러 ㅠㅠ:', error);
+        alert(`냐옹... 카테고리 추가 중 문제가 생겼다옹: ${error.message}`);
+    }
+}
+
+// 냐옹! 카테고리 목록을 서버에서 다시 가져와서 화면을 업데이트하는 함수를 만들자옹!
+async function refreshCategoriesFromServer() {
+    try {
+        console.log('카테고리 목록 새로고침 시작이다옹!');
+        const response = await fetch('/.netlify/functions/get-categories');
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`카테고리 새로고침 실패: ${response.status} - ${errorText}`);
         }
+        const serverCategories = await response.json();
+        categories = serverCategories.map(cat => cat.name); // 이름만 추출해서 업데이트!
+        
+        console.log('카테고리 목록 성공적으로 새로고침 했다옹!', categories);
+        populateAllCategoryDropdowns(); // 모든 드롭다운 및 관리자 목록 업데이트!
+        
+        // 만약 관리자 패널이 열려있고, 카테고리 관리 목록을 보여주고 있다면 그것도 업데이트!
+        if (adminPanel.style.display === 'block' && typeof renderAdminCategoryList === 'function') {
+             // renderAdminCategoryList 함수가 displayCategories를 인자로 받는다면,
+             // populateAllCategoryDropdowns 안에서 이미 categories 변수를 사용해서 displayCategories를 만들고 호출하고 있을거다냥.
+             // 여기서는 populateAllCategoryDropdowns() 호출로 충분할 수 있다옹!
+             // 만약 직접 호출해야 한다면:
+             // const uniqueCategoriesFromPhotos = photos.length > 0 ? [...new Set(photos.map(p => p.category).filter(Boolean))].sort() : [];
+             // let displayCategories = [...new Set([...categories, ...uniqueCategoriesFromPhotos])].sort();
+             // renderAdminCategoryList(displayCategories);
+        }
+
+    } catch (error) {
+        console.error('카테고리 목록 새로고침 중 에러 ㅠㅠ:', error);
+        alert('카테고리 목록을 새로 가져오는 데 실패했다옹...');
+    }
+}
         
         // 냐옹! 여기가 수정된 renderGallery 함수다옹!
         function renderGallery() {
