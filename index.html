@@ -623,6 +623,37 @@
                 console.error('init: 갤러리 사진 목록 가져오는 중 네트워크 에러:', e);
                 photos = [];
             }
+
+            try {
+                const heroResponse = await fetch('/.netlify/functions/get-hero-info');
+                if (heroResponse.ok) {
+                    const heroData = await heroResponse.json();
+                    heroInfo.title = heroData.title || DEFAULT_HERO_TITLE;
+                    heroInfo.subtitle = heroData.subtitle || DEFAULT_HERO_SUBTITLE;
+                    heroInfo.imageUrl = heroData.imageUrl || DEFAULT_HERO_IMAGE_URL;
+                } else {
+                    console.error('init: 히어로 정보 가져오기 실패 (서버 응답):', await heroResponse.text());
+                    setDefaultHeroInfo();
+                }
+            } catch (e) {
+                console.error('init: 히어로 정보 가져오는 중 네트워크 에러:', e);
+                setDefaultHeroInfo();
+            }
+            updateHeroSection();
+
+            try {
+                const photosResponse = await fetch('/.netlify/functions/get-photos');
+                if (photosResponse.ok) {
+                    const photosData = await photosResponse.json();
+                    photos = photosData;
+                } else {
+                    console.error('init: 갤러리 사진 목록 가져오기 실패 (서버 응답):', await photosResponse.text());
+                    photos = [];
+                }
+            } catch (e) {
+                console.error('init: 갤러리 사진 목록 가져오는 중 네트워크 에러:', e);
+                photos = [];
+            }
             
             populateAllCategoryDropdowns(); // 카테고리 먼저 채우고
             renderGallery(); // 그 다음 갤러리 렌더링
