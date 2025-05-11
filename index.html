@@ -1135,7 +1135,7 @@ async function refreshCategoriesFromServer() {
                 const imageUrl = photo.imageUrl || '/api/placeholder/300/250?text=이미지+없다옹'; // 기본 이미지
                 const title = photo.title || '제목 없다옹';
 
-                item.innerHTML = `<img src="${imageUrl}" alt="${title}"><div class="photo-title">${title}</div>`;
+                item.innerHTML = `<img src="${imageUrl}" alt="${title}" loading="lazy"><div class="photo-title">${title}</div>`;
                 item.addEventListener('click', () => openImageModal(photo.id));
                 gallery.appendChild(item);
                 
@@ -1162,7 +1162,7 @@ async function refreshCategoriesFromServer() {
 
                 // 냐옹! 여기도 백틱(템플릿 리터럴)을 올바르게! data- 속성 값도 따옴표로 감싸준다옹!
                 item.innerHTML = `
-                    <img src="${imageUrl}" alt="${title}">
+                    <img src="${imageUrl}" alt="${title}" loading="lazy">
                     <div style="padding: 5px; text-align: center; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         ${title} 
                         <span style="display: block; color: #666; font-size: 11px;">${categoryText}</span>
