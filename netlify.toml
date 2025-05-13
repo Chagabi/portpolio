@@ -1,3 +1,17 @@
 [build]
   functions = "netlify/functions" # 만약 네 함수 파일들이 'netlify/functions' 폴더 안에 있다면!
                                   # 만약 'functions' 폴더 안에 있다면 "functions" 로 바꿔주라옹!
+
+# 보안 헤더 설정 추가
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # HSTS 설정
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    
+    # 추가 보안 헤더
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "upgrade-insecure-requests"
