@@ -73,49 +73,39 @@
 
         .hero-section {
             width: 100%;
-            height: 800px; 
-            overflow: hidden;
-            position: relative; 
+            min-height: 280px; /* 높이 조절: 너무 크지 않게 */
             text-align: center;
-            background-color: #e0e0e0; 
+            background-color: #4A5568; /* 차분한 배경색으로 변경 */
             display: flex; 
             flex-direction: column; 
-            justify-content: flex-end; 
-            align-items: center; 
+            justify-content: center; /* 글귀를 세로 중앙에 */
+            align-items: center; /* 글귀를 가로 중앙에 */
+            padding: 40px 20px; /* 섹션 자체에 여백 추가 */
         }
 
-        #hero-image-display {
-            width: 100%;
-            height: 100%; 
-            object-fit: cover; 
-            position: absolute; 
-            top: 0;
-            left: 0;
-            z-index: 1; 
-        }
+        /* hero-image-display 스타일은 삭제됨 */
 
         .hero-text-container {
-            position: relative; 
-            z-index: 2; 
             color: white;
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.5); 
-            width: 100%; 
+            padding: 30px 40px; /* 내부 여백 늘리기 */
+            background-color: rgba(0, 0, 0, 0.25); /* 배경 오버레이 살짝 연하게 */
+            max-width: 800px; /* 최대 너비 설정해서 너무 길어지지 않게 */
+            width: auto; 
             text-align: center;
-            border-bottom-left-radius: 8px; 
-            border-bottom-right-radius: 8px;
+            border-radius: 12px; /* 모든 모서리 둥글게 */
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2); /* 은은한 그림자 효과 */
         }
 
         #hero-title-display {
-            font-size: 2.5em; 
+            font-size: 2.8em; /* 살짝 크게 */
             font-weight: bold;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); 
+            margin-bottom: 15px; /* 부제목과의 간격 조정 */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5); 
         }
 
         #hero-subtitle-display {
-            font-size: 1.2em; 
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            font-size: 1.3em; /* 살짝 크게 */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
         main {
@@ -416,13 +406,13 @@
             }
 
             #hero-title-display {
-                font-size: 1.8em;
+                font-size: 2em; /* 모바일에서 제목 크기 조정 */
             }
             #hero-subtitle-display {
-                font-size: 1em;
+                font-size: 1.1em; /* 모바일에서 부제목 크기 조정 */
             }
             .hero-text-container {
-                padding: 15px;
+                padding: 20px; /* 모바일에서 텍스트 컨테이너 여백 조정 */
             }
         }
     </style>
@@ -444,7 +434,6 @@
     </header>
 
     <section class="hero-section">
-        <img id="hero-image-display" src="/api/placeholder/1200/500" alt="히어로 이미지 불러오는중">
         <div class="hero-text-container">
             <h1 id="hero-title-display">Pulchritudinem per imagines trado</h1>
             <p id="hero-subtitle-display">@uu_cats</p>
@@ -454,16 +443,6 @@
         <div class="admin-panel" id="admin-panel">
             <h2>관리자 패널</h2>
 
-            <h3>히어로 이미지 관리</h3>
-            <div class="upload-form">
-                <input type="file" class="file-input" id="hero-image-upload-input" accept="image/*">
-                <button class="btn" id="hero-image-upload-btn">히어로 이미지 업로드</button>
-            </div>
-            <div id="current-hero-image-admin" style="margin-top:10px; margin-bottom: 20px;">
-                <p><strong>현재 히어로 이미지:</strong></p>
-                <img id="admin-hero-preview" src="/api/placeholder/400/150" alt="현재 히어로 이미지 미리보기" style="max-width: 400px; max-height: 150px; object-fit: cover; border-radius: 4px; margin-top: 5px;">
-                <button class="btn btn-danger" id="hero-image-delete-btn" style="display: block; margin-top: 10px;">히어로 이미지 삭제</button>
-            </div>
             <h3>히어로 문구 관리</h3>
             <div class="hero-text-form">
                 <input type="text" id="hero-title-input" class="text-input" placeholder="큰 제목 입력">
@@ -528,8 +507,7 @@
 <script>
         let photos = [];
         let categories = [];
-        let heroInfo = {
-            imageUrl: '/api/placeholder/1200/500?text=Loading...',
+        let heroInfo = { // imageUrl 속성 삭제
             title: '로딩 중이다옹...',
             subtitle: '잠시만 기다려달라냥!'
         };
@@ -555,13 +533,14 @@
         const nextBtn = document.getElementById('next-btn');
         const twitterLink = document.getElementById('twitter-link');
         const categoryDropdown = document.getElementById('category-dropdown');
-        const heroImageDisplay = document.getElementById('hero-image-display');
+        // const heroImageDisplay = document.getElementById('hero-image-display'); // 삭제 (HTML에서 해당 ID가 없어짐)
         const heroTitleDisplay = document.getElementById('hero-title-display');
         const heroSubtitleDisplay = document.getElementById('hero-subtitle-display');
-        const heroImageUploadInputAdmin = document.getElementById('hero-image-upload-input');
-        const heroImageUploadBtnAdmin = document.getElementById('hero-image-upload-btn');
-        const adminHeroPreview = document.getElementById('admin-hero-preview');
-        const heroImageDeleteBtnAdmin = document.getElementById('hero-image-delete-btn');
+        // 히어로 이미지 관련 관리자 패널 요소들도 삭제
+        // const heroImageUploadInputAdmin = document.getElementById('hero-image-upload-input');
+        // const heroImageUploadBtnAdmin = document.getElementById('hero-image-upload-btn');
+        // const adminHeroPreview = document.getElementById('admin-hero-preview');
+        // const heroImageDeleteBtnAdmin = document.getElementById('hero-image-delete-btn');
         const heroTitleInputAdmin = document.getElementById('hero-title-input');
         const heroSubtitleInputAdmin = document.getElementById('hero-subtitle-input');
         const heroTextSaveBtnAdmin = document.getElementById('hero-text-save-btn');
@@ -570,7 +549,7 @@
         const addCategoryBtnAdmin = document.getElementById('add-category-btn');
         const categoryListAdmin = document.getElementById('category-list-admin');
 
-        const DEFAULT_HERO_IMAGE_URL = '/api/placeholder/1200/500?text=Hero+Image';
+        // const DEFAULT_HERO_IMAGE_URL = '/api/placeholder/1200/500?text=Hero+Image'; // 삭제
         const DEFAULT_HERO_TITLE = '여기에 멋진 제목을!';
         const DEFAULT_HERO_SUBTITLE = '여기는 부제목을 쓰는 공간이다옹!';
 
@@ -599,19 +578,7 @@
                 const heroData = await heroResponse.json();
                 heroInfo.title = heroData.title || DEFAULT_HERO_TITLE;
                 heroInfo.subtitle = heroData.subtitle || DEFAULT_HERO_SUBTITLE;
-                heroInfo.imageUrl = heroData.imageUrl || DEFAULT_HERO_IMAGE_URL;
-                 if (heroInfo.imageUrl && heroInfo.imageUrl !== DEFAULT_HERO_IMAGE_URL) {
-                    let existingPreload = document.querySelector(`link[rel="preload"][href="${heroInfo.imageUrl}"]`);
-                    if (!existingPreload && heroInfo.imageUrl.startsWith('https')) { 
-                        const preloadLink = document.createElement('link');
-                        preloadLink.rel = 'preload';
-                        preloadLink.href = heroInfo.imageUrl;
-                        preloadLink.as = 'image';
-                        preloadLink.crossOrigin = 'anonymous'; 
-                        document.head.appendChild(preloadLink);
-                        console.log('동적 Preload 발동! (히어로):', heroInfo.imageUrl);
-                    }
-                }
+                // heroInfo.imageUrl 관련 로직 삭제
             } else {
                 console.error('init: 히어로 정보 가져오기 실패 (서버 응답):', await heroResponse.text());
                 setDefaultHeroInfo();
@@ -646,95 +613,41 @@
         function setDefaultHeroInfo() {
             heroInfo.title = DEFAULT_HERO_TITLE;
             heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
-            heroInfo.imageUrl = DEFAULT_HERO_IMAGE_URL;
+            // heroInfo.imageUrl 관련 로직 삭제
         }
 
         function updateHeroSection() {
-            heroImageDisplay.src = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
+            // heroImageDisplay.src 관련 로직 삭제
             heroTitleDisplay.textContent = heroInfo.title || ''; 
             heroSubtitleDisplay.textContent = heroInfo.subtitle || ''; 
 
             if (adminPanel.style.display === 'block') {
-                adminHeroPreview.src = heroInfo.imageUrl || '/api/placeholder/400/150?text=No+Image';
+                // adminHeroPreview.src 관련 로직 삭제
                 heroTitleInputAdmin.value = heroInfo.title || '';
                 heroSubtitleInputAdmin.value = heroInfo.subtitle || '';
             }
         }
 
-        async function handleHeroImageUpload() {
-            const file = heroImageUploadInputAdmin.files[0];
-            if (!file) { alert('히어로 이미지를 선택해달라옹!'); return; }
-
-            const formData = new FormData();
-            formData.append('imageFile', file);
-            formData.append('heroTitle', heroTitleInputAdmin.value.trim() || heroInfo.title);
-            formData.append('heroSubtitle', heroSubtitleInputAdmin.value.trim() || heroInfo.subtitle);
-
-            try {
-                const response = await fetch('/.netlify/functions/upload-hero-image', { method: 'POST', body: formData });
-                if (!response.ok) {
-                    const errorResult = await response.json();
-                    throw new Error(errorResult.message || 'Netlify Function에서 히어로 이미지 업로드 실패!');
-                }
-                const result = await response.json();
-                heroInfo.imageUrl = result.publicUrl; 
-                heroInfo.title = heroTitleInputAdmin.value.trim() || heroInfo.title;
-                heroInfo.subtitle = heroSubtitleInputAdmin.value.trim() || heroInfo.subtitle;
-
-                updateHeroSection();
-                alert('히어로 이미지가 성공적으로 업로드 및 저장되었다옹!');
-            } catch (error) {
-                console.error('히어로 이미지 업로드 중 에러:', error);
-                alert(`냐옹... 히어로 이미지 업로드 실패: ${error.message}`);
-            } finally {
-                heroImageUploadInputAdmin.value = ''; 
-            }
-        }
-
-        async function deleteHeroImage() {
-            if (confirm('정말로 히어로 이미지를 기본 이미지로 되돌릴거냥?')) {
-                try {
-                    const response = await fetch('/.netlify/functions/update-hero-text', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            title: heroInfo.title, 
-                            subtitle: heroInfo.subtitle, 
-                            imageUrl: DEFAULT_HERO_IMAGE_URL 
-                        })
-                    });
-                    if(response.ok){
-                        heroInfo.imageUrl = DEFAULT_HERO_IMAGE_URL; 
-                        updateHeroSection();
-                        alert('히어로 이미지가 기본값으로 변경되었다옹!');
-                    } else { 
-                        const errorText = await response.text();
-                        throw new Error(errorText || '히어로 이미지 기본값 변경 실패'); 
-                    }
-                } catch (error) {
-                    console.error('히어로 이미지 기본값으로 변경 실패:', error);
-                    alert('냐옹... 히어로 이미지 초기화에 실패했다옹.');
-                }
-            }
-        }
+        // handleHeroImageUpload 함수 전체 삭제
+        // deleteHeroImage 함수 전체 삭제
         
         async function saveHeroText() {
             const titleToSave = heroTitleInputAdmin.value.trim();
             const subtitleToSave = heroSubtitleInputAdmin.value.trim();
-            const currentImageUrl = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
+            // currentImageUrl 관련 로직 삭제
 
             try {
                 const response = await fetch('/.netlify/functions/update-hero-text', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title: titleToSave, subtitle: subtitleToSave, imageUrl: currentImageUrl })
+                    body: JSON.stringify({ title: titleToSave, subtitle: subtitleToSave }) // imageUrl 제거
                 });
 
                 if (response.ok) {
                     const result = await response.json(); 
                     heroInfo.title = result.data.title;
                     heroInfo.subtitle = result.data.subtitle;
-                    heroInfo.imageUrl = result.data.imageUrl; 
+                    // heroInfo.imageUrl 관련 로직 삭제
                     updateHeroSection();
                     alert('히어로 문구가 Firestore에 저장되었다옹!');
                 } else { 
@@ -750,14 +663,14 @@
         async function deleteHeroText() {
              if (confirm('정말로 히어로 문구를 기본값으로 되돌릴거냥?')) {
                 try {
-                    const currentImageUrl = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
+                    // currentImageUrl 관련 로직 삭제
                     const response = await fetch('/.netlify/functions/update-hero-text', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
                             title: DEFAULT_HERO_TITLE, 
-                            subtitle: DEFAULT_HERO_SUBTITLE, 
-                            imageUrl: currentImageUrl 
+                            subtitle: DEFAULT_HERO_SUBTITLE
+                            // imageUrl 관련 로직 삭제
                         })
                     });
                      if(response.ok){
@@ -1303,8 +1216,9 @@ async function refreshCategoriesFromServer() {
                 renderGallery(); 
             });
 
-            heroImageUploadBtnAdmin.addEventListener('click', handleHeroImageUpload);
-            heroImageDeleteBtnAdmin.addEventListener('click', deleteHeroImage);
+            // 히어로 이미지 관련 이벤트 리스너 삭제
+            // heroImageUploadBtnAdmin.addEventListener('click', handleHeroImageUpload);
+            // heroImageDeleteBtnAdmin.addEventListener('click', deleteHeroImage);
             heroTextSaveBtnAdmin.addEventListener('click', saveHeroText);
             heroTextDeleteBtnAdmin.addEventListener('click', deleteHeroText);
             addCategoryBtnAdmin.addEventListener('click', handleAddCategory);
