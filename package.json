@@ -13,6 +13,7 @@
         "@google-cloud/storage": "^7.16.0",
         "busboy": "^1.6.0",
         "firebase-admin": "^13.3.0",
+        "node-fetch": "^2.7.0",
         "sharp": "^0.34.1"
     }
 }
