@@ -1,0 +1,19 @@
+{
+    "name": "uucats-repository",
+    "version": "1.0.0",
+    "description": "UUcats Repository for photos",
+    "main": "index.html",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "private": true,
+    "dependencies": {
+        "@google-cloud/storage": "^7.16.0",
+        "busboy": "^1.6.0",
+        "firebase-admin": "^13.3.0",
+        "node-fetch": "^2.7.0",
+        "sharp": "^0.34.1"
+    }
+}

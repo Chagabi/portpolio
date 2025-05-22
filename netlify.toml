@@ -1,0 +1,20 @@
+# 기존 설정 유지
+[build]
+  functions = "netlify/functions"
+
+# 보안 헤더 설정
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # 기존 보안 헤더 유지
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "upgrade-insecure-requests"
+    
+    # CORS 헤더 추가
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"

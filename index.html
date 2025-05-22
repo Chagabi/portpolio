@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUcats Repository - Dark Mode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #121212; /* 전체 페이지 배경: 아주 어두운 회색 */
+            color: #e0e0e0; /* 전체 페이지 기본 글씨색: 밝은 회색 */
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        header {
+            background-color: #1f1f1f; /* 헤더 배경: 어두운 회색 */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5); /* 어두운 테마에 맞는 그림자 */
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e0e0e0; /* 로고 글씨색 밝게 */
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #bdbdbd; /* 네비게이션 링크 글씨색 밝게 */
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #42a5f5; /* 호버 시 밝은 파란색 */
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .social-link svg {
+            width: 20px;
+            height: 20px;
+            fill: #bdbdbd; /* SVG 아이콘 색상 */
+        }
+        .social-link:hover svg {
+            fill: #42a5f5;
+        }
+
+
+        .hero-section {
+            width: 100%;
+            min-height: 300px; 
+            text-align: center;
+            background-color: #1A1D22; /* 히어로 섹션 배경: 매우 어두운 회색/검정 계열 */
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 50px 20px; 
+        }
+
+        .hero-text-container {
+            color: #ffffff;
+            padding: 35px 50px; 
+            background-color: rgba(40, 40, 40, 0.5); /* 배경 오버레이 살짝 어둡게 */
+            max-width: 960px; /* 좌우 폭 넓힘 */
+            width: 100%; /* 부모 요소 너비에 맞추되, max-width로 제한 */
+            text-align: center;
+            border-radius: 12px; 
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3); 
+        }
+
+        #hero-title-display {
+            font-size: 3em; 
+            font-weight: bold;
+            margin-bottom: 15px; 
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6); 
+        }
+
+        #hero-subtitle-display {
+            font-size: 1.4em; 
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+        }
+        
+        main {
+            padding: 40px 0;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            background-color: #2a2a2a; /* 갤러리 아이템 배경: 어두운 회색 */
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s;
+            filter: brightness(0.9); /* 이미지 살짝 어둡게 해서 다크모드와 조화 */
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+            filter: brightness(1);
+        }
+        
+        .photo-title {
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: 500;
+            color: #e0e0e0; /* 사진 제목 글씨색 밝게 */
+            background-color: #2a2a2a; /* 제목 배경도 아이템과 동일하게 */
+            border-top: 1px solid #383838; /* 구분선 */
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.92); /* 모달 배경 더 어둡게 */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding-bottom: 50px;
+        }
+        
+        .modal-content {
+            max-width: 85%;
+            max-height: 75%;
+            margin-bottom: 15px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #ccc;
+            font-size: 45px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close:hover {
+            color: #fff;
+        }
+        
+        .modal-title {
+            color: #f5f5f5;
+            text-align: center;
+            font-size: 18px;
+            width: 100%;
+            padding: 12px 20px;
+            background-color: rgba(20, 20, 20, 0.7);
+            border-radius: 5px;
+            max-width: 85%;
+            backdrop-filter: blur(3px);
+        }
+        
+        .nav-btn {
+            background-color: rgba(30, 30, 30, 0.6);
+        }
+        .nav-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .login-modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7); /* 로그인 모달 배경 어둡게 */
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-form {
+            background-color: #2c2c2c; /* 로그인 폼 배경: 어두운 회색 */
+            padding: 35px;
+            border-radius: 10px;
+            width: 380px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        
+        .login-form h2 {
+            margin-bottom: 25px;
+            text-align: center;
+            color: #e0e0e0; /* 폼 제목 글씨색 밝게 */
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #bdbdbd; /* 라벨 글씨색 밝게 */
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444; /* 입력창 테두리 */
+            border-radius: 5px;
+            background-color: #383838; /* 입력창 배경 */
+            color: #e0e0e0; /* 입력창 글씨색 */
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #42a5f5;
+            box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.3);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #42a5f5;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.2s;
+            margin-top: 10px; 
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .btn:hover {
+            background-color: #1e88e5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-danger { 
+            background-color: #ef5350;
+        }
+        .btn-danger:hover {
+            background-color: #e53935;
+        }
+        
+        .admin-panel {
+            display: none;
+            background-color: #2a2a2a; /* 관리자 패널 배경: 어두운 회색 */
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+        
+        .admin-panel h2, .admin-panel h3 { 
+            margin-bottom: 18px; 
+            margin-top: 22px; 
+            color: #e0e0e0; /* 관리자 패널 제목 글씨색 밝게 */
+            border-bottom: 1px solid #444;
+            padding-bottom: 8px;
+        }
+        .admin-panel h2:first-child {
+            margin-top: 0; 
+        }
+        
+        .upload-form, .hero-text-form, .category-form { 
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: flex-end; 
+        }
+        
+        .file-input, .text-input { 
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #383838;
+            color: #e0e0e0;
+        }
+        
+        .gallery-admin {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .gallery-admin-item {
+            position: relative;
+            background-color: #383838;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        .gallery-admin-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            filter: brightness(0.9);
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #ef5350;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .logout-btn {
+            background-color: #ef5350;
+            margin-top: 15px;
+        }
+        
+        .logout-btn:hover {
+            background-color: #e53935;
+        }
+
+        .category-list { 
+            list-style: none;
+            padding: 0;
+            margin-bottom: 15px;
+        }
+        .category-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #444;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            background-color: #383838;
+            color: #bdbdbd;
+        }
+        .category-list li button {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        #category-dropdown, #image-category-upload {
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            border-radius: 5px; 
+            border: 1px solid #444;
+            background-color: #383838;
+            color: #e0e0e0;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            #category-dropdown {
+                font-size: 14px;
+                padding: 12px 15px;
+            }
+
+            #hero-title-display {
+                font-size: 2.2em; 
+            }
+            #hero-subtitle-display {
+                font-size: 1.15em; 
+            }
+            .hero-text-container {
+                padding: 25px 20px; 
+                max-width: 95%;
+            }
+            .login-form {
+                width: 90%;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">UUcats Repository</a>
+            <div class="nav-links">
+                <a href="#" class="social-link" id="twitter-link">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    (트위터)
+                </a>
+                <a href="#" id="login-button">관리자</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-text-container">
+            <h1 id="hero-title-display">테스트용 무료 호스팅이라 조금 느려요... 10초만 기다려주세요!</h1>
+            <p id="hero-subtitle-display">유료로 바꿔야하는데 귀찮당...</p>
+        </div>
+    </section>
+    <main class="container">
+        <div class="admin-panel" id="admin-panel">
+            <h2>관리자 패널</h2>
+
+            <h3>히어로 문구 관리</h3>
+            <div class="hero-text-form">
+                <input type="text" id="hero-title-input" class="text-input" placeholder="큰 제목 입력">
+                <input type="text" id="hero-subtitle-input" class="text-input" placeholder="작은 부제목 입력">
+                <button class="btn" id="hero-text-save-btn">문구 저장</button>
+                <button class="btn btn-danger" id="hero-text-delete-btn">문구 전체 삭제</button>
+            </div>
+            <h3>카테고리 관리</h3>
+            <div class="category-form">
+                <input type="text" id="new-category-input" class="text-input" placeholder="새 카테고리 이름">
+                <button class="btn" id="add-category-btn">카테고리 추가</button>
+            </div>
+            <ul id="category-list-admin" class="category-list">
+                </ul>
+            <h3>갤러리 사진 업로드</h3>
+            <div class="upload-form">
+                <input type="file" class="file-input" id="image-upload" accept="image/*">
+                <input type="text" placeholder="사진 제목" id="image-title" class="text-input">
+                <select id="image-category-upload" class="text-input">
+                    <option value="">카테고리 선택</option>
+                    </select>
+                <button class="btn" id="upload-btn">사진 업로드</button>
+            </div>
+            <div class="gallery-admin" id="gallery-admin">
+                </div>
+            <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
+        </div>
+        
+        <div class="category-dropdown-container">
+            <select id="category-dropdown" class="category-dropdown">
+                <option value="전체">모든 카테고리</option>
+                </select>
+        </div>
+        
+        <div class="gallery" id="gallery">
+            </div>
+    </main>
+    
+    <div class="modal" id="image-modal">
+        <span class="close" id="close-modal">&times;</span>
+        <span class="nav-btn prev-btn" id="prev-btn">&#10094;</span>
+        <span class="nav-btn next-btn" id="next-btn">&#10095;</span>
+        <img class="modal-content" id="modal-image">
+        <div class="modal-title" id="modal-title"></div>
+    </div>
+    
+    <div class="login-modal" id="login-modal">
+        <div class="login-form">
+            <h2>관리자 로그인</h2>
+            <div class="form-group">
+                <label for="username">아이디</label>
+                <input type="text" id="username" name="username">
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <button class="btn btn-block" id="login-submit">로그인</button>
+        </div>
+    </div>
+
+<script>
+        // JavaScript 부분은 이전과 동일하게 유지됩니다 (히어로 이미지 관련 로직은 이미 제거됨).
+        // 이 예제에서는 스타일 변경에 집중했으므로 스크립트는 생략하고,
+        // 이전 단계에서 수정된 스크립트를 그대로 사용하시면 됩니다.
+        // 만약 스크립트 전체가 필요하시면 다시 요청해주세요!
+        let photos = [];
+        let categories = [];
+        let heroInfo = { 
+            title: '로딩 중이다옹...',
+            subtitle: '잠시만 기다려달라냥!'
+        };
+        let currentCategoryFilter = '전체';
+        let currentModalPhotoIndex = 0;
+
+        const gallery = document.getElementById('gallery');
+        const galleryAdmin = document.getElementById('gallery-admin');
+        const adminPanel = document.getElementById('admin-panel');
+        const loginButton = document.getElementById('login-button');
+        const loginModal = document.getElementById('login-modal');
+        const loginSubmit = document.getElementById('login-submit');
+        const logoutBtn = document.getElementById('logout-btn');
+        const uploadBtn = document.getElementById('upload-btn');
+        const imageUploadInput = document.getElementById('image-upload');
+        const imageTitleInput = document.getElementById('image-title');
+        const imageCategoryUploadDropdown = document.getElementById('image-category-upload');
+        const imageModal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalTitleElement = document.getElementById('modal-title');
+        const closeModal = document.getElementById('close-modal');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const twitterLink = document.getElementById('twitter-link');
+        const categoryDropdown = document.getElementById('category-dropdown');
+        const heroTitleDisplay = document.getElementById('hero-title-display');
+        const heroSubtitleDisplay = document.getElementById('hero-subtitle-display');
+        const heroTitleInputAdmin = document.getElementById('hero-title-input');
+        const heroSubtitleInputAdmin = document.getElementById('hero-subtitle-input');
+        const heroTextSaveBtnAdmin = document.getElementById('hero-text-save-btn');
+        const heroTextDeleteBtnAdmin = document.getElementById('hero-text-delete-btn');
+        const newCategoryInputAdmin = document.getElementById('new-category-input');
+        const addCategoryBtnAdmin = document.getElementById('add-category-btn');
+        const categoryListAdmin = document.getElementById('category-list-admin');
+
+        const DEFAULT_HERO_TITLE = '여기에 멋진 제목을!';
+        const DEFAULT_HERO_SUBTITLE = '여기는 부제목을 쓰는 공간이다옹!';
+
+    async function init() {
+        console.log("야옹! init() 함수가 지금 막 시작됐다옹!");
+
+        try {
+            const response = await fetch('/.netlify/functions/get-categories'); 
+            if (!response.ok) {
+                const errorText = await response.text(); 
+                throw new Error(`냐옹! 서버에서 카테고리 가져오기 실패: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+            const serverCategories = await response.json(); 
+            categories = serverCategories; 
+        } catch (error) {
+            console.error('서버에서 카테고리 가져오다가 에러다옹 ㅠㅠ:', error);
+            categories = ['풍경', '인물', '기본값이다옹']; 
+            alert('냐옹... 서버에서 카테고리 목록을 가져오는데 실패해서 임시 목록을 보여준다옹. 새로고침 해보라냥!');
+        }
+
+        try {
+            const heroResponse = await fetch('/.netlify/functions/get-hero-info');
+            if (heroResponse.ok) {
+                const heroData = await heroResponse.json();
+                heroInfo.title = heroData.title || DEFAULT_HERO_TITLE;
+                heroInfo.subtitle = heroData.subtitle || DEFAULT_HERO_SUBTITLE;
+            } else {
+                setDefaultHeroInfo();
+            }
+        } catch (e) {
+            setDefaultHeroInfo();
+        }
+        updateHeroSection();
+
+        try {
+            const photosResponse = await fetch('/.netlify/functions/get-photos');
+            if (photosResponse.ok) {
+                photos = await photosResponse.json();
+            } else {
+                photos = [];
+            }
+        } catch (e) {
+            photos = [];
+        }
+            
+        populateAllCategoryDropdowns(); 
+        renderGallery(); 
+        checkLogin(); 
+        setupEventListeners();
+    }
+
+        function setDefaultHeroInfo() {
+            heroInfo.title = DEFAULT_HERO_TITLE;
+            heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
+        }
+
+        function updateHeroSection() {
+            heroTitleDisplay.textContent = heroInfo.title || ''; 
+            heroSubtitleDisplay.textContent = heroInfo.subtitle || ''; 
+
+            if (adminPanel.style.display === 'block') {
+                heroTitleInputAdmin.value = heroInfo.title || '';
+                heroSubtitleInputAdmin.value = heroInfo.subtitle || '';
+            }
+        }
+        
+        async function saveHeroText() {
+            const titleToSave = heroTitleInputAdmin.value.trim();
+            const subtitleToSave = heroSubtitleInputAdmin.value.trim();
+
+            try {
+                const response = await fetch('/.netlify/functions/update-hero-text', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: titleToSave, subtitle: subtitleToSave }) 
+                });
+
+                if (response.ok) {
+                    const result = await response.json(); 
+                    heroInfo.title = result.data.title;
+                    heroInfo.subtitle = result.data.subtitle;
+                    updateHeroSection();
+                    alert('히어로 문구가 Firestore에 저장되었다옹!');
+                } else { 
+                    throw new Error(await response.text() || '히어로 문구 저장 실패'); 
+                }
+            } catch (error) {
+                alert(`냐옹... 히어로 문구 저장에 실패했다옹: ${error.message}`);
+            }
+        }
+
+        async function deleteHeroText() {
+             if (confirm('정말로 히어로 문구를 기본값으로 되돌릴거냥?')) {
+                try {
+                    const response = await fetch('/.netlify/functions/update-hero-text', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            title: DEFAULT_HERO_TITLE, 
+                            subtitle: DEFAULT_HERO_SUBTITLE
+                        })
+                    });
+                     if(response.ok){
+                        heroInfo.title = DEFAULT_HERO_TITLE;
+                        heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
+                        updateHeroSection();
+                        alert('히어로 문구가 기본값으로 초기화되었다옹!');
+                    } else { 
+                        throw new Error(await response.text() || '히어로 문구 초기화 실패');
+                    }
+                } catch (error) {
+                    alert('냐옹... 히어로 문구 초기화에 실패했다옹.');
+                }
+            }
+        }
+        
+    function populateAllCategoryDropdowns() {
+        const categoryNamesFromGlobal = categories.map(cat => cat.name);
+        const uniqueCategoryNamesFromPhotos = photos.length > 0 
+            ? [...new Set(photos.map(p => p.category).filter(catName => catName && typeof catName === 'string' && catName.trim() !== ''))].sort() 
+            : [];
+        let displayCategoryNames = [...new Set([...categoryNamesFromGlobal, ...uniqueCategoryNamesFromPhotos])]
+                                    .filter(catName => catName && typeof catName === 'string' && catName.trim() !== '') 
+                                    .sort((a, b) => a.localeCompare(b)); 
+
+        if (displayCategoryNames.length === 0 && categoryNamesFromGlobal.length > 0) {
+            displayCategoryNames = [...categoryNamesFromGlobal].sort((a, b) => a.localeCompare(b));
+        }
+
+        categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>'; 
+        displayCategoryNames.forEach(categoryName => { 
+            const count = photos.filter(p => p.category === categoryName).length;
+            const option = document.createElement('option');
+            option.value = categoryName;
+            option.textContent = `${categoryName} (${count})`; 
+            categoryDropdown.appendChild(option);
+        });
+        categoryDropdown.value = currentCategoryFilter; 
+
+        imageCategoryUploadDropdown.innerHTML = '<option value="">카테고리 선택</option>'; 
+        displayCategoryNames.forEach(categoryName => { 
+            const option = document.createElement('option');
+            option.value = categoryName;
+            option.textContent = categoryName; 
+            imageCategoryUploadDropdown.appendChild(option);
+        });
+
+        if (adminPanel.style.display === 'block') {
+            renderAdminCategoryList(); 
+        }
+    }
+
+    function renderAdminCategoryList() {
+        categoryListAdmin.innerHTML = ''; 
+        if (!categories || categories.length === 0) {
+            categoryListAdmin.innerHTML = '<li style="text-align:center; color:#777; padding:10px 0;">아직 관리할 카테고리가 없다옹.</li>';
+            return; 
+        }
+        [...categories].sort((a,b) => (a.name||'').localeCompare(b.name||'')).forEach(category => { 
+            const listItem = document.createElement('li');
+            listItem.id = `admin-category-li-${category.id}`; 
+            listItem.textContent = category.name; 
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '삭제';
+            deleteButton.className = 'btn btn-danger btn-sm'; 
+            deleteButton.onclick = () => handleDeleteCategory(category.id, category.name); 
+            listItem.appendChild(deleteButton);
+            categoryListAdmin.appendChild(listItem);
+        });
+    }
+
+    async function handleDeleteCategory(categoryId, categoryName) {
+        if (!confirm(`정말로 '${categoryName}' 카테고리를 삭제할거냥?`)) return; 
+        try {
+            const response = await fetch('/.netlify/functions/delete-category', {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ id: categoryId }), 
+            });
+            const resultData = await response.json();
+            if (!response.ok) throw new Error(resultData.message || `HTTP 에러 ${response.status}`);
+            alert(`'${categoryName}' 카테고리 삭제 성공옹! (서버: ${resultData.message})`);
+            await refreshCategoriesFromServer(); 
+        } catch (error) {
+            alert(`카테고리 삭제 실패옹... (${error.message})`);
+        }
+    }
+
+    async function handleAddCategory() {
+        const newCategoryName = newCategoryInputAdmin.value.trim();
+        if (!newCategoryName) { alert('카테고리 이름을 입력해달라옹!'); return; }
+        if (newCategoryName.toLowerCase() === '전체') { alert("'전체'는 사용불가옹!"); newCategoryInputAdmin.value = ''; return;}
+        try {
+            const response = await fetch('/.netlify/functions/add-category', {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ name: newCategoryName }), 
+            });
+            const result = await response.json(); 
+            if (!response.ok) throw new Error(result.message || `카테고리 추가 실패: ${response.status}`);
+            alert(`'${result.name}' 카테고리 추가 성공옹!`);
+            await refreshCategoriesFromServer(); 
+            newCategoryInputAdmin.value = ''; 
+        } catch (error) {
+            alert(`카테고리 추가 중 문제 발생옹: ${error.message}`);
+        }
+    }
+
+    async function refreshCategoriesFromServer() {
+        try {
+            const response = await fetch('/.netlify/functions/get-categories');
+            if (!response.ok) throw new Error(`카테고리 새로고침 실패: ${response.status}`);
+            categories = await response.json(); 
+            populateAllCategoryDropdowns(); 
+        } catch (error) {
+            alert('카테고리 목록 새로고침 실패옹...');
+        }
+    }
+            
+    function renderGallery() {
+        gallery.innerHTML = '';
+        const filteredPhotos = currentCategoryFilter === '전체' ? photos : photos.filter(photo => photo.category === currentCategoryFilter);
+        if (filteredPhotos.length === 0) {
+            let msg = `'${currentCategoryFilter}' 카테고리에 사진이 없다옹.`;
+            if (currentCategoryFilter === '전체' && photos.length === 0) msg = '아직 업로드된 사진이 없다옹!';
+            gallery.innerHTML = `<div style="text-align:center; padding:40px; width:100%; color:#999;">${msg}</div>`;
+            return;
+        }
+        filteredPhotos.forEach((photo, index) => {
+            const item = document.createElement('div'); item.className = 'gallery-item'; 
+            item.style.opacity='0'; item.style.transform='translateY(20px)'; item.style.transition=`opacity 0.5s ease ${index*0.05}s, transform 0.5s ease ${index*0.05}s`;
+            item.innerHTML = `<img src="${photo.imageUrl || ''}" alt="${photo.title || ''}" loading="lazy"><div class="photo-title">${photo.title || ''}</div>`;
+            item.addEventListener('click', () => openImageModal(photo.id));
+            gallery.appendChild(item);
+            setTimeout(() => { item.style.opacity='1'; item.style.transform='translateY(0)';}, 10); 
+        });
+    }
+            
+    function renderAdminGallery() {
+        galleryAdmin.innerHTML = '';
+        photos.slice().reverse().forEach(photo => {
+            const item = document.createElement('div'); item.className = 'gallery-admin-item';
+            item.innerHTML = `<img src="${photo.imageUrl||''}" alt="${photo.title||''}" loading="lazy"><div style="padding:5px;text-align:center;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#ccc;">${photo.title||''} <span style="display:block;color:#888;font-size:11px;">${photo.category||''}</span></div><button class="delete-btn" data-id="${photo.id}" data-gcsfilename="${photo.gcsFileName||''}">&times;</button>`;
+            galleryAdmin.appendChild(item);
+        });
+        document.querySelectorAll('#gallery-admin .delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => deletePhoto(e.currentTarget.dataset.id, e.currentTarget.dataset.gcsfilename));
+        });
+    }
+            
+    async function uploadPhoto() {
+        const file = imageUploadInput.files[0]; if (!file) { alert('이미지 선택해달라옹!'); return; }
+        const title = imageTitleInput.value.trim() || `사진 ${Date.now()}`;
+        const category = imageCategoryUploadDropdown.value; if (!category) { alert('카테고리 선택해달라옹!'); return; }
+        const formData = new FormData(); formData.append('imageFile', file); formData.append('title', title); formData.append('category', category);
+        try {
+            const response = await fetch('/.netlify/functions/upload-image-to-gcs', { method: 'POST', body: formData });
+            if (!response.ok) throw new Error((await response.json()).message || '업로드 실패!');
+            await refreshPhotosFromServer(); 
+            imageUploadInput.value=''; imageTitleInput.value=''; imageCategoryUploadDropdown.value=''; 
+            alert('사진 업로드 성공옹!');
+        } catch (error) { alert(`사진 업로드 실패: ${error.message}`);}
+    }
+            
+    async function refreshPhotosFromServer() {
+        try {
+            const photosResponse = await fetch('/.netlify/functions/get-photos');
+            photos = photosResponse.ok ? await photosResponse.json() : [];
+        } catch (e) { photos = []; }
+        populateAllCategoryDropdowns(); renderGallery();                 
+        if (localStorage.getItem('isLoggedIn')==='true') renderAdminGallery();
+    }
+
+    async function deletePhoto(photoId, gcsFileName) {
+        if (!photoId || !confirm('정말로 이 사진을 삭제할거냥?')) return;
+        try {
+            const response = await fetch('/.netlify/functions/delete-photo', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photoId, gcsFileName })
+            });
+            if (!response.ok) throw new Error((await response.json()).message || '삭제 실패!');
+            alert('사진 삭제 성공옹!'); 
+            setTimeout(refreshPhotosFromServer, 500); 
+        } catch (error) { alert(`사진 삭제 실패: ${error.message}`);}
+    }
+            
+    function openImageModal(photoId) {
+        let photosToSearch = (currentCategoryFilter !== '전체') ? photos.filter(p => p.category === currentCategoryFilter) : photos;
+        if (photosToSearch.length === 0 && photos.length > 0) photosToSearch = photos; // 카테고리에 없으면 전체에서라도 찾기
+        currentModalPhotoIndex = photosToSearch.findIndex(p => p.id === photoId);
+        if (currentModalPhotoIndex === -1) { // 그래도 못찾으면 전체에서 다시
+             currentModalPhotoIndex = photos.findIndex(p => p.id === photoId);
+             if (currentModalPhotoIndex === -1) return;
+             photosToSearch = photos;
+        }
+        displayCurrentPhotoInModal(photosToSearch); 
+        imageModal.style.display = 'flex';
+    }
+
+    function displayCurrentPhotoInModal(photoArray) { 
+        if (currentModalPhotoIndex >= 0 && currentModalPhotoIndex < photoArray.length) {
+            const photo = photoArray[currentModalPhotoIndex]; if (!photo) return;
+            modalImage.src = photo.imageUrl || '';
+            modalTitleElement.innerHTML = `${photo.title||''}<br><span style="font-size:14px;opacity:0.8;">@UU_CATS</span> <span style="display:inline-block;margin-left:10px;font-size:12px;background-color:rgba(255,255,255,0.2);padding:3px 10px;border-radius:12px;">${photo.category||''}</span>`;
+        }
+        prevBtn.style.display = photoArray.length > 1 ? 'block' : 'none';
+        nextBtn.style.display = photoArray.length > 1 ? 'block' : 'none';
+    }
+
+    function showPreviousPhotoInModal() {
+        let arr = (currentCategoryFilter !== '전체') ? photos.filter(p => p.category === currentCategoryFilter) : photos;
+        if (arr.length === 0 && photos.length > 0) arr = photos; if(arr.length === 0) return;
+        currentModalPhotoIndex = (currentModalPhotoIndex - 1 + arr.length) % arr.length;
+        displayCurrentPhotoInModal(arr);
+    }
+
+    function showNextPhotoInModal() {
+        let arr = (currentCategoryFilter !== '전체') ? photos.filter(p => p.category === currentCategoryFilter) : photos;
+        if (arr.length === 0 && photos.length > 0) arr = photos; if(arr.length === 0) return;
+        currentModalPhotoIndex = (currentModalPhotoIndex + 1) % arr.length;
+        displayCurrentPhotoInModal(arr);
+    }
+            
+    async function login() { 
+        const u = document.getElementById('username').value, p = document.getElementById('password').value;
+        if (!u || !p) { alert('아이디와 비밀번호를 모두 입력해달라옹!'); return; }
+        try {
+            const response = await fetch('/.netlify/functions/login-police', { 
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) 
+            });
+            const result = await response.json(); 
+            if (response.ok && result.success) { 
+                localStorage.setItem('isLoggedIn', 'true'); loginModal.style.display = 'none'; 
+                document.getElementById('username').value = ''; document.getElementById('password').value = ''; 
+                checkLogin(); alert(result.message || '로그인 성공이다옹!');
+            } else { alert(result.message || '아이디 또는 비밀번호가 틀렸다옹!'); document.getElementById('password').value = '';}
+        } catch (error) { alert('냐옹... 로그인 중 서버에 문제가 생겼다옹!'); }
+    }
+
+    function logout() {
+        if (confirm('정말로 로그아웃 할거냥?')) {
+            localStorage.removeItem('isLoggedIn'); adminPanel.style.display = 'none';
+            loginButton.textContent = '관리자 로그인'; alert('로그아웃 되었다옹!');
+        }
+    }
+
+    function checkLogin() {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        adminPanel.style.display = isLoggedIn ? 'block' : 'none';
+        loginButton.textContent = isLoggedIn ? '관리자 패널 보기' : '관리자 로그인'; 
+        if(isLoggedIn) { renderAdminGallery(); populateAllCategoryDropdowns(); updateHeroSection(); }
+    }
+            
+    function setupEventListeners() {
+        loginButton.addEventListener('click', () => {
+            if (localStorage.getItem('isLoggedIn') === 'true') { 
+                adminPanel.style.display = (adminPanel.style.display==='block') ? 'none' : 'block';      
+                loginButton.textContent = (adminPanel.style.display==='block') ? '관리자 패널 닫기' : '관리자 패널 열기'; 
+                if(adminPanel.style.display==='block') { checkLogin(); window.scrollTo({ top: adminPanel.offsetTop - 80, behavior: 'smooth' }); }
+            } else { loginModal.style.display = 'flex'; }
+        });
+        loginSubmit.addEventListener('click', login);
+        logoutBtn.addEventListener('click', logout);
+        uploadBtn.addEventListener('click', uploadPhoto);
+        closeModal.addEventListener('click', () => imageModal.style.display = 'none');
+        prevBtn.addEventListener('click', showPreviousPhotoInModal);
+        nextBtn.addEventListener('click', showNextPhotoInModal);
+        categoryDropdown.addEventListener('change', (e) => { currentCategoryFilter = e.target.value; renderGallery(); });
+        heroTextSaveBtnAdmin.addEventListener('click', saveHeroText);
+        heroTextDeleteBtnAdmin.addEventListener('click', deleteHeroText);
+        addCategoryBtnAdmin.addEventListener('click', handleAddCategory);
+        document.addEventListener('keydown', (e) => {
+             if (imageModal.style.display === 'flex') { 
+                if (e.key === 'ArrowLeft') showPreviousPhotoInModal();
+                else if (e.key === 'ArrowRight') showNextPhotoInModal();
+                else if (e.key === 'Escape') imageModal.style.display = 'none';
+            }
+        });
+        window.addEventListener('click', (e) => {
+            if (e.target === imageModal) imageModal.style.display = 'none';
+            if (e.target === loginModal) loginModal.style.display = 'none';
+        });
+        twitterLink.addEventListener('click', (e) => { e.preventDefault(); window.open('https://x.com/UU_CATS', '_blank'); });
+    }
+            
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

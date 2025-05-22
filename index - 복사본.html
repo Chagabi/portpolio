@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUcats Repository</title>
+    <link rel="preload" href="https://storage.googleapis.com/uucats-repository-images/hero/hero-image-1746967832302.webp" as="image">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #4285f4;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .social-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* === 히어로 섹션 스타일이다냥! === */
+        .hero-section {
+            width: 100%;
+            height: 800px; /* 조금 더 높게 조정했다옹 */
+            overflow: hidden;
+            position: relative; /* 문구 위치 잡기 편하게! */
+            text-align: center;
+            background-color: #e0e0e0; /* 기본 배경색 */
+            display: flex; /* 문구 중앙 정렬을 위해 추가했다옹 */
+            flex-direction: column; /* 문구를 이미지 아래로! */
+            justify-content: flex-end; /* 문구를 아래쪽에 붙인다옹 */
+            align-items: center; /* 가로 중앙 정렬 */
+        }
+
+        #hero-image-display {
+            width: 100%;
+            height: 100%; /* 부모 높이에 맞춤 */
+            object-fit: cover; /* 이미지가 비율 유지하며 꽉 차게! */
+            position: absolute; /* 문구랑 겹칠 수 있게! */
+            top: 0;
+            left: 0;
+            z-index: 1; /* 문구보다 뒤에 있도록! */
+        }
+
+        .hero-text-container {
+            position: relative; /* z-index 적용을 위해 */
+            z-index: 2; /* 이미지보다 위에 있도록! */
+            color: white;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5); /* 가독성을 위한 반투명 배경 */
+            width: 100%; /* 가로 꽉 차게 */
+            text-align: center;
+            border-bottom-left-radius: 8px; /* 살짝 둥글게~ */
+            border-bottom-right-radius: 8px;
+        }
+
+        #hero-title-display {
+            font-size: 2.5em; /* 큰 제목! */
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* 글자 그림자! */
+        }
+
+        #hero-subtitle-display {
+            font-size: 1.2em; /* 작은 부제목! */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+        }
+        /* === 히어로 섹션 스타일 끝이다냥! === */
+        
+        main {
+            padding: 40px 0;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: #fff;
+            cursor: pointer;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .photo-title {
+            padding: 10px;
+            text-align: center;
+            font-weight: 500;
+            color: #333;
+            position: relative;
+            z-index: 10;
+            background-color: #fff;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding-bottom: 50px;
+        }
+        
+        .modal-content {
+            max-width: 85%;
+            max-height: 75%;
+            margin-bottom: 15px;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .modal-title {
+            color: #fff;
+            text-align: center;
+            font-size: 18px;
+            width: 100%;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            max-width: 85%;
+        }
+        
+        .nav-btn {
+            position: absolute;
+            top: 40%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+            z-index: 20;
+        }
+        
+        .nav-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .prev-btn {
+            left: 20px;
+        }
+        
+        .next-btn {
+            right: 20px;
+        }
+        
+        /* 로그인 모달 */
+        .login-modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .login-form h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 5px; /* 버튼 간격 살짝! */
+        }
+        
+        .btn:hover {
+            background-color: #3367d6;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-danger { /* 삭제 버튼용 빨간색! */
+            background-color: #ff4444;
+        }
+        .btn-danger:hover {
+            background-color: #cc0000;
+        }
+        
+        /* 관리자 패널 */
+        .admin-panel {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .admin-panel h2, .admin-panel h3 { /* h3도 추가했옹 */
+            margin-bottom: 15px; /* 간격 살짝 줄였옹 */
+            margin-top: 20px; /* 섹션별 간격 */
+        }
+        .admin-panel h2:first-child {
+            margin-top: 0; /* 첫번째 h2는 위쪽 간격 없음! */
+        }
+        
+        .upload-form, .hero-text-form, .category-form { /* 폼 스타일 통일이다냥 */
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end; /* 버튼이랑 인풋 높이 맞추려고! */
+        }
+        
+        .file-input, .text-input { /* 인풋 스타일 통일! */
+            flex: 1;
+            min-width: 200px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .gallery-admin {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .gallery-admin-item {
+            position: relative;
+        }
+        
+        .gallery-admin-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .logout-btn {
+            background-color: #f44336;
+            margin-top: 15px;
+        }
+        
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .category-list { /* 카테고리 목록 스타일 */
+            list-style: none;
+            padding: 0;
+            margin-bottom: 15px;
+        }
+        .category-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid #eee;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+        .category-list li button {
+            padding: 3px 8px;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .category-dropdown {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+
+            #hero-title-display {
+                font-size: 1.8em;
+            }
+            #hero-subtitle-display {
+                font-size: 1em;
+            }
+            .hero-text-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">UUcats Repository</a>
+            <div class="nav-links">
+                <a href="#" class="social-link" id="twitter-link">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    (트위터)
+                </a>
+                <a href="#" id="login-button">관리자</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <img id="hero-image-display" src="https://storage.googleapis.com/uucats-repository-images/hero/hero-image-1746967832302.webp" alt="UUcats Repository의 멋지고 선명한 대표 고양이 히어로 이미지다옹!">
+        <div class="hero-text-container">
+            <h1 id="hero-title-display">Pulchritudinem per imagines trado</h1>
+            <p id="hero-subtitle-display">@uu_cats</p>
+        </div>
+    </section>
+        </div>
+    </section>
+    <main class="container">
+        <div class="admin-panel" id="admin-panel">
+            <h2>관리자 패널</h2>
+
+            <h3>히어로 이미지 관리</h3>
+            <div class="upload-form">
+                <input type="file" class="file-input" id="hero-image-upload-input" accept="image/*">
+                <button class="btn" id="hero-image-upload-btn">히어로 이미지 업로드</button>
+            </div>
+            <div id="current-hero-image-admin" style="margin-top:10px; margin-bottom: 20px;">
+                <p><strong>현재 히어로 이미지:</strong></p>
+                <img id="admin-hero-preview" src="/api/placeholder/400/150" alt="현재 히어로 이미지 미리보기" style="max-width: 400px; max-height: 150px; object-fit: cover; border-radius: 4px; margin-top: 5px;">
+                <button class="btn btn-danger" id="hero-image-delete-btn" style="display: block; margin-top: 10px;">히어로 이미지 삭제</button>
+            </div>
+            <h3>히어로 문구 관리</h3>
+            <div class="hero-text-form">
+                <input type="text" id="hero-title-input" class="text-input" placeholder="큰 제목 입력">
+                <input type="text" id="hero-subtitle-input" class="text-input" placeholder="작은 부제목 입력">
+                <button class="btn" id="hero-text-save-btn">문구 저장</button>
+                <button class="btn btn-danger" id="hero-text-delete-btn">문구 전체 삭제</button>
+            </div>
+            <h3>카테고리 관리</h3>
+            <div class="category-form">
+                <input type="text" id="new-category-input" class="text-input" placeholder="새 카테고리 이름">
+                <button class="btn" id="add-category-btn">카테고리 추가</button>
+            </div>
+            <ul id="category-list-admin" class="category-list">
+                </ul>
+            <h3>갤러리 사진 업로드</h3>
+            <div class="upload-form">
+                <input type="file" class="file-input" id="image-upload" accept="image/*">
+                <input type="text" placeholder="사진 제목" id="image-title" class="text-input">
+                <select id="image-category-upload" class="text-input" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">카테고리 선택</option>
+                    </select>
+                <button class="btn" id="upload-btn">사진 업로드</button>
+            </div>
+            <div class="gallery-admin" id="gallery-admin">
+                </div>
+            <button class="btn btn-block logout-btn" id="logout-btn">로그아웃</button>
+        </div>
+        
+        <div class="category-dropdown-container">
+            <select id="category-dropdown" class="category-dropdown" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #ddd;">
+                <option value="전체">모든 카테고리</option>
+                </select>
+        </div>
+        
+        <div class="gallery" id="gallery">
+            </div>
+    </main>
+    
+    <div class="modal" id="image-modal">
+        <span class="close" id="close-modal">&times;</span>
+        <span class="nav-btn prev-btn" id="prev-btn">&#10094;</span>
+        <span class="nav-btn next-btn" id="next-btn">&#10095;</span>
+        <img class="modal-content" id="modal-image">
+        <div class="modal-title" id="modal-title"></div>
+    </div>
+    
+    <div class="login-modal" id="login-modal">
+        <div class="login-form">
+            <h2>관리자 로그인</h2>
+            <div class="form-group">
+                <label for="username">아이디</label>
+                <input type="text" id="username" name="username">
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <button class="btn btn-block" id="login-submit">로그인</button>
+        </div>
+    </div>
+
+<script>
+        let photos = [];
+        let categories = []; // 냐옹! 이렇게 빈 바구니로 시작하는 거다옹!
+        let heroInfo = {
+            imageUrl: '/api/placeholder/1200/500?text=Loading...',
+            title: '로딩 중이다옹...',
+            subtitle: '잠시만 기다려달라냥!'
+        };
+        let currentCategoryFilter = '전체';
+        let currentModalPhotoIndex = 0;
+
+        const gallery = document.getElementById('gallery');
+        const galleryAdmin = document.getElementById('gallery-admin');
+        const adminPanel = document.getElementById('admin-panel');
+        const loginButton = document.getElementById('login-button');
+        const loginModal = document.getElementById('login-modal');
+        const loginSubmit = document.getElementById('login-submit');
+        const logoutBtn = document.getElementById('logout-btn');
+        const uploadBtn = document.getElementById('upload-btn');
+        const imageUploadInput = document.getElementById('image-upload');
+        const imageTitleInput = document.getElementById('image-title');
+        const imageCategoryUploadDropdown = document.getElementById('image-category-upload');
+        const imageModal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalTitleElement = document.getElementById('modal-title');
+        const closeModal = document.getElementById('close-modal');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const twitterLink = document.getElementById('twitter-link');
+        const categoryDropdown = document.getElementById('category-dropdown');
+        const heroImageDisplay = document.getElementById('hero-image-display');
+        const heroTitleDisplay = document.getElementById('hero-title-display');
+        const heroSubtitleDisplay = document.getElementById('hero-subtitle-display');
+        const heroImageUploadInputAdmin = document.getElementById('hero-image-upload-input');
+        const heroImageUploadBtnAdmin = document.getElementById('hero-image-upload-btn');
+        const adminHeroPreview = document.getElementById('admin-hero-preview');
+        const heroImageDeleteBtnAdmin = document.getElementById('hero-image-delete-btn');
+        const heroTitleInputAdmin = document.getElementById('hero-title-input');
+        const heroSubtitleInputAdmin = document.getElementById('hero-subtitle-input');
+        const heroTextSaveBtnAdmin = document.getElementById('hero-text-save-btn');
+        const heroTextDeleteBtnAdmin = document.getElementById('hero-text-delete-btn');
+        const newCategoryInputAdmin = document.getElementById('new-category-input');
+        const addCategoryBtnAdmin = document.getElementById('add-category-btn');
+        const categoryListAdmin = document.getElementById('category-list-admin');
+
+        const DEFAULT_HERO_IMAGE_URL = '/api/placeholder/1200/500?text=Hero+Image';
+        const DEFAULT_HERO_TITLE = '여기에 멋진 제목을!';
+        const DEFAULT_HERO_SUBTITLE = '여기는 부제목을 쓰는 공간이다옹!';
+
+     // 냐옹! init 함수를 이렇게 통째로 바꿔주자옹!
+    async function init() {
+        console.log("야옹! init() 함수가 지금 막 시작됐다옹!"); // <--- 우리가 추가했던 확인용 로그!
+
+        // --- 냐옹! 🐱 여기가 바로 카테고리를 서버에서 가져오는 부분이다옹! ---
+        try {
+            console.log('냐옹~ 서버에서 카테고리 목록을 가져오기 시작한다옹!');
+            const response = await fetch('/.netlify/functions/get-categories'); // 우리 함수 주소!
+            if (!response.ok) {
+                const errorText = await response.text(); 
+                throw new Error(`냐옹! 서버에서 카테고리 가져오기 실패: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+            const serverCategories = await response.json(); 
+
+            categories = serverCategories; // 서버에서 이미 {id, name} 객체 배열로 온다옹! 그대로 쓰자냥!
+            
+            console.log('서버에서 카테고리 성공적으로 가져왔다옹!', categories);
+
+        } catch (error) {
+            console.error('서버에서 카테고리 가져오다가 에러다옹 ㅠㅠ:', error);
+            categories = ['풍경', '인물', '기본값이다옹']; // 예시: 에러 시 기본 카테고리
+            alert('냐옹... 서버에서 카테고리 목록을 가져오는데 실패해서 임시 목록을 보여준다옹. 새로고침 해보라냥!');
+        }
+
+
+            try {
+                const heroResponse = await fetch('/.netlify/functions/get-hero-info');
+                if (heroResponse.ok) {
+                    const heroData = await heroResponse.json();
+                    heroInfo.title = heroData.title || DEFAULT_HERO_TITLE;
+                    heroInfo.subtitle = heroData.subtitle || DEFAULT_HERO_SUBTITLE;
+                    heroInfo.imageUrl = heroData.imageUrl || DEFAULT_HERO_IMAGE_URL;
+                } else {
+                    console.error('init: 히어로 정보 가져오기 실패 (서버 응답):', await heroResponse.text());
+                    setDefaultHeroInfo();
+                }
+            } catch (e) {
+                console.error('init: 히어로 정보 가져오는 중 네트워크 에러:', e);
+                setDefaultHeroInfo();
+            }
+            updateHeroSection();
+
+            try {
+                const photosResponse = await fetch('/.netlify/functions/get-photos');
+                if (photosResponse.ok) {
+                    const photosData = await photosResponse.json();
+                    photos = photosData;
+                } else {
+                    console.error('init: 갤러리 사진 목록 가져오기 실패 (서버 응답):', await photosResponse.text());
+                    photos = [];
+                }
+            } catch (e) {
+                console.error('init: 갤러리 사진 목록 가져오는 중 네트워크 에러:', e);
+                photos = [];
+            }
+
+            try {
+                const heroResponse = await fetch('/.netlify/functions/get-hero-info');
+                if (heroResponse.ok) {
+                    const heroData = await heroResponse.json();
+                    heroInfo.title = heroData.title || DEFAULT_HERO_TITLE;
+                    heroInfo.subtitle = heroData.subtitle || DEFAULT_HERO_SUBTITLE;
+                    heroInfo.imageUrl = heroData.imageUrl || DEFAULT_HERO_IMAGE_URL;
+                } else {
+                    console.error('init: 히어로 정보 가져오기 실패 (서버 응답):', await heroResponse.text());
+                    setDefaultHeroInfo();
+                }
+            } catch (e) {
+                console.error('init: 히어로 정보 가져오는 중 네트워크 에러:', e);
+                setDefaultHeroInfo();
+            }
+            updateHeroSection();
+
+            try {
+                const photosResponse = await fetch('/.netlify/functions/get-photos');
+                if (photosResponse.ok) {
+                    const photosData = await photosResponse.json();
+                    photos = photosData;
+                } else {
+                    console.error('init: 갤러리 사진 목록 가져오기 실패 (서버 응답):', await photosResponse.text());
+                    photos = [];
+                }
+            } catch (e) {
+                console.error('init: 갤러리 사진 목록 가져오는 중 네트워크 에러:', e);
+                photos = [];
+            }
+            
+            populateAllCategoryDropdowns(); // 카테고리 먼저 채우고
+            renderGallery(); // 그 다음 갤러리 렌더링
+            checkLogin(); // 로그인 상태 확인 및 어드민 UI 처리
+            setupEventListeners();
+        }
+
+        function setDefaultHeroInfo() {
+            heroInfo.title = DEFAULT_HERO_TITLE;
+            heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
+            heroInfo.imageUrl = DEFAULT_HERO_IMAGE_URL;
+        }
+
+        function updateHeroSection() {
+            heroImageDisplay.src = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
+            heroTitleDisplay.textContent = heroInfo.title || ''; // textContent로 변경
+            heroSubtitleDisplay.textContent = heroInfo.subtitle || ''; // textContent로 변경
+
+            if (adminPanel.style.display === 'block') {
+                adminHeroPreview.src = heroInfo.imageUrl || '/api/placeholder/400/150?text=No+Image';
+                heroTitleInputAdmin.value = heroInfo.title || '';
+                heroSubtitleInputAdmin.value = heroInfo.subtitle || '';
+            }
+        }
+
+        async function handleHeroImageUpload() {
+            const file = heroImageUploadInputAdmin.files[0];
+            if (!file) { alert('히어로 이미지를 선택해달라옹!'); return; }
+
+            const formData = new FormData();
+            formData.append('imageFile', file);
+            // 제목과 부제목은 서버에서 현재 값을 읽도록 클라이언트에서는 보내지 않거나,
+            // 만약 현재 입력된 값으로 업데이트하고 싶다면 함께 보낼 수 있다옹.
+            // 여기서는 현재 입력 필드의 값 또는 기존 heroInfo 값을 사용한다옹.
+            formData.append('heroTitle', heroTitleInputAdmin.value.trim() || heroInfo.title);
+            formData.append('heroSubtitle', heroSubtitleInputAdmin.value.trim() || heroInfo.subtitle);
+
+            try {
+                const response = await fetch('/.netlify/functions/upload-hero-image', { method: 'POST', body: formData });
+                if (!response.ok) {
+                    const errorResult = await response.json();
+                    throw new Error(errorResult.message || 'Netlify Function에서 히어로 이미지 업로드 실패!');
+                }
+                const result = await response.json();
+                heroInfo.imageUrl = result.publicUrl; 
+                // 서버에서 제목/부제목도 같이 업데이트 했다면, 그 값을 받아와서 heroInfo에 반영할 수 있다옹.
+                // 여기서는 업로드 시 사용된 값을 heroInfo에 반영한다옹.
+                heroInfo.title = heroTitleInputAdmin.value.trim() || heroInfo.title;
+                heroInfo.subtitle = heroSubtitleInputAdmin.value.trim() || heroInfo.subtitle;
+
+                updateHeroSection();
+                alert('히어로 이미지가 성공적으로 업로드 및 저장되었다옹!');
+            } catch (error) {
+                console.error('히어로 이미지 업로드 중 에러:', error);
+                alert(`냐옹... 히어로 이미지 업로드 실패: ${error.message}`);
+            } finally {
+                heroImageUploadInputAdmin.value = ''; // 파일 입력 필드 초기화
+            }
+        }
+
+        async function deleteHeroImage() {
+            if (confirm('정말로 히어로 이미지를 기본 이미지로 되돌릴거냥?')) {
+                try {
+                    // 서버에 이미지 URL만 기본값으로 업데이트 요청 (제목/부제목은 현재 값 유지 또는 기본값으로)
+                    const response = await fetch('/.netlify/functions/update-hero-text', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            title: heroInfo.title, // 현재 제목 유지 또는 DEFAULT_HERO_TITLE
+                            subtitle: heroInfo.subtitle, // 현재 부제목 유지 또는 DEFAULT_HERO_SUBTITLE
+                            imageUrl: DEFAULT_HERO_IMAGE_URL 
+                        })
+                    });
+                    if(response.ok){
+                        heroInfo.imageUrl = DEFAULT_HERO_IMAGE_URL; // 클라이언트 heroInfo 업데이트
+                        // 필요하다면 title, subtitle도 기본값으로 설정
+                        // heroInfo.title = DEFAULT_HERO_TITLE;
+                        // heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
+                        updateHeroSection();
+                        alert('히어로 이미지가 기본값으로 변경되었다옹!');
+                    } else { 
+                        const errorText = await response.text();
+                        throw new Error(errorText || '히어로 이미지 기본값 변경 실패'); 
+                    }
+                } catch (error) {
+                    console.error('히어로 이미지 기본값으로 변경 실패:', error);
+                    alert('냐옹... 히어로 이미지 초기화에 실패했다옹.');
+                }
+            }
+        }
+        
+        async function saveHeroText() {
+            const titleToSave = heroTitleInputAdmin.value.trim();
+            const subtitleToSave = heroSubtitleInputAdmin.value.trim();
+            // 이미지 URL은 현재 heroInfo의 것을 사용한다옹.
+            const currentImageUrl = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
+
+            try {
+                const response = await fetch('/.netlify/functions/update-hero-text', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: titleToSave, subtitle: subtitleToSave, imageUrl: currentImageUrl })
+                });
+
+                if (response.ok) {
+                    const result = await response.json(); // 서버에서 반환된 데이터 사용
+                    heroInfo.title = result.data.title;
+                    heroInfo.subtitle = result.data.subtitle;
+                    heroInfo.imageUrl = result.data.imageUrl; // imageUrl도 서버 응답으로 업데이트
+                    updateHeroSection();
+                    alert('히어로 문구가 Firestore에 저장되었다옹!');
+                } else { 
+                    const errorText = await response.text();
+                    throw new Error(errorText || '히어로 문구 저장 실패'); 
+                }
+            } catch (error) {
+                console.error('히어로 문구 저장 실패:', error);
+                alert(`냐옹... 히어로 문구 저장에 실패했다옹: ${error.message}`);
+            }
+        }
+
+        async function deleteHeroText() {
+             if (confirm('정말로 히어로 문구를 기본값으로 되돌릴거냥?')) {
+                try {
+                     // 이미지 URL은 현재 heroInfo의 것을 사용한다옹.
+                    const currentImageUrl = heroInfo.imageUrl || DEFAULT_HERO_IMAGE_URL;
+                    const response = await fetch('/.netlify/functions/update-hero-text', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            title: DEFAULT_HERO_TITLE, 
+                            subtitle: DEFAULT_HERO_SUBTITLE, 
+                            imageUrl: currentImageUrl // 현재 이미지 URL은 유지하면서 텍스트만 기본값으로
+                        })
+                    });
+                     if(response.ok){
+                        heroInfo.title = DEFAULT_HERO_TITLE;
+                        heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
+                        // heroInfo.imageUrl은 변경하지 않음 (텍스트만 삭제)
+                        updateHeroSection();
+                        alert('히어로 문구가 기본값으로 초기화되었다옹!');
+                    } else { 
+                        const errorText = await response.text();
+                        throw new Error(errorText || '히어로 문구 초기화 실패');
+                    }
+                } catch (error) {
+                    console.error('히어로 문구 기본값으로 변경 실패:', error);
+                    alert('냐옹... 히어로 문구 초기화에 실패했다옹.');
+                }
+            }
+        }
+        
+function populateAllCategoryDropdowns() {
+    console.log('populateAllCategoryDropdowns 시작! 현재 categories:', JSON.parse(JSON.stringify(categories))); // categories 내용 확인 (순환 참조 방지)
+    console.log('현재 photos:', photos.length > 0 ? photos.slice(0,2) : '사진 없음'); // 사진 일부 확인
+
+    // 1. categories (전역 객체 배열)에서 카테고리 "이름"만 추출한다옹.
+    const categoryNamesFromGlobal = categories.map(cat => cat.name);
+    console.log('categoryNamesFromGlobal (이름만 추출):', categoryNamesFromGlobal);
+
+    // 2. photos 배열에서 실제 사용된 카테고리 "이름" 목록을 가져온다옹 (중복 제거 및 정렬).
+    const uniqueCategoryNamesFromPhotos = photos.length > 0 
+        ? [...new Set(photos.map(p => p.category).filter(catName => catName && typeof catName === 'string' && catName.trim() !== ''))].sort() 
+        : [];
+    console.log('uniqueCategoryNamesFromPhotos (사진에서 추출한 이름):', uniqueCategoryNamesFromPhotos);
+    
+    // 3. 위 두 이름 목록을 합치고, 다시 한번 중복을 제거하고, 최종적으로 정렬된 "이름" 목록을 만든다옹.
+    //    이것이 바로 모든 드롭다운에 표시될 카테고리 이름들이다냥!
+    let displayCategoryNames = [...new Set([...categoryNamesFromGlobal, ...uniqueCategoryNamesFromPhotos])]
+                                .filter(catName => catName && typeof catName === 'string' && catName.trim() !== '') // 최종적으로 문자열이고 비어있지 않은 것만!
+                                .sort((a, b) => a.localeCompare(b)); // 이름순 정렬!
+    console.log('최종 displayCategoryNames (드롭다운용 이름 목록):', displayCategoryNames);
+
+    // 만약 displayCategoryNames가 비었는데, categories (객체배열)에는 카테고리가 있었다면,
+    // (예: 사진에 아직 카테고리가 사용되지 않았지만, 관리자가 카테고리를 만들어둔 경우)
+    // categories에 있는 이름들을 사용한다옹.
+    if (displayCategoryNames.length === 0 && categoryNamesFromGlobal.length > 0) {
+        displayCategoryNames = [...categoryNamesFromGlobal].sort((a, b) => a.localeCompare(b));
+        console.log('사진에 카테고리 없지만, 전역 카테고리 있어서 displayCategoryNames 업데이트:', displayCategoryNames);
+    } else if (displayCategoryNames.length === 0 && categoryNamesFromGlobal.length === 0) {
+        // 아무 카테고리도 없을 때 (사진에도 없고, 관리자가 만든 것도 없을 때)
+        console.log('표시할 카테고리 이름이 하나도 없다옹!');
+        // 필요하다면 여기에 '카테고리 없음' 같은 기본 메시지를 드롭다운에 표시할 수도 있다옹.
+    }
+
+    // --- 이제 이 displayCategoryNames (문자열 배열)를 사용해서 드롭다운들을 채운다옹 ---
+
+    // 메인 화면 카테고리 드롭다운 업데이트
+    categoryDropdown.innerHTML = '<option value="전체">모든 카테고리</option>'; // 기본 '전체' 옵션
+    displayCategoryNames.forEach(categoryName => { // categoryName은 이제 항상 문자열이다옹!
+        const count = photos.filter(p => p.category === categoryName).length;
+        const option = document.createElement('option');
+        option.value = categoryName;
+        option.textContent = `${categoryName} (${count})`; 
+        categoryDropdown.appendChild(option);
+    });
+    categoryDropdown.value = currentCategoryFilter; // 현재 필터 유지
+
+    // 관리자 패널의 사진 업로드용 카테고리 드롭다운 업데이트
+    imageCategoryUploadDropdown.innerHTML = '<option value="">카테고리 선택</option>'; // 기본 '선택' 옵션
+    displayCategoryNames.forEach(categoryName => { // categoryName은 이제 항상 문자열이다옹!
+        const option = document.createElement('option');
+        option.value = categoryName;
+        option.textContent = categoryName; // 여기는 카테고리 이름만!
+        imageCategoryUploadDropdown.appendChild(option);
+    });
+
+    // 관리자 패널의 카테고리 목록 (추가/삭제용) 업데이트
+    // 이 목록은 renderAdminCategoryList 함수가 담당하고, 그 함수는 전역 categories (객체 배열)를 직접 사용한다옹.
+    if (adminPanel.style.display === 'block') {
+        // ⭐ 중요: renderAdminCategoryList를 인자 없이 호출한다옹! ⭐
+        renderAdminCategoryList(); 
+    }
+    console.log('populateAllCategoryDropdowns 끝났다옹!');
+}
+
+// 기존 함수 선언: function renderAdminCategoryList(catsToDisplay = []) { ... }
+// 아래처럼 매개변수를 없애고, 전역 `categories` 변수를 직접 사용하도록 하자옹!
+
+function renderAdminCategoryList() {
+    categoryListAdmin.innerHTML = ''; // 목록을 깨끗하게 비우는 건 그대로!
+
+    // 전역 변수 `categories`는 이제 {id: '...', name: '...'} 형태의 객체 배열이다옹!
+    // (init 함수와 refreshCategoriesFromServer 함수에서 이렇게 채워주기로 했다냥!)
+
+    if (!categories || categories.length === 0) {
+        const listItem = document.createElement('li');
+        listItem.textContent = '아직 관리할 카테고리가 없다옹. 새로 추가해보라냥!';
+        // 보기 좋게 스타일도 살짝 추가 (선택 사항)
+        listItem.style.textAlign = 'center';
+        listItem.style.color = '#777';
+        listItem.style.padding = '10px 0';
+        categoryListAdmin.appendChild(listItem);
+        return; // 카테고리 없으면 여기서 끝!
+    }
+    
+    // 카테고리 이름을 기준으로 가나다 순으로 정렬해서 보여주자옹 (선택 사항이지만 보기 좋다냥!)
+    const sortedCategories = [...categories].sort((a, b) => {
+        // 혹시 name이 없는 객체가 있을까봐 방어 코드 추가 (그럴 일 없어야 하지만!)
+        const nameA = a.name || '';
+        const nameB = b.name || '';
+        return nameA.localeCompare(nameB); // 이름으로 정렬!
+    });
+
+    sortedCategories.forEach(category => { // 'category'는 이제 항상 {id: '...', name: '...'} 객체다옹!
+        const listItem = document.createElement('li');
+        
+        // ⭐ 1. 각 리스트 아이템에 고유 ID 부여! ⭐
+        // 나중에 삭제 성공 시 화면에서 이 ID로 li 요소를 찾아 지울 수 있다옹!
+        listItem.id = `admin-category-li-${category.id}`; 
+        
+        // ⭐ 2. 화면에는 카테고리 이름(category.name)을 표시! ⭐
+        listItem.textContent = category.name; 
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '삭제';
+        deleteButton.className = 'btn btn-danger btn-sm'; // 스타일은 그대로!
+
+        // ⭐ 3. 삭제 버튼 클릭 시 handleDeleteCategory 함수에 category.id 와 category.name을 전달! ⭐
+        deleteButton.onclick = () => handleDeleteCategory(category.id, category.name); 
+                                     // ↑↑↑ 요기가 핵심이다냥! ↑↑↑
+
+        listItem.appendChild(deleteButton);
+        categoryListAdmin.appendChild(listItem);
+    });
+    console.log('관리자 카테고리 목록 (객체 기반, 전역 categories 사용) 렌더링 완료!', sortedCategories);
+}
+
+// ⭐⭐ 여기에 새로운 handleDeleteCategory 함수를 넣어주세요옹! ⭐⭐
+async function handleDeleteCategory(categoryId, categoryName) {
+    console.log(`삭제 버튼 클릭! ID: ${categoryId}, 이름: ${categoryName} (handleDeleteCategory 시작)`);
+
+    if (!confirm(`정말로 '${categoryName}' 카테고리를 삭제할거냥? 이 작업은 되돌릴 수 없다옹!`)) {
+        console.log('카테고리 삭제 취소됨 (handleDeleteCategory)');
+        return; // 아니오! 하면 여기서 끝!
+    }
+
+    // 로딩 인디케이터가 있다면 여기서 보여주면 좋다옹!
+    // showLoadingIndicator(); 
+
+    try {
+        console.log(`서버에 카테고리(ID: ${categoryId}) 삭제 요청 보낸다옹... (handleDeleteCategory)`);
+
+        const response = await fetch('/.netlify/functions/delete-category', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: categoryId }), // 삭제할 카테고리 ID를 보낸다옹!
+        });
+
+        const contentType = response.headers.get("content-type");
+        let resultData;
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            resultData = await response.json();
+        } else {
+            const textResult = await response.text();
+            console.warn('서버 응답이 JSON 형식이 아니다옹 (delete-category 응답):', textResult);
+            resultData = { message: textResult }; // 오류 처리를 위해 기본 메시지로 설정
+        }
+
+        if (!response.ok) {
+            const errorMessage = resultData.message || `HTTP 에러 ${response.status} - ${response.statusText}`;
+            throw new Error(errorMessage);
+        }
+
+        console.log('서버에서 카테고리 삭제 성공! 응답:', resultData, '(handleDeleteCategory)');
+        alert(`'${categoryName}' 카테고리가 성공적으로 삭제되었다옹! 냥! (서버 메시지: ${resultData.message})`);
+
+        // 화면에서 해당 카테고리 li 요소를 삭제하자옹!
+        // listItem에 ID를 'admin-category-li-' + categoryId 로 설정했었다옹!
+        const listItemToRemove = document.getElementById(`admin-category-li-${categoryId}`);
+        if (listItemToRemove) {
+            listItemToRemove.remove();
+            console.log(`화면에서 '${categoryName}' (ID: ${categoryId}) 카테고리 항목 삭제 완료! (handleDeleteCategory)`);
+        } else {
+            console.warn(`화면에서 카테고리 항목(li ID: admin-category-li-${categoryId})을 찾지 못했다옹. (handleDeleteCategory)`);
+            // 못 찾았으면 전체 목록을 다시 불러오는 것도 방법이다옹!
+            // refreshCategoriesFromServer(); // 이 방법도 좋다냥!
+        }
+        
+        // 삭제 후, 전체 카테고리 목록 (categories 변수)도 업데이트 해주는 게 좋다옹!
+        // 그리고 다른 드롭다운들도 업데이트!
+        await refreshCategoriesFromServer(); // 삭제 성공했으니 서버에서 최신 목록을 다시 받아오자옹!
+
+        // 만약 목록이 다 비었으면 "카테고리 없다옹" 메시지를 다시 표시할 수도 있다옹.
+        // (refreshCategoriesFromServer 안에서 populateAllCategoryDropdowns를 호출하고,
+        // 그 안에서 renderAdminCategoryList가 호출되면서 빈 목록 메시지를 처리할 거다옹!)
+
+
+    } catch (error) {
+        console.error('카테고리 삭제 중 에러 발생 ㅠㅠ (handleDeleteCategory):', error);
+        alert(`카테고리 삭제에 실패했다옹... 냐앙... (${error.message})`);
+    } finally {
+        // 로딩 인디케이터가 있다면 여기서 숨겨주면 좋다옹!
+        // hideLoadingIndicator();
+    }
+}
+
+async function handleAddCategory() {
+    const newCategoryName = newCategoryInputAdmin.value.trim();
+    if (!newCategoryName) {
+        alert('카테고리 이름을 입력해달라옹!');
+        return;
+    }
+    // "전체"라는 이름의 카테고리는 만들 수 없게 하자옹!
+    if (newCategoryName.toLowerCase() === '전체') {
+        alert("'전체'는 카테고리 이름으로 사용할 수 없다옹!");
+        newCategoryInputAdmin.value = ''; // 입력 필드 비우기
+        return;
+    }
+
+    // 클라이언트에서 먼저 중복 검사를 할 수도 있다옹 (선택 사항)
+    // 하지만 서버에서도 중복 검사를 하니까 더 안전하다냥!
+    // if (categories.map(cat => cat.name).includes(newCategoryName)) { // categories가 객체 배열일 경우
+    // if (categories.includes(newCategoryName)) { // categories가 이름 배열일 경우 (현재 우리 코드!)
+    //     alert('이미 있는 카테고리 이름이다옹! (클라이언트 체크)');
+    //     return;
+    // }
+
+    try {
+        console.log(`'${newCategoryName}' 카테고리를 서버에 추가 시도한다옹!`);
+        const response = await fetch('/.netlify/functions/add-category', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: newCategoryName }), // 서버에 보낼 데이터! {name: "카테고리이름"} 형태
+        });
+
+        const result = await response.json(); // 서버의 응답을 JSON으로 변환
+
+        if (!response.ok) {
+            // 서버에서 에러 응답이 오면 (예: 중복, 잘못된 요청 등)
+            // result 안에 서버 함수에서 보낸 message가 들어있을 거다냥!
+            throw new Error(result.message || `냐옹! 카테고리 추가 실패: ${response.status}`);
+        }
+
+        // 성공적으로 추가되었을 때! (서버에서 상태 코드 201을 보내줬을 때)
+        console.log('서버에서 카테고리 추가 성공! 응답:', result);
+        alert(`'${result.name}' 카테고리가 성공적으로 추가되었다옹! 야호!`);
+
+        // 새 카테고리가 추가됐으니, 클라이언트의 categories 배열도 업데이트하고 화면도 새로 그려야 한다옹!
+        // 방법 1: 서버에서 모든 카테고리를 다시 불러와서 categories 배열을 통째로 갱신 (가장 확실!)
+        await refreshCategoriesFromServer(); // 이 함수는 아래에 새로 만들 거다옹!
+
+        // 방법 2: 서버 응답(result)에 있는 새 카테고리 정보를 현재 categories 배열에 추가 (더 빠를 수 있지만, 정렬 등이 필요할 수 있음)
+        // categories.push(result.name); // categories가 이름 배열일 경우
+        // categories.sort(); // 이름 순으로 정렬
+        // populateAllCategoryDropdowns(); // 화면 업데이트
+
+        newCategoryInputAdmin.value = ''; // 입력 필드 비우기
+
+    } catch (error) {
+        console.error('handleAddCategory 에러 ㅠㅠ:', error);
+        alert(`냐옹... 카테고리 추가 중 문제가 생겼다옹: ${error.message}`);
+    }
+}
+
+// 냐옹! 카테고리 목록을 서버에서 다시 가져와서 화면을 업데이트하는 함수를 만들자옹!
+async function refreshCategoriesFromServer() {
+    try {
+        console.log('카테고리 목록 새로고침 시작이다옹!');
+        const response = await fetch('/.netlify/functions/get-categories');
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`카테고리 새로고침 실패: ${response.status} - ${errorText}`);
+        }
+        const serverCategories = await response.json();
+        categories = serverCategories; // 요것도 그대로!
+        
+        console.log('카테고리 목록 성공적으로 새로고침 했다옹!', categories);
+        populateAllCategoryDropdowns(); // 모든 드롭다운 및 관리자 목록 업데이트!
+        
+        // 만약 관리자 패널이 열려있고, 카테고리 관리 목록을 보여주고 있다면 그것도 업데이트!
+        if (adminPanel.style.display === 'block' && typeof renderAdminCategoryList === 'function') {
+             // renderAdminCategoryList 함수가 displayCategories를 인자로 받는다면,
+             // populateAllCategoryDropdowns 안에서 이미 categories 변수를 사용해서 displayCategories를 만들고 호출하고 있을거다냥.
+             // 여기서는 populateAllCategoryDropdowns() 호출로 충분할 수 있다옹!
+             // 만약 직접 호출해야 한다면:
+             // const uniqueCategoriesFromPhotos = photos.length > 0 ? [...new Set(photos.map(p => p.category).filter(Boolean))].sort() : [];
+             // let displayCategories = [...new Set([...categories, ...uniqueCategoriesFromPhotos])].sort();
+             // renderAdminCategoryList(displayCategories);
+        }
+
+    } catch (error) {
+        console.error('카테고리 목록 새로고침 중 에러 ㅠㅠ:', error);
+        alert('카테고리 목록을 새로 가져오는 데 실패했다옹...');
+    }
+}
+        
+        // 냐옹! 여기가 수정된 renderGallery 함수다옹!
+        function renderGallery() {
+            gallery.innerHTML = '';
+            const filteredPhotos = currentCategoryFilter === '전체' ? photos : photos.filter(photo => photo.category === currentCategoryFilter);
+            
+            if (filteredPhotos.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.style.textAlign = 'center'; 
+                emptyMessage.style.padding = '40px'; 
+                emptyMessage.style.width = '100%'; 
+                emptyMessage.style.color = '#666';
+                let messageText = `'${currentCategoryFilter}' 카테고리에 사진이 없다옹.`;
+                if (currentCategoryFilter === '전체' && photos.length === 0) {
+                    messageText = '아직 업로드된 사진이 하나도 없다옹! 관리자 모드에서 새 사진을 올려보라냥!';
+                } else if (currentCategoryFilter === '전체' && photos.length > 0) {
+                     // 이 경우는 filteredPhotos.length가 0이 될 수 없으므로, 실제로는 여기로 오지 않는다옹.
+                    messageText = '사진은 있지만 알 수 없는 이유로 표시되지 않는다옹. 새로고침 해보라냥!';
+                }
+
+                emptyMessage.innerHTML = `<svg width="50" height="50" viewBox="0 0 24 24" style="margin-bottom: 15px; opacity: 0.5;"><path fill="currentColor" d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" /></svg><p style="font-size: 16px; margin-bottom: 5px;">${messageText}</p><p style="font-size: 14px; opacity: 0.7;">다른 카테고리를 선택하거나 새 사진을 업로드해보라냥.</p>`;
+                gallery.appendChild(emptyMessage);
+                return;
+            }
+
+            filteredPhotos.forEach((photo, index) => {
+                const item = document.createElement('div'); 
+                item.className = 'gallery-item'; 
+                item.style.opacity = '0'; 
+                item.style.transform = 'translateY(20px)'; 
+                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease'; 
+                item.style.transitionDelay = `${index * 0.05}s`;
+                
+                // 냐옹! 여기도 백틱(템플릿 리터럴)을 올바르게 사용한다옹!
+                // photo.imageUrl과 photo.title이 실제로 유효한 값인지 확인하는 게 좋다옹.
+                const imageUrl = photo.imageUrl || '/api/placeholder/300/250?text=이미지+없다옹'; // 기본 이미지
+                const title = photo.title || '제목 없다옹';
+
+                item.innerHTML = `<img src="${imageUrl}" alt="${title}" loading="lazy"><div class="photo-title">${title}</div>`;
+                item.addEventListener('click', () => openImageModal(photo.id));
+                gallery.appendChild(item);
+                
+                // 애니메이션을 위해 DOM에 추가된 후 스타일 변경
+                setTimeout(() => { 
+                    item.style.opacity = '1'; 
+                    item.style.transform = 'translateY(0)'; 
+                }, 10); // 아주 짧은 지연
+            });
+        }
+        
+        // 냐옹! 여기가 수정된 renderAdminGallery 함수다옹!
+        function renderAdminGallery() {
+            galleryAdmin.innerHTML = '';
+            // 최근 업로드된 사진이 위로 오도록 photos 배열을 복사해서 뒤집는다옹.
+            photos.slice().reverse().forEach(photo => {
+                const item = document.createElement('div'); 
+                item.className = 'gallery-admin-item';
+                
+                const imageUrl = photo.imageUrl || '/api/placeholder/200/150?text=이미지X';
+                const title = photo.title || '제목 없음';
+                const categoryText = photo.category || '카테고리 없음';
+                const gcsFileName = photo.gcsFileName || ''; // gcsFileName이 없을 경우 빈 문자열
+
+                // 냐옹! 여기도 백틱(템플릿 리터럴)을 올바르게! data- 속성 값도 따옴표로 감싸준다옹!
+                item.innerHTML = `
+                    <img src="${imageUrl}" alt="${title}" loading="lazy">
+                    <div style="padding: 5px; text-align: center; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${title} 
+                        <span style="display: block; color: #666; font-size: 11px;">${categoryText}</span>
+                    </div>
+                    <button class="delete-btn" data-id="${photo.id}" data-gcsfilename="${gcsFileName}">&times;</button>`;
+                galleryAdmin.appendChild(item);
+            });
+
+            // 삭제 버튼 이벤트 리스너는 한 번만 설정하는 게 좋다옹 (renderAdminGallery 호출될 때마다 중복 방지)
+            // 하지만 여기서는 매번 다시 그리므로, 새로 그려진 버튼들에 대해 다시 설정해야 한다옹.
+            document.querySelectorAll('#gallery-admin .delete-btn').forEach(btn => {
+                // 혹시 모를 중복 리스너 방지를 위해 기존 리스너 제거 (더 확실한 방법은 다른 곳에서 한 번만 설정)
+                // btn.replaceWith(btn.cloneNode(true)); // 리스너 제거하는 한 가지 트릭
+                // const newBtn = btn.cloneNode(true);
+                // btn.parentNode.replaceChild(newBtn, btn);
+
+                // 여기서는 간단하게 바로 추가한다옹.
+                btn.addEventListener('click', (e) => {
+                    // currentTarget을 사용하면 이벤트가 실제로 바인딩된 버튼을 가리킨다옹.
+                    const id = e.currentTarget.getAttribute('data-id');
+                    const gcsFileNameValue = e.currentTarget.getAttribute('data-gcsfilename');
+                    deletePhoto(id, gcsFileNameValue);
+                });
+            });
+        }
+        
+        async function uploadPhoto() {
+            const file = imageUploadInput.files[0];
+            if (!file) { alert('업로드할 이미지를 선택해달라옹!'); return; }
+            
+            const title = imageTitleInput.value.trim() || `새로운 냥냥이 사진 ${Date.now()}`;
+            const category = imageCategoryUploadDropdown.value;
+            if (!category) { alert('사진의 카테고리를 선택해달라옹!'); return; }
+
+            const formData = new FormData();
+            formData.append('imageFile', file);
+            formData.append('title', title);
+            formData.append('category', category);
+            
+            try {
+                const response = await fetch('/.netlify/functions/upload-image-to-gcs', { method: 'POST', body: formData });
+                if (!response.ok) {
+                    const errorResult = await response.json();
+                    throw new Error(errorResult.message || 'Netlify Function에서 파일 업로드 실패!');
+                }
+                await refreshPhotosFromServer(); 
+                imageUploadInput.value = ''; 
+                imageTitleInput.value = ''; 
+                imageCategoryUploadDropdown.value = ''; // 드롭다운도 초기화
+                alert('사진이 성공적으로 업로드 및 저장되었다옹!');
+            } catch (error) {
+                console.error('갤러리 사진 업로드 중 에러:', error);
+                alert(`냐옹... 사진 업로드 실패: ${error.message}`);
+            }
+        }
+        
+        async function refreshPhotosFromServer() {
+            try {
+                const photosResponse = await fetch('/.netlify/functions/get-photos');
+                if (photosResponse.ok) {
+                    photos = await photosResponse.json();
+                    // 데이터 로드 후 UI 업데이트 순서 중요!
+                    populateAllCategoryDropdowns(); // 카테고리 먼저 업데이트
+                    renderGallery();                 // 메인 갤러리 업데이트
+                    if (localStorage.getItem('isLoggedIn') === 'true') { // 로그인 상태일 때만 어드민 갤러리 업데이트
+                        renderAdminGallery();
+                    }
+                } else {
+                    console.error('refreshPhotosFromServer: 사진 목록 가져오기 실패');
+                    photos = []; // 실패 시 사진 목록 비우기
+                    populateAllCategoryDropdowns(); // 카테고리 드롭다운은 빈 상태로라도 업데이트
+                    renderGallery();                 // 갤러리도 빈 상태로 업데이트
+                     if (localStorage.getItem('isLoggedIn') === 'true') {
+                        renderAdminGallery();
+                    }
+                }
+            } catch (e) {
+                console.error('refreshPhotosFromServer: 사진 목록 가져오는 중 네트워크 에러', e);
+                photos = []; // 에러 시 사진 목록 비우기
+                populateAllCategoryDropdowns();
+                renderGallery();
+                 if (localStorage.getItem('isLoggedIn') === 'true') {
+                    renderAdminGallery();
+                }
+            }
+        }
+
+        // deletePhoto 함수에 setTimeout 추가 (이전에 제안했던 내용)
+        async function deletePhoto(photoId, gcsFileName) {
+            if (!photoId) { alert('삭제할 사진의 ID가 없다옹!'); return; }
+            if (confirm('정말로 이 사진을 서버에서 삭제할거냥? 되돌릴 수 없다옹!')) {
+                try {
+                    const response = await fetch('/.netlify/functions/delete-photo', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ photoId: photoId, gcsFileName: gcsFileName })
+                    });
+                    if (!response.ok) {
+                        const errorResult = await response.json();
+                        throw new Error(errorResult.message || 'Netlify Function에서 사진 삭제 실패!');
+                    }
+                    
+                    alert('사진이 서버에서 삭제되었다옹!'); // 성공 알림 먼저!
+
+                    // 살짝 기다렸다가 목록 새로고침 (서버 데이터 반영 시간 고려)
+                    setTimeout(async () => {
+                        await refreshPhotosFromServer();
+                        console.log('삭제 후, 0.5초 뒤에 사진 목록 새로고침 완료다옹!');
+                    }, 500); // 0.5초 지연 (필요에 따라 조절)
+
+                } catch (error) {
+                    console.error('사진 삭제 중 에러:', error);
+                    alert(`냐옹... 사진 삭제 실패: ${error.message}`);
+                }
+            }
+        }
+        
+        function openImageModal(photoId) {
+            // 현재 필터링된 사진 목록 또는 전체 사진 목록에서 해당 photoId를 찾는다옹.
+            let photosToSearch = photos; // 기본값은 전체 사진
+            if (currentCategoryFilter !== '전체') {
+                photosToSearch = photos.filter(photo => photo.category === currentCategoryFilter);
+                // 만약 필터된 목록에 없다면 전체 목록에서도 찾아본다옹 (혹시 모를 상황 대비)
+                if (!photosToSearch.find(p => p.id === photoId)) {
+                    photosToSearch = photos;
+                }
+            }
+            
+            currentModalPhotoIndex = photosToSearch.findIndex(photo => photo.id === photoId);
+
+            if (currentModalPhotoIndex === -1) { 
+                console.error(`모달에서 사진 ID '${photoId}'를 찾을 수 없다옹!`);
+                // 혹시 모르니 전체 사진 목록에서 다시 한번 시도
+                currentModalPhotoIndex = photos.findIndex(photo => photo.id === photoId);
+                if (currentModalPhotoIndex === -1) return; // 그래도 없으면 그냥 종료
+                photosToSearch = photos; // 검색 대상을 전체 사진으로 변경
+            }
+            
+            displayCurrentPhotoInModal(photosToSearch); // 검색한 배열을 전달
+            imageModal.style.display = 'flex';
+        }
+
+        // 냐옹! 여기가 수정된 displayCurrentPhotoInModal 함수다옹!
+        function displayCurrentPhotoInModal(photoArrayToDisplay) { // 매개변수 이름 변경
+            if (currentModalPhotoIndex >= 0 && currentModalPhotoIndex < photoArrayToDisplay.length) {
+                const photo = photoArrayToDisplay[currentModalPhotoIndex];
+                if (!photo) { // 혹시 photo 객체가 undefined일 경우 대비
+                    console.error("표시할 사진 객체가 없다옹!", currentModalPhotoIndex, photoArrayToDisplay);
+                    return;
+                }
+                
+                modalImage.src = photo.imageUrl || '/api/placeholder/800/600?text=이미지+없다옹';
+                
+                // innerHTML을 사용할 때는 XSS 공격에 주의해야 하지만, 여기서는 직접 입력한 데이터를 표시하므로 괜찮다옹.
+                // 하지만 가능하다면 textContent를 부분적으로 사용하는 것이 더 안전할 수 있다냥.
+                const title = photo.title || '제목 없음';
+                const category = photo.category || '카테고리 없음';
+                
+                // 냐옹! 여기도 백틱(템플릿 리터럴)을 올바르게! HTML 문자열로 구성한다옹.
+                modalTitleElement.innerHTML = `
+                    ${title}<br>
+                    <span style="font-size: 14px; opacity: 0.8;">@UU_CATS</span>
+                    <span style="display: inline-block; margin-left: 10px; font-size: 12px; background-color: rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 12px; backdrop-filter: blur(5px);">
+                        ${category}
+                    </span>`;
+            } else {
+                // 모달 네비게이션 버튼 숨기기 또는 비활성화 로직 추가 가능
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            }
+            // 사진이 있으면 네비게이션 버튼 다시 보이게
+             if (photoArrayToDisplay.length > 1) {
+                prevBtn.style.display = 'block';
+                nextBtn.style.display = 'block';
+            } else {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        function showPreviousPhotoInModal() {
+            let photosToDisplay = photos;
+            if (currentCategoryFilter !== '전체') {
+                photosToDisplay = photos.filter(photo => photo.category === currentCategoryFilter);
+                 if (photosToDisplay.length === 0 && photos.length > 0) photosToDisplay = photos; // 필터된 결과 없으면 전체에서
+            }
+            if (photosToDisplay.length === 0) return; // 사진 없으면 아무것도 안함
+
+            currentModalPhotoIndex = (currentModalPhotoIndex - 1 + photosToDisplay.length) % photosToDisplay.length;
+            displayCurrentPhotoInModal(photosToDisplay);
+        }
+
+        function showNextPhotoInModal() {
+            let photosToDisplay = photos;
+             if (currentCategoryFilter !== '전체') {
+                photosToDisplay = photos.filter(photo => photo.category === currentCategoryFilter);
+                if (photosToDisplay.length === 0 && photos.length > 0) photosToDisplay = photos; // 필터된 결과 없으면 전체에서
+            }
+            if (photosToDisplay.length === 0) return; // 사진 없으면 아무것도 안함
+
+            currentModalPhotoIndex = (currentModalPhotoIndex + 1) % photosToDisplay.length;
+            displayCurrentPhotoInModal(photosToDisplay);
+        }
+        
+        async function login() { 
+            const usernameInput = document.getElementById('username'); 
+            const passwordInput = document.getElementById('password'); 
+            const username = usernameInput.value; 
+            const password = passwordInput.value;
+
+            if (!username || !password) {
+                alert('아이디와 비밀번호를 모두 입력해달라옹!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/.netlify/functions/login-police', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username, password: password }) 
+                });
+                const result = await response.json(); 
+                if (response.ok && result.success) { 
+                    localStorage.setItem('isLoggedIn', 'true');
+                    loginModal.style.display = 'none'; 
+                    usernameInput.value = ''; // 입력 필드 초기화
+                    passwordInput.value = ''; // 입력 필드 초기화
+                    checkLogin(); // 관리자 UI 업데이트
+                    alert(result.message || '로그인 성공이다옹!');
+                } else {
+                    alert(result.message || '아이디 또는 비밀번호가 틀렸다옹!');
+                    passwordInput.value = ''; // 비밀번호 필드만 초기화
+                }
+            } catch (error) { 
+                console.error('로그인 에러:', error); 
+                alert('냐옹... 로그인 중 서버에 문제가 생겼다옹!'); 
+            }
+        }
+
+        function logout() {
+            if (confirm('정말로 로그아웃 할거냥?')) {
+                localStorage.removeItem('isLoggedIn');
+                adminPanel.style.display = 'none';
+                loginButton.textContent = '관리자 로그인'; // 버튼 텍스트 변경
+                alert('로그아웃 되었다옹!');
+            }
+        }
+
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                adminPanel.style.display = 'block';
+                loginButton.textContent = '관리자 패널 보기'; // 로그인 시 버튼 텍스트
+                // 관리자 로그인 시 필요한 데이터 로딩 및 UI 렌더링
+                renderAdminGallery(); 
+                populateAllCategoryDropdowns(); // 카테고리 목록 (관리자용 포함) 다시 그리기
+                updateHeroSection(); // 히어로 섹션 정보 (관리자 입력 필드 등) 업데이트
+            } else {
+                adminPanel.style.display = 'none';
+                loginButton.textContent = '관리자 로그인'; // 로그아웃 시 버튼 텍스트
+            }
+        }
+        
+        function setupEventListeners() {
+            loginButton.addEventListener('click', () => {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                if (isLoggedIn) { // 이미 로그인 상태라면
+                    if (adminPanel.style.display === 'block') { // 관리자 패널이 열려있으면
+                        adminPanel.style.display = 'none';      // 닫고
+                        loginButton.textContent = '관리자 패널 열기'; // 버튼 텍스트 변경
+                    } else { // 관리자 패널이 닫혀있으면
+                        adminPanel.style.display = 'block';     // 열고
+                        loginButton.textContent = '관리자 패널 닫기'; // 버튼 텍스트 변경
+                        checkLogin(); // 패널 내용 최신화 (중요!)
+                        // 부드럽게 스크롤 (옵션)
+                        window.scrollTo({ top: adminPanel.offsetTop - 80, behavior: 'smooth' }); 
+                    }
+                } else { // 로그아웃 상태라면
+                    loginModal.style.display = 'flex'; // 로그인 모달 띄우기
+                }
+            });
+
+            loginSubmit.addEventListener('click', login);
+            logoutBtn.addEventListener('click', logout);
+            uploadBtn.addEventListener('click', uploadPhoto);
+            closeModal.addEventListener('click', () => imageModal.style.display = 'none');
+            prevBtn.addEventListener('click', showPreviousPhotoInModal);
+            nextBtn.addEventListener('click', showNextPhotoInModal);
+            
+            categoryDropdown.addEventListener('change', (e) => { 
+                currentCategoryFilter = e.target.value; 
+                renderGallery(); 
+            });
+
+            heroImageUploadBtnAdmin.addEventListener('click', handleHeroImageUpload);
+            heroImageDeleteBtnAdmin.addEventListener('click', deleteHeroImage);
+            heroTextSaveBtnAdmin.addEventListener('click', saveHeroText);
+            heroTextDeleteBtnAdmin.addEventListener('click', deleteHeroText);
+            addCategoryBtnAdmin.addEventListener('click', handleAddCategory);
+            
+            // 키보드 이벤트 (모달 내에서)
+            document.addEventListener('keydown', (e) => {
+                 if (imageModal.style.display === 'flex') { // 모달이 열려있을 때만 작동
+                    if (e.key === 'ArrowLeft') showPreviousPhotoInModal();
+                    else if (e.key === 'ArrowRight') showNextPhotoInModal();
+                    else if (e.key === 'Escape') imageModal.style.display = 'none';
+                }
+            });
+
+            // 모달 바깥 영역 클릭 시 닫기
+            window.addEventListener('click', (e) => {
+                if (e.target === imageModal) imageModal.style.display = 'none';
+                if (e.target === loginModal) loginModal.style.display = 'none';
+            });
+
+            // 트위터 링크 (새 창에서 열기)
+            twitterLink.addEventListener('click', (e) => { 
+                e.preventDefault(); // 기본 동작 막기
+                window.open('https://x.com/UU_CATS', '_blank'); 
+            });
+        }
+        
+        // 페이지 로드 완료 후 init 함수 실행
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
