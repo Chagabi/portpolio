@@ -143,34 +143,38 @@
             padding: 40px 0;
         }
         
-        /* ✨ 장비 소개 섹션 CSS 수정 (기본적으로 숨김) ✨ */
+        /* 장비 소개 섹션 CSS 수정 (기본적으로 숨김) */
         .camera-info-section {
             background-color: #1f1f1f;
-            padding: 20px 25px;
-            margin: 0 auto 30px auto; /* 가운데 정렬 및 아래 마진 유지 */
+            padding: 20px 25px; /* 기본 패딩 유지 */
+            margin-top: 0; /* 초기 마진 0 */
+            margin-bottom: 0; /* 초기 마진 0 */
             border-radius: 8px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.3);
             text-align: center;
             border: 1px solid rgba(255,255,255,0.05);
-            max-width: 700px; 
             
-            /* ✨ 이 부분이 핵심이다옹! ✨ */
-            max-height: 0; /* 초기 높이를 0으로 설정해서 숨긴다옹 */
+            max-width: 1000px; /* ✨ 최대 너비 늘림! ✨ */
+            margin-left: auto;
+            margin-right: auto; 
+            
+            max-height: 0; /* ✨ 초기 높이를 0으로 설정해서 숨긴다옹! ✨ */
             overflow: hidden; /* 내용이 넘치면 숨긴다옹 */
-            transition: max-height 0.7s ease-out, padding 0.5s ease-out, margin 0.5s ease-out; /* 부드럽게 펼쳐지도록 트랜지션 추가 */
-            opacity: 0; /* 초기 투명도를 0으로 설정 */
+            /* ✨ 트랜지션 시간 조정해서 부드럽게! ✨ */
+            transition: max-height 0.7s ease-out, opacity 0.5s ease-out, padding 0.5s ease-out, margin 0.5s ease-out; 
+            opacity: 0; /* ✨ 초기 투명도를 0으로 설정! ✨ */
             visibility: hidden; /* 요소가 공간을 차지하지 않도록 숨긴다옹 */
             pointer-events: none; /* 숨겨진 상태에서 클릭 이벤트 방지 */
         }
         
-        .camera-info-section.active { /* ✨ 'active' 클래스가 붙으면 펼쳐진다옹! ✨ */
-            max-height: 500px; /* 충분히 큰 값으로 설정 (내용이 다 보이도록) */
-            padding: 20px 25px; /* 원래 패딩 값으로 돌아간다옹 */
-            margin-top: 30px; /* 원래 마진 값으로 돌아간다옹 */
-            opacity: 1; /* 투명도를 1로 설정 */
+        .camera-info-section.active { /* 'active' 클래스가 붙으면 펼쳐진다옹! */
+            max-height: 500px; /* ✨ 충분히 큰 값으로 설정 (내용이 다 보이도록, 필요시 더 늘린다옹!) ✨ */
+            padding: 20px 25px; /* ✨ 패딩 원상 복구! ✨ */
+            margin-top: 30px; /* ✨ 위쪽 마진 추가! ✨ */
+            margin-bottom: 30px; /* ✨ 아래쪽 마진 추가! ✨ */
+            opacity: 1; /* ✨ 투명도를 1로 설정! ✨ */
             visibility: visible; /* 보이게 한다옹 */
             pointer-events: auto; /* 클릭 이벤트 허용 */
-            /* 여기서 max-height는 실제 내용보다 충분히 커야 한다옹. 내용이 더 많아지면 500px 이상으로 늘려줘야 한다옹! */
         }
 
         .camera-info-section h2 {
@@ -252,7 +256,6 @@
                 font-size: 0.8em;
             }
         }
-        /* ✨ 최소화된 장비 소개 섹션 CSS 끝이다옹! ✨ */
         
         .gallery {
             display: grid;
@@ -612,18 +615,18 @@
                 padding: 25px;
             }
 
-            .modal-image-wrapper { /* 모바일 화면에서 버튼-이미지 간격 조정 */
-                max-width: 100vw; /* 화면 꽉차게 */
+            .modal-image-wrapper { 
+                max-width: 100vw; 
             }
-            .modal-content { /* 모바일 화면에서 이미지 크기 조정 */
-                 max-width: calc(100% - 80px); /* 양쪽 버튼 너비(각 30px)와 여백(각 10px) 고려 */
+            .modal-content { 
+                 max-width: calc(100% - 80px); 
                  max-height: 75vh;
             }
-            .nav-btn { /* 모바일 화면에서 버튼 크기 살짝 줄이기 */
+            .nav-btn { 
                 width: 36px;
                 height: 36px;
                 font-size: 20px;
-                margin: 0 5px; /* 이미지와의 간격 줄이기 */
+                margin: 0 5px; 
             }
             .modal-title {
                 max-width: 90%;
@@ -648,8 +651,8 @@
                     </svg>
                     (트위터)
                 </a>
-                <a href="#" id="equipment-info-button">장비 소개</a>
-                <a href="#" id="login-button">관리자</a>
+                <a href="#" id="equipment-info-button"><i class="fas fa-camera"></i> 장비 소개</a>
+                <a href="#" id="login-button"><i class="fas fa-user-lock"></i> 관리자</a>
             </div>
         </div>
     </header>
@@ -661,6 +664,28 @@
         </div>
     </section>
     <main class="container">
+        <section class="camera-info-section" id="camera-info-section">
+            <h2>📷 현재 사용중인 사진촬영 장비입니다.</h2>
+            <div class="equipment-list">
+                <div class="equipment-item">
+                    <h3>카메라</h3>
+                    <p>Sony A7RM4A</p>
+                </div>
+                <div class="equipment-item">
+                    <h3>렌즈</h3>
+                    <p>렌즈1 : Sony FE 24-70mm F2.8 GM II</p>
+                    <p>렌즈2 : Sony FE 50mm F1.2 GM</p>
+                </div>
+                <div class="equipment-item">
+                    <h3>그 외</h3>
+                    <p>배터리그립 : VG-C4EM </p>
+                    <p>조명 : GODOX V1S</p>
+                    <p>동조기 : GODOX Xpro2 S</p>
+                </div>
+            </div>
+            <p class="section-note">25.06.28 기준</p>
+        </section>
+        
         <div class="admin-panel" id="admin-panel">
             <h2>관리자 패널</h2>
 
@@ -726,28 +751,6 @@
             <button class="btn btn-block" id="login-submit">로그인</button>
         </div>
     </div>
-
-    <section class="camera-info-section" id="camera-info-section">
-        <h2>📷 현재 사용중인 사진촬영 장비입니다.</h2>
-        <div class="equipment-list">
-            <div class="equipment-item">
-                <h3>카메라</h3>
-                <p>SONY 알파 A7R IV</p>
-            </div>
-            <div class="equipment-item">
-                <h3>렌즈</h3>
-                <p>렌즈1 : Sony FE 24-70mm F2.8 GM II</p>
-                <p>렌즈2 : Sony FE 50mm F.12 GM</p>
-            </div>
-            <div class="equipment-item">
-                <h3>그 외</h3>
-                <p>세로그립 : Sony VG-C4EM</p>
-                <p>조명 : GODOX V1S</p>
-                <p>동조기 : GODOX Xpro V2</p>
-            </div>
-        </div>
-        <p class="section-note">25.06.28 기준</p>
-    </section>
 
 <script>
         let photos = [];
@@ -1212,15 +1215,20 @@
         equipmentInfoButton.addEventListener('click', (event) => {
             event.preventDefault(); // 기본 링크 동작 막기
             cameraInfoSection.classList.toggle('active'); // active 클래스 토글
+
             // 섹션이 열리면 스크롤 이동
             if (cameraInfoSection.classList.contains('active')) {
                 // 섹션이 완전히 열린 후 스크롤되도록 약간의 딜레이를 준다옹
                 setTimeout(() => {
-                    window.scrollTo({
-                        top: cameraInfoSection.offsetTop - 80, // 헤더 아래에 보이도록 조절
-                        behavior: 'smooth'
-                    });
-                }, 500); // transition 시간보다 약간 더 길게 설정
+                    // hero-section 바로 아래에 위치하므로, 해당 섹션의 offsetTop으로 이동한다옹!
+                    const heroSection = document.querySelector('.hero-section');
+                    if (heroSection) {
+                         window.scrollTo({
+                            top: heroSection.offsetTop + heroSection.offsetHeight - 50, // 히어로 섹션 아래 + 약간 여유
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 400); // CSS transition 시간(0.7s)보다 살짝 빠르게 설정해서 자연스럽게 보이게 한다옹
             }
         });
     }
