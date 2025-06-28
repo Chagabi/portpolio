@@ -91,15 +91,20 @@
 
         .hero-text-container {
             color: #ffffff;
-            padding: 35px 50px; 
+            padding: 25px 40px; 
             background-color: rgba(40, 40, 40, 0.5); /* 배경 오버레이 살짝 어둡게 */
-            max-width: 960px; /* 좌우 폭 넓힘 */
+            max-width: 800px; /* 좌우 폭 넓힘 */
             width: 100%; /* 부모 요소 너비에 맞추되, max-width로 제한 */
             text-align: center;
             border-radius: 12px; 
             box-shadow: 0 6px 25px rgba(0,0,0,0.3); 
             overflow: hidden; /* ✨ 타이핑 효과를 위해 추가한다옹! ✨ */
         }
+        /* 모바일 미디어 쿼리 안에서도 한 번 더 조절할 수 있다옹! */
+        @media (max-width: 768px) {
+        .hero-text-container {
+        padding: 20px 15px; /* ✨ 25px 20px -> 20px 15px으로 줄였다옹! ✨ */
+        max-width: 90%; /* ✨ 95% -> 90%로 줄였다옹! ✨ */}}
 
         #hero-title-display {
             font-size: 3em; 
