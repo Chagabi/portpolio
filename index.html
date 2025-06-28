@@ -98,6 +98,7 @@
             text-align: center;
             border-radius: 12px; 
             box-shadow: 0 6px 25px rgba(0,0,0,0.3); 
+            overflow: hidden; /* ✨ 타이핑 효과를 위해 추가한다옹! ✨ */
         }
 
         #hero-title-display {
@@ -111,6 +112,24 @@
             font-size: 1.4em; 
             text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
         }
+
+        /* ✨ 타이핑 커서 깜빡임 효과를 위한 CSS 추가냥! ✨ */
+        .typing-cursor {
+            display: inline-block; /* 커서가 줄바꿈 없이 텍스트 옆에 오도록 한다옹 */
+            width: 3px; /* 커서 두께냥 */
+            height: 1.2em; /* 텍스트 높이에 맞춘다옹 */
+            background-color: #e0e0e0; /* 커서 색깔이다옹 */
+            vertical-align: middle; /* 텍스트와 세로 가운데 정렬 시켜준다옹 */
+            animation: blink 0.7s infinite; /* 깜빡이는 애니메이션이다옹 */
+            margin-left: 5px; /* 텍스트와의 간격이다옹 */
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        /* ✨ 여기까지 타이핑 효과 CSS다옹! ✨ */
         
         main {
             padding: 40px 0;
@@ -140,7 +159,7 @@
         .gallery-item img {
             width: 100%;
             height: 250px;
-            object-fit: cover;
+            object-fit: contain;
             transition: transform 0.3s;
             filter: brightness(0.9); /* 이미지 살짝 어둡게 해서 다크모드와 조화 */
         }
@@ -518,8 +537,8 @@
 
     <section class="hero-section">
         <div class="hero-text-container">
-            <h1 id="hero-title-display">테스트용 무료 호스팅이라 조금 느려요... 10초만 기다려주세요!</h1>
-            <p id="hero-subtitle-display">유료로 바꿔야하는데 귀찮당...</p>
+            <h1 id="hero-title-display">사진을 DB로 부터 불러오는 중 입니다.</h1>
+            <p id="hero-subtitle-display">사이트 로딩중</p>
         </div>
     </section>
     <main class="container">
@@ -590,10 +609,6 @@
     </div>
 
 <script>
-        // JavaScript 부분은 이전과 동일하게 유지됩니다 (히어로 이미지 관련 로직은 이미 제거됨).
-        // 이 예제에서는 스타일 변경에 집중했으므로 스크립트는 생략하고,
-        // 이전 단계에서 수정된 스크립트를 그대로 사용하시면 됩니다.
-        // 만약 스크립트 전체가 필요하시면 다시 요청해주세요!
         let photos = [];
         let categories = [];
         let heroInfo = { 
@@ -635,8 +650,60 @@
         const DEFAULT_HERO_TITLE = '여기에 멋진 제목을!';
         const DEFAULT_HERO_SUBTITLE = '여기는 부제목을 쓰는 공간이다옹!';
 
+    // ✨✨✨ 타이핑 애니메이션을 위한 변수 및 함수들이다옹! ✨✨✨
+    let typingTimeout; // 타이핑 중복 실행을 막기 위한 타임아웃 변수다옹
+
+    async function typeEffect(element, text, delay = 100) {
+        if (!element) return; // 요소가 없으면 그냥 돌아간다옹
+        element.innerHTML = ''; // 기존 텍스트를 지우고 시작한다옹
+
+        const cursorSpan = document.createElement('span');
+        cursorSpan.className = 'typing-cursor';
+        element.appendChild(cursorSpan); // 커서를 추가한다옹
+
+        for (let i = 0; i < text.length; i++) {
+            const charSpan = document.createElement('span');
+            charSpan.textContent = text.charAt(i);
+            element.insertBefore(charSpan, cursorSpan); // 커서 앞에 글자를 넣는다옹
+            await new Promise(resolve => setTimeout(resolve, delay)); // 글자 하나하나 나타나는 시간이다옹
+        }
+        cursorSpan.remove(); // 타이핑이 끝나면 커서는 없앤다옹
+    }
+
+    // 히어로 섹션을 업데이트하는 함수를 타이핑 효과 적용 버전으로 바꾼다옹!
+    async function updateHeroSection(isInitialLoad = false) {
+        clearTimeout(typingTimeout); // 기존 타이핑이 있다면 중지 시킨다옹
+        heroTitleDisplay.innerHTML = ''; // 기존 내용 지우기
+        heroSubtitleDisplay.innerHTML = ''; // 기존 내용 지우기
+
+        let titleToDisplay = heroInfo.title || DEFAULT_HERO_TITLE;
+        let subtitleToDisplay = heroInfo.subtitle || DEFAULT_HERO_SUBTITLE;
+
+        // 초기 로딩 중일 때는 로딩 문구를 타이핑한다옹!
+        if (isInitialLoad) {
+            titleToDisplay = '사진을 DB로 부터 불러오는 중 입니다.';
+            subtitleToDisplay = '사이트 로딩중';
+        }
+
+        await typeEffect(heroTitleDisplay, titleToDisplay, 70); // 제목 먼저 타이핑한다옹 (살짝 빠르게!)
+        // 부제목은 제목 타이핑이 끝난 후에 시작해야 하니까 기다린다옹!
+        typingTimeout = setTimeout(() => {
+            typeEffect(heroSubtitleDisplay, subtitleToDisplay, 50); // 부제목은 더 빠르게 타이핑한다옹!
+        }, titleToDisplay.length * 70 + 200); // 제목 타이핑 시간 + 약간의 딜레이
+        // (여기서 70은 typeEffect의 delay 시간이다옹. 필요하면 맞춰서 조절한다옹!)
+
+        if (adminPanel.style.display === 'block') { // 관리자 패널 열려있으면 입력창도 업데이트한다옹
+            heroTitleInputAdmin.value = heroInfo.title || '';
+            heroSubtitleInputAdmin.value = heroInfo.subtitle || '';
+        }
+    }
+    // ✨✨✨ 타이핑 애니메이션 관련 함수 끝이다옹! ✨✨✨
+            
     async function init() {
         console.log("야옹! init() 함수가 지금 막 시작됐다옹!");
+        
+        // ✨ 로딩 메시지를 먼저 타이핑한다옹! ✨
+        await updateHeroSection(true); // true를 넘겨서 초기 로딩 메시지를 보여준다옹!
 
         try {
             const response = await fetch('/.netlify/functions/get-categories'); 
@@ -664,7 +731,8 @@
         } catch (e) {
             setDefaultHeroInfo();
         }
-        updateHeroSection();
+        // ✨ 여기서 updateHeroSection()을 다시 호출해서 실제 내용을 타이핑하게 한다옹! ✨
+        updateHeroSection(); // 이전에 true로 호출했으니 이제는 저장된 진짜 내용을 보여준다옹!
 
         try {
             const photosResponse = await fetch('/.netlify/functions/get-photos');
@@ -688,15 +756,7 @@
             heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
         }
 
-        function updateHeroSection() {
-            heroTitleDisplay.textContent = heroInfo.title || ''; 
-            heroSubtitleDisplay.textContent = heroInfo.subtitle || ''; 
-
-            if (adminPanel.style.display === 'block') {
-                heroTitleInputAdmin.value = heroInfo.title || '';
-                heroSubtitleInputAdmin.value = heroInfo.subtitle || '';
-            }
-        }
+        // updateHeroSection 함수는 위에서 새로운 버전으로 대체되었다옹!
         
         async function saveHeroText() {
             const titleToSave = heroTitleInputAdmin.value.trim();
@@ -713,7 +773,7 @@
                     const result = await response.json(); 
                     heroInfo.title = result.data.title;
                     heroInfo.subtitle = result.data.subtitle;
-                    updateHeroSection();
+                    updateHeroSection(); // ✨ 타이핑 효과 적용! ✨
                     alert('히어로 문구가 Firestore에 저장되었다옹!');
                 } else { 
                     throw new Error(await response.text() || '히어로 문구 저장 실패'); 
@@ -737,7 +797,7 @@
                      if(response.ok){
                         heroInfo.title = DEFAULT_HERO_TITLE;
                         heroInfo.subtitle = DEFAULT_HERO_SUBTITLE;
-                        updateHeroSection();
+                        updateHeroSection(); // ✨ 타이핑 효과 적용! ✨
                         alert('히어로 문구가 기본값으로 초기화되었다옹!');
                     } else { 
                         throw new Error(await response.text() || '히어로 문구 초기화 실패');
@@ -978,7 +1038,7 @@
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         adminPanel.style.display = isLoggedIn ? 'block' : 'none';
         loginButton.textContent = isLoggedIn ? '관리자 패널 보기' : '관리자 로그인'; 
-        if(isLoggedIn) { renderAdminGallery(); populateAllCategoryDropdowns(); updateHeroSection(); }
+        if(isLoggedIn) { renderAdminGallery(); populateAllCategoryDropdowns(); updateHeroSection(); } // ✨ 타이핑 효과 적용! ✨
     }
             
     function setupEventListeners() {
