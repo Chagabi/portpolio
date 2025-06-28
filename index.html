@@ -685,11 +685,11 @@
             subtitleToDisplay = '사이트 로딩중';
         }
 
-        await typeEffect(heroTitleDisplay, titleToDisplay, 70); // 제목 먼저 타이핑한다옹 (살짝 빠르게!)
+        await typeEffect(heroTitleDisplay, titleToDisplay, 40); // 제목 먼저 타이핑한다옹 (살짝 빠르게!)
         // 부제목은 제목 타이핑이 끝난 후에 시작해야 하니까 기다린다옹!
         typingTimeout = setTimeout(() => {
-            typeEffect(heroSubtitleDisplay, subtitleToDisplay, 50); // 부제목은 더 빠르게 타이핑한다옹!
-        }, titleToDisplay.length * 70 + 200); // 제목 타이핑 시간 + 약간의 딜레이
+            typeEffect(heroSubtitleDisplay, subtitleToDisplay, 30); // 부제목은 더 빠르게 타이핑한다옹!
+        }, titleToDisplay.length * 40 + 50)// 제목 타이핑 시간 + 약간의 딜레이
         // (여기서 70은 typeEffect의 delay 시간이다옹. 필요하면 맞춰서 조절한다옹!)
 
         if (adminPanel.style.display === 'block') { // 관리자 패널 열려있으면 입력창도 업데이트한다옹
