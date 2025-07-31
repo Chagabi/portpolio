@@ -565,6 +565,10 @@
             background-color: #383838;
             color: #bdbdbd;
         }
+        .category-list li .category-buttons { /* 버튼들을 감싸는 div 추가 */
+            display: flex;
+            gap: 8px; /* 버튼 사이 간격 */
+        }
         .category-list li button {
             padding: 4px 10px;
             font-size: 12px;
@@ -983,6 +987,7 @@
         }
     }
 
+    // ✨ renderAdminCategoryList 함수 수정! ✨
     function renderAdminCategoryList() {
         categoryListAdmin.innerHTML = ''; 
         if (!categories || categories.length === 0) {
@@ -993,11 +998,23 @@
             const listItem = document.createElement('li');
             listItem.id = `admin-category-li-${category.id}`; 
             listItem.textContent = category.name; 
+            
+            const buttonContainer = document.createElement('div'); // 버튼들을 담을 컨테이너
+            buttonContainer.className = 'category-buttons';
+
+            const editButton = document.createElement('button'); // 수정 버튼
+            editButton.textContent = '수정';
+            editButton.className = 'btn btn-sm'; // 기존 btn 스타일 재활용
+            editButton.onclick = () => handleEditCategory(category.id, category.name); // 수정 함수 연결
+            buttonContainer.appendChild(editButton);
+
             const deleteButton = document.createElement('button');
             deleteButton.textContent = '삭제';
             deleteButton.className = 'btn btn-danger btn-sm'; 
             deleteButton.onclick = () => handleDeleteCategory(category.id, category.name); 
-            listItem.appendChild(deleteButton);
+            buttonContainer.appendChild(deleteButton);
+
+            listItem.appendChild(buttonContainer); // 버튼 컨테이너를 리스트 아이템에 추가
             categoryListAdmin.appendChild(listItem);
         });
     }
@@ -1016,6 +1033,40 @@
             alert(`카테고리 삭제 실패옹... (${error.message})`);
         }
     }
+
+    // ✨ handleEditCategory 함수 추가! ✨
+    async function handleEditCategory(categoryId, oldCategoryName) {
+        const newCategoryName = prompt(`'${oldCategoryName}' 카테고리의 새 이름을 입력해달라옹!`, oldCategoryName);
+        if (newCategoryName === null || newCategoryName.trim() === '') {
+            alert('카테고리 이름을 입력하지 않았거나 취소했다옹!');
+            return;
+        }
+        if (newCategoryName.toLowerCase() === '전체') {
+            alert("'전체'는 사용불가옹!");
+            return;
+        }
+        if (newCategoryName.trim() === oldCategoryName.trim()) {
+            alert('이름이 똑같다옹! 바꿀 필요 없다냥!');
+            return;
+        }
+
+        try {
+            // Netlify Function 이름이 update-category.js 이므로 그대로 호출한다옹!
+            const response = await fetch('/.netlify/functions/update-category', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: categoryId, newName: newCategoryName.trim() }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || `카테고리 수정 실패: ${response.status}`);
+            alert(`'${oldCategoryName}' 카테고리가 '${result.name}'으로 수정 성공옹!`);
+            await refreshCategoriesFromServer(); // 카테고리 목록 새로고침
+            await refreshPhotosFromServer(); // 사진들의 카테고리도 업데이트될 수 있도록 사진 목록도 새로고침
+        } catch (error) {
+            alert(`카테고리 수정 중 문제 발생옹: ${error.message}`);
+        }
+    }
+
 
     async function handleAddCategory() {
         const newCategoryName = newCategoryInputAdmin.value.trim();
