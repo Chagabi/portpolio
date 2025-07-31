@@ -1,28 +1,37 @@
 // netlify/functions/update-category.js
 const admin = require('firebase-admin');
 
+// Netlify 환경 변수에서 Firebase 접속 정보 (개별) 읽어오기
+const FIREBASE_PROJECT_ID_ENV = process.env.FIREBASE_PROJECT_ID;
+const FIREBASE_CLIENT_EMAIL_ENV = process.env.FIREBASE_CLIENT_EMAIL;
+const FIREBASE_PRIVATE_KEY_ENV = process.env.FIREBASE_PRIVATE_KEY;
+
+let db;
+let firebaseInitializationError = null;
+
 // Firebase Admin SDK 초기화
 // 이미 다른 Netlify Function에서 초기화했다면 이 부분은 필요 없다옹!
-// 너의 Firebase 프로젝트에 맞게 서비스 계정 키를 설정해야 한다옹.
-// 환경 변수 (예: FIREBASE_SERVICE_ACCOUNT_KEY)를 사용하는 것이 안전하다냥!
-if (!admin.apps.length) {
-    // 환경 변수에서 서비스 계정 키를 불러와서 사용한다옹.
-    // Netlify 대시보드에서 FIREBASE_SERVICE_ACCOUNT_KEY 환경 변수에
-    // Firebase 서비스 계정 JSON 키의 내용을 직접 붙여넣어달라옹!
+if (FIREBASE_PROJECT_ID_ENV && FIREBASE_CLIENT_EMAIL_ENV && FIREBASE_PRIVATE_KEY_ENV) {
     try {
-        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
-        });
+        const firebaseServiceAccount = {
+            projectId: FIREBASE_PROJECT_ID_ENV,
+            clientEmail: FIREBASE_CLIENT_EMAIL_ENV,
+            // 개인 키는 환경 변수에 저장될 때 줄바꿈이 \\n으로 인코딩될 수 있어서 \n으로 바꿔줘야 한다옹!
+            privateKey: FIREBASE_PRIVATE_KEY_ENV.replace(/\\n/g, '\n') 
+        };
+        if (admin.apps.length === 0) { // Firebase 앱이 아직 초기화되지 않았다면 초기화한다옹!
+            admin.initializeApp({ credential: admin.credential.cert(firebaseServiceAccount) });
+        }
+        db = admin.firestore(); // Firestore 인스턴스 가져오기
     } catch (e) {
-        console.error("냐옹! Firebase 서비스 계정 키를 파싱하는 데 실패했다옹:", e);
-        // 개발 환경에서 로컬 테스트를 위해 임시로 기본 앱을 초기화할 수도 있다옹.
-        // 하지만 실제 배포 환경에서는 환경 변수를 꼭 사용해야 한다냥!
-        admin.initializeApp(); 
+        firebaseInitializationError = `냐옹! Firebase (카테고리 업데이트) 초기화 실패다옹: ${e.message}`;
+        console.error(firebaseInitializationError);
     }
+} else {
+    firebaseInitializationError = '냐옹! Firebase (카테고리 업데이트) 서비스 계정 환경 변수가 설정되지 않았다옹!';
+    console.error(firebaseInitializationError);
 }
 
-const db = admin.firestore();
 
 exports.handler = async (event, context) => {
     // POST 요청만 처리한다옹!
@@ -30,6 +39,24 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 405,
             body: JSON.stringify({ message: '냐옹! POST 요청만 받는다옹!' }),
+            headers: { 'Content-Type': 'application/json' }
+        };
+    }
+
+    // Firebase 초기화에 문제가 있었다면 에러를 반환한다옹!
+    if (firebaseInitializationError) {
+        return { 
+            statusCode: 500, 
+            body: JSON.stringify({ message: `서버 설정 오류: ${firebaseInitializationError}` }),
+            headers: { 'Content-Type': 'application/json' }
+        };
+    }
+    // db 인스턴스가 제대로 초기화되었는지 다시 확인한다옹!
+    if (!db) {
+        console.error('냐옹! Firestore DB 인스턴스가 초기화되지 않았다옹!');
+        return { 
+            statusCode: 500, 
+            body: JSON.stringify({ message: '서버 내부 설정 오류 (DB 인스턴스 누락)' }),
             headers: { 'Content-Type': 'application/json' }
         };
     }
